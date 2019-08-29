@@ -1,0 +1,123 @@
+<template> 
+	<!-- Only one root node is allowed in template. -->
+	<div class="container">
+    	<div class="item-container">
+            <image src="{{displayUri}}" class="image"></image>
+            <input type="button" class="btn" onclick="takePhoto" value="拍摄相片" />
+            <input type="button" class="btn" onclick="pickPhoto" value="选取相片" />
+            <input type="button" class="btn" onclick="editPhoto" value="编辑相片" />
+            <input type="button" class="btn" onclick="savePhoto" value="保存相片" />
+            <input type="button" class="btn" onclick="resetPhoto" value="取消修改" />
+    	</div>
+	</div >
+</template>
+
+<style>
+    @import 'common.css';
+
+    .item-container {
+        margin-top: 30px;
+        margin-right: 60px;
+        margin-left: 60px;
+        flex-direction: column;
+    }
+    .image {
+        margin: 50px 0px;
+        width: 650px;
+        height: 650px;
+        background-color:#fffafa;
+    }
+    .title {
+        font-size: 60px;
+    }
+    input {
+        font-size: 60px;
+        color: #00bfff;
+        padding: 20px;  
+    }
+</style>
+
+<script>
+  import media from '@system.media'
+  import prompt from '@system.prompt'
+  import image from '@system.image'
+  export default {
+    data: {
+        displayUri: null
+    },
+    onInit: function () {
+        this.$page.setTitleBar({ text: '图片处理' })
+    },
+    takePhoto: function () {
+        var that = this;
+        media.takePhoto({
+            success: function (data) {
+                that.originUri = data.uri
+                that.displayUri = data.uri
+                console.log('media.takePhoto----------success' + ' ' + that.displayUri)
+            },
+            fail: function (errmsg, errcode) {
+                prompt.showToast({ message: "拍摄失败\n" + errcode + ': ' + errmsg, image:'/Common/logo.png' })
+                console.log('media.takePhoto----------fail ' + errcode + ': ' + errmsg)
+            },
+            cancel: function () {
+                console.log('media.takePhoto----------cancel')
+            }
+        })
+    },
+    pickPhoto: function () {
+        var that = this;
+        media.pickImage({
+            success: function (data) {
+                that.originUri = data.uri
+                that.displayUri = data.uri
+                console.log('media.pickImage----------success' + ' ' + that.displayUri)
+            },
+            fail: function (erromsg, errocode) {
+                prompt.showToast({ message: "选取失败\n" + errocode + ': ' + erromsg, image:'/Common/logo.png' })
+                console.log('media.pickImage----------fail ' + errocode + ': ' + erromsg)
+            },
+            cancel: function () {
+                console.log('media.pickImage----------cancel')
+            }
+        })
+    },
+    editPhoto: function () {
+        var that = this;
+        image.editImage({
+            uri: that.displayUri,
+            success: function (data) {
+                that.displayUri = data.uri
+                console.log('image.editImage----------success' + ' ' + that.displayUri)
+            },
+            cancel: function () {
+                prompt.showToast({ message: "取消编辑" })
+                console.log("image.editImage----------cancel")
+            },
+            fail: function (erromsg, errocode) {
+                prompt.showToast({ message: "编辑失败\n" + errocode + ': ' + erromsg, image:'/Common/logo.png' })
+                console.log('media.editImage----------fail ' + errocode + ': ' + erromsg)
+            }
+        })
+    },
+    savePhoto: function () {
+        var that = this;
+        media.saveToPhotosAlbum({
+            uri: that.displayUri,
+            success: function () {
+                prompt.showToast({ message: "保存成功" })
+                console.log('media.saveToPhotosAlbum----------success' + ' ' + that.displayUri)
+            },
+            fail: function (erromsg, errocode) {
+                prompt.showToast({ message: "保存失败\n" + errocode + ': ' + erromsg, image:'/Common/logo.png' })
+                console.log('media.saveToPhotosAlbum----------fail ' + errocode + ': ' + erromsg)
+            }
+        })
+    },
+    resetPhoto: function() {
+        this.displayUri = this.originUri
+        prompt.showToast({ message: "取消修改" })
+        console.log('resetPhoto----------success')
+    }
+  }
+</script>
