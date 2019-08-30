@@ -3,11 +3,13 @@
 	<div class="container">
     	<div class="item-container">
             <image src="{{displayUri}}" class="image"></image>
-            <input type="button" class="btn" onclick="takePhoto" value="拍摄相片" />
-            <input type="button" class="btn" onclick="pickPhoto" value="选取相片" />
-            <input type="button" class="btn" onclick="editPhoto" value="编辑相片" />
-            <input type="button" class="btn" onclick="savePhoto" value="保存相片" />
-            <input type="button" class="btn" onclick="resetPhoto" value="取消修改" />
+            <div class="list-item">
+                <image src="img/takePhoto.png" class="btn" onclick="takePhoto"></image>
+                <image src="img/pickPhoto.png" class="btn" onclick="pickPhoto"></image>
+                <image src="img/editPhoto.png" class="btn" onclick="editPhoto"></image>
+                <image src="img/savePhoto.png" class="btn" onclick="savePhoto"></image>
+                <image src="img/resetPhoto.png" class="btn" onclick="resetPhoto"></image>
+            </div>
     	</div>
 	</div >
 </template>
@@ -22,19 +24,23 @@
         flex-direction: column;
     }
     .image {
-        margin: 50px 0px;
+        margin: 30px 0px;
         width: 650px;
-        height: 650px;
+        height: 1100px;
         background-color:#fffafa;
     }
     .title {
         font-size: 60px;
     }
-    input {
-        font-size: 60px;
-        color: #00bfff;
-        padding: 20px;  
+    .list-item {
+        align-items: center;
     }
+    .btn {
+        width: 84px;
+        height: 84px;
+        margin-right: 20px;
+        margin-left: 20px;
+    } 
 </style>
 
 <script>
@@ -46,7 +52,12 @@
         displayUri: null
     },
     onInit: function () {
-        this.$page.setTitleBar({ text: '图片处理' })
+        this.$page.setTitleBar({
+            //titlebar的状态在manifest.json中display设置的
+            textColor: '#1a1a1a',
+            text: '图片处理',
+            menu: true
+        })
     },
     takePhoto: function () {
         var that = this;
@@ -90,13 +101,12 @@
                 that.displayUri = data.uri
                 console.log('image.editImage----------success' + ' ' + that.displayUri)
             },
-            cancel: function () {
-                prompt.showToast({ message: "取消编辑" })
-                console.log("image.editImage----------cancel")
-            },
             fail: function (erromsg, errocode) {
                 prompt.showToast({ message: "编辑失败\n" + errocode + ': ' + erromsg, image:'/Common/logo.png' })
                 console.log('media.editImage----------fail ' + errocode + ': ' + erromsg)
+            },
+            cancel: function () {
+                console.log("image.editImage----------cancel")
             }
         })
     },
@@ -114,7 +124,7 @@
             }
         })
     },
-    resetPhoto: function() {
+    resetPhoto: function () {
         this.displayUri = this.originUri
         prompt.showToast({ message: "取消修改" })
         console.log('resetPhoto----------success')
