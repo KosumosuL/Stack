@@ -1,0 +1,4 @@
+# Test Project   
+     
+modules:  
+> photo    
