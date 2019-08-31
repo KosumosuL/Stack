@@ -1,12 +1,8 @@
-from flask import Flask
+from Stack import init_app
 
-app = Flask(__name__)
-
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
-
+app = init_app('Stack.config')
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host=app.config['HOST'],
+            port=app.config['PORT'],
+            debug=app.config['DEBUG'])
