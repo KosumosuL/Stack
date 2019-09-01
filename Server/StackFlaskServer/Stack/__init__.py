@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+
 def init_app(config_filename):
     app = Flask(__name__)
     app.config.from_object(config_filename)
@@ -19,8 +20,8 @@ def init_app(config_filename):
 
     from Stack.model import db
     db.init_app(app)
-    #
-    # from Stack.view import init_api
-    # init_api(app)
+
+    from Stack.view import init_api
+    init_api(app)
 
     return app

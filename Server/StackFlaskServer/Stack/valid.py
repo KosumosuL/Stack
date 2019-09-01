@@ -1,22 +1,23 @@
 from voluptuous import *
 
 schema = Schema({
-    Required('pid'): All(int, Length(min=5, max=5)),
-    Required('lid'): All(int, Length(min=5, max=5)),
-    Required('cid'): All(int, Length(min=5, max=5)),
-    Required('fid'): All(int, Length(min=5, max=5)),
-    Required('image'): str,
-    Required('content'): str,
-    Required('label'): str,
-    Required('keyword'): str,
-    Required('ptime'): Datetime,
-    Required('ltime'): Datetime,
-    Required('ctime'): Datetime,
-    Required('isre'): Boolean,
-    Required('aes_score'): Decimal,
-    Required('phonenum'): All(int, Length(min=11, max=11)),
-    Required('follower'): All(int, Length(min=11, max=11)),
-    Required('followee'): All(int, Length(min=11, max=11))
+    'pid': int,
+    'lid': int,
+    'cid': int,
+    'fid': int,
+    'image': str,
+    'content': str,
+    'label': str,
+    'keyword': str,
+    'ptime': lambda v: datetime.datetime.strptime(v, '%Y-%m-%d %H:%M:%S'),
+    'ltime': lambda v: datetime.datetime.strptime(v, '%Y-%m-%d %H:%M:%S'),
+    'ctime': lambda v: datetime.datetime.strptime(v, '%Y-%m-%d %H:%M:%S'),
+    'ftime': lambda v: datetime.datetime.strptime(v, '%Y-%m-%d %H:%M:%S'),
+    'isre': Boolean,
+    'aes_score': Decimal,
+    'phonenum': All(str, Length(min=11, max=11)),
+    'follower': All(str, Length(min=11, max=11)),
+    'followee': All(str, Length(min=11, max=11))
 })
 
 # like_schema = Schema({

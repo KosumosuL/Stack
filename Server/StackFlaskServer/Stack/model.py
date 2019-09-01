@@ -7,7 +7,7 @@ from Stack import db
 
 class User(db.Model):
     __tablename__ = 'user'
-    phonenum = db.Column(db.INTEGER, primary_key=True, nullable=False)
+    phonenum = db.Column(db.String(11), primary_key=True, nullable=False)
     password = db.Column(db.String(32), nullable=False)
     photo = db.Column(db.String(200), nullable=False)
     name = db.Column(db.String(32), nullable=True)
@@ -64,13 +64,12 @@ class Post(db.Model):
     isre = db.Column(db.Boolean, nullable=False)
     label = db.Column(db.String(32), nullable=True)
     aes_score = db.Column(db.DECIMAL, nullable=False)
-    phonenum = db.Column(db.INTEGER, nullable=False)
+    phonenum = db.Column(db.String(11), nullable=False)
 
     def __repr__(self):
         return '<User %r>' % self.pid
 
-    def __init__(self, pid, image, ptime, label, aes_score, phonenum, isre=False):
-        self.pid = pid
+    def __init__(self, image, ptime, label, aes_score, phonenum, isre=False):
         self.image = image
         self.ptime = ptime
         self.label = label
@@ -89,13 +88,10 @@ class Post(db.Model):
         return self.query.filter(start < self.ptime, self.ptime <= end).order_by(self.aes_score.desc()).limit(RANK_LIMIT).all()
 
     def getlastweek(self, start, end):
-        return self.query.filter(start < self.ptime, self.ptime <= end).all()
+        return self.query.filter(start < self.ptime, self.ptime <= end).order_by(self.ptime.desc()).all()
 
     def getbyuser(self, phonenum):
         return self.query.filter_by(phonenum=phonenum).all()
-
-    def getid(self):
-        return self.query.count()
 
     def add(self, post):
         db.session.add(post)
@@ -113,10 +109,10 @@ class Post(db.Model):
         return {
             'pid': post.pid,
             'image': post.image,
-            'ptime': post.ptime,
+            'ptime': str(post.ptime),
             'isre': post.isre,
             'label': post.label,
-            'aes_score': post.aes_score,
+            'aes_score': str(post.aes_score),
             'phonenum': post.phonenum
         }
 
@@ -125,13 +121,12 @@ class LikeTable(db.Model):
     lid = db.Column(db.INTEGER, primary_key=True, nullable=False)
     ltime = db.Column(db.DateTime, nullable=False)
     pid = db.Column(db.INTEGER, nullable=False)
-    phonenum = db.Column(db.INTEGER, nullable=False)
+    phonenum = db.Column(db.String(11), nullable=False)
 
     def __repr__(self):
         return '<LikeTable %r>' % self.lid
 
-    def __init__(self, lid, ltime, pid, phonenum):
-        self.lid = lid
+    def __init__(self, ltime, pid, phonenum):
         self.ltime = ltime
         self.pid = pid
         self.phonenum = phonenum
@@ -139,14 +134,14 @@ class LikeTable(db.Model):
     def get(self, lid):
         return self.query.filter_by(lid=lid).first()
 
+    def getbypp(self, pid, phonenum):
+        return self.query.filter(self.pid == pid, self.phonenum == phonenum).first()
+
     def getbypid(self, pid):
         return self.query.filter_by(pid=pid).all()
 
     def getcountbypid(self, pid):
         return self.query.filter_by(pid=pid).count()
-
-    def getid(self):
-        return self.query.count()
 
     def add(self, like):
         db.session.add(like)
@@ -163,7 +158,7 @@ class LikeTable(db.Model):
     def out(self, like):
         return {
             'lid': like.lid,
-            'ltime': like.ltime,
+            'ltime': str(like.ltime),
             'pid': like.pid,
             'phonenum': like.phonenum
         }
@@ -174,13 +169,12 @@ class CommentTable(db.Model):
     content = db.Column(db.String(50), nullable=False)
     ctime = db.Column(db.DateTime, nullable=False)
     pid = db.Column(db.INTEGER, nullable=False)
-    phonenum = db.Column(db.INTEGER, nullable=False)
+    phonenum = db.Column(db.String(11), nullable=False)
 
     def __repr__(self):
         return '<LikeTable %r>' % self.cid
 
-    def __init__(self, cid, content, ctime, pid, phonenum):
-        self.cid = cid
+    def __init__(self, content, ctime, pid, phonenum):
         self.content = content
         self.ctime = ctime
         self.pid = pid
@@ -191,9 +185,6 @@ class CommentTable(db.Model):
 
     def getbypid(self, pid):
         return self.query.filter_by(pid=pid).all()
-
-    def getid(self):
-        return self.query.count()
 
     def add(self, comment):
         db.session.add(comment)
@@ -211,7 +202,7 @@ class CommentTable(db.Model):
         return {
             'cid': comment.cid,
             'content': comment.content,
-            'ctime': comment.ctime,
+            'ctime': str(comment.ctime),
             'pid': comment.pid,
             'phonenum': comment.phonenum
         }
@@ -220,14 +211,13 @@ class FollowTable(db.Model):
     __tablename__ = 'followtable'
     fid = db.Column(db.INTEGER, primary_key=True, nullable=False)
     ftime = db.Column(db.DateTime, nullable=False)
-    follower = db.Column(db.INTEGER, nullable=False)
-    followee = db.Column(db.INTEGER, nullable=False)
+    follower = db.Column(db.String(11), nullable=False)
+    followee = db.Column(db.String(11), nullable=False)
 
     def __repr__(self):
         return '<LikeTable %r>' % self.fid
 
-    def __init__(self, fid, ftime, follower, followee):
-        self.fid = fid
+    def __init__(self, ftime, follower, followee):
         self.ftime = ftime
         self.follower = follower
         self.followee = followee
@@ -238,8 +228,8 @@ class FollowTable(db.Model):
     def get_followers(self, followee):
         return self.query.filter_by(followee=followee).all()
 
-    def getid(self):
-        return self.query.count()
+    def getbyff(self, follower, followee):
+        return self.query.filter(self.follower == follower, self.followee == followee).first()
 
     def add(self, follow):
         db.session.add(follow)
@@ -256,7 +246,7 @@ class FollowTable(db.Model):
     def out(self, follow):
         return {
             'fid': follow.fid,
-            'ftime': follow.ftime,
+            'ftime': str(follow.ftime),
             'follower': follow.follower,
             'followee': follow.followee
         }

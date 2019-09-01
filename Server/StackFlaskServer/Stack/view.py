@@ -4,6 +4,7 @@ from Stack.model import *
 from Stack.valid import *
 import datetime
 
+
 def init_api(app):
 
     # home page
@@ -16,10 +17,10 @@ def init_api(app):
     ###########################################
     # for each user, get all posts
     # check auth(phonenum) firstly
-    @app.route('/home/get_posts', method=['POST'])
+    @app.route('/home/get_posts', methods=['POST'])
     def get_posts():
         data = {}
-        phonenum = int(request.form.get('phonenum'))
+        phonenum = request.form.get('phonenum')
         try:
             schema(
                 {
@@ -28,6 +29,7 @@ def init_api(app):
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -42,25 +44,23 @@ def init_api(app):
                     res.append(Post.out(Post, post))
                 data['message'] = res
                 data['status'] = 200
-                data['message'] = 'got all posts successfully!'
             except Exception as e:
                 data['status'] = 406
-                data['message'] = e
+                data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     # user creates one post
     # check auth(phonenum) firstly
-    @app.route('/home/create_post', method=['POST'])
+    @app.route('/home/create_post', methods=['POST'])
     def create_post():
         data = {}
         image = request.form.get('image')
-        ptime = datetime.datetime.strptime(request.form.get('ptime'), "%Y-%m-%d %H:%M:%S")
+        ptime = request.form.get('ptime')
         label = request.form.get('label')
-        aes_score = float(request.form.get('aes_score'))
-        phonenum = int(request.form.get('phonenum'))
+        import decimal
+        aes_score = decimal.Decimal(request.form.get('aes_score'))
+        phonenum = request.form.get('phonenum')
         try:
             schema(
                 {
@@ -73,6 +73,7 @@ def init_api(app):
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -80,8 +81,7 @@ def init_api(app):
                 data['message'] = e.msg + " for " + e.path[0]
 
         if conforms_to_schema:
-            post = Post(pid=Post.getid(Post) + 10000,
-                        image=image,
+            post = Post(image=image,
                         ptime=ptime,
                         label=label,
                         aes_score=aes_score,
@@ -91,16 +91,14 @@ def init_api(app):
                 data['status'] = 200
                 data['message'] = 'post successfully!'
             except Exception as e:
-                data['status'] = 400
-                data['message'] = e
+                data['status'] = 406
+                data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     # user deletes one post
     # check auth(phonenum) firstly
-    @app.route('/home/delete_post', method=['POST'])
+    @app.route('/home/delete_post', methods=['POST'])
     def delete_post():
         data = {}
         pid = int(request.form.get('pid'))
@@ -112,6 +110,7 @@ def init_api(app):
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -122,24 +121,23 @@ def init_api(app):
             # check like thirdly
             try:
                 _ = Post.delete(Post, pid)
+                # 还需删除所有包含的likes和comments
                 data['status'] = 200
                 data['message'] = 'deleted successfully!'
             except Exception as e:
                 data['status'] = 406
-                data['message'] = e
+                data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     # user repost/retweet one post
     # check auth(phonenum) firstly
-    @app.route('/home/re_post', method=['POST'])
+    @app.route('/home/re_post', methods=['POST'])
     def re_post():
         data = {}
-        ptime = datetime.datetime.strptime(request.form.get('ptime'), "%Y-%m-%d %H:%M:%S")
+        ptime = request.form.get('ptime')
         pid = int(request.form.get('pid'))
-        phonenum = int(request.form.get('phonenum'))
+        phonenum = request.form.get('phonenum')
         try:
             schema(
                 {
@@ -150,6 +148,7 @@ def init_api(app):
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -163,8 +162,7 @@ def init_api(app):
                 data['status'] = 404
                 data['message'] = "Post {} doesn't exist".format(pid)
             else:
-                post = Post(pid=Post.getid(Post) + 10000,
-                            image=origin_post.image,
+                post = Post(image=origin_post.image,
                             ptime=ptime,
                             label=origin_post.label,
                             aes_score=origin_post.aes_score,
@@ -176,18 +174,16 @@ def init_api(app):
                     data['message'] = 'repost successfully!'
                 except Exception as e:
                     data['status'] = 406
-                    data['message'] = e
+                    data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     ###########################################
     # like
     ###########################################
-    # for each post, get likes
+    # for each post, get the number of likes
     # check auth(phonenum) firstly
-    @app.route('/home/get_likes', method=['POST'])
+    @app.route('/home/get_likes', methods=['POST'])
     def get_likes():
         data = {}
         pid = int(request.form.get('pid'))
@@ -199,6 +195,7 @@ def init_api(app):
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -217,26 +214,23 @@ def init_api(app):
                     # for like in likes:
                     #     res.append(LikeTable.out(LikeTable, like))
                     # data['message'] = res
-                    len = LikeTable.getcountbypid(LikeTable, pid=pid)
-                    data['message'] = len
+                    lens = LikeTable.getcountbypid(LikeTable, pid=pid)
+                    data['message'] = lens
                     data['status'] = 200
-                    data['message'] = 'got all likes successfully!'
                 except Exception as e:
                     data['status'] = 406
-                    data['message'] = e
+                    data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     # user likes one post
     # check auth(phonenum) firstly
-    @app.route('/home/like_post', method=['POST'])
+    @app.route('/home/like_post', methods=['POST'])
     def like_post():
         data = {}
-        ltime = datetime.datetime.strptime(request.form.get('ltime'), "%Y-%m-%d %H:%M:%S")
+        ltime = request.form.get('ltime')
         pid = int(request.form.get('pid'))
-        phonenum = int(request.form.get('phonenum'))
+        phonenum = request.form.get('phonenum')
         try:
             schema(
                 {
@@ -247,6 +241,7 @@ def init_api(app):
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -258,9 +253,11 @@ def init_api(app):
             if Post.get(Post, pid) is None:
                 data['status'] = 404
                 data['message'] = "Post {} doesn't exist".format(pid)
+            elif LikeTable.getbypp(LikeTable, pid, phonenum):
+                data['status'] = 400
+                data['message'] = 'repeat liking is forbidden'
             else:
-                like = LikeTable(lid=LikeTable.getid(LikeTable) + 10000,
-                                 ltime=ltime,
+                like = LikeTable(ltime=ltime,
                                  pid=pid,
                                  phonenum=phonenum)
                 try:
@@ -269,28 +266,28 @@ def init_api(app):
                     data['message'] = 'liked successfully!'
                 except Exception as e:
                     data['status'] = 406
-                    data['message'] = e
+                    data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     # user unlikes one post
     # check auth(phonenum) firstly
-    @app.route('/home/unlike_post', method=['POST'])
+    @app.route('/home/unlike_post', methods=['POST'])
     def unlike_post():
         data = {}
-        lid = int(request.form.get('lid'))
+        # lid = int(request.form.get('lid'))
         pid = int(request.form.get('pid'))
+        phonenum = request.form.get('phonenum')
         try:
             schema(
                 {
-                    "lid": lid,
-                    "pid": pid
+                    "pid": pid,
+                    "phonenum": phonenum
                 }
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -305,23 +302,24 @@ def init_api(app):
             else:
                 # check like thirdly
                 try:
-                    _ = LikeTable.delete(LikeTable, lid)
+                    # consider the inconvenience of obtaining the lid ...
+                    # _ = LikeTable.delete(LikeTable, lid)
+                    like = LikeTable.getbypp(LikeTable, pid, phonenum)
+                    _ = LikeTable.delete(LikeTable, like.lid)
                     data['status'] = 200
                     data['message'] = 'unliked successfully!'
                 except Exception as e:
                     data['status'] = 406
-                    data['message'] = e
+                    data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     ###########################################
     # comment
     ###########################################
     # for each post, get comments
     # check auth(phonenum) firstly
-    @app.route('/home/get_comments', method=['POST'])
+    @app.route('/home/get_comments', methods=['POST'])
     def get_comments():
         data = {}
         pid = int(request.form.get('pid'))
@@ -333,6 +331,7 @@ def init_api(app):
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -352,24 +351,21 @@ def init_api(app):
                         res.append(CommentTable.out(CommentTable, comment))
                     data['message'] = res
                     data['status'] = 200
-                    data['message'] = 'got all comments successfully!'
                 except Exception as e:
                     data['status'] = 406
-                    data['message'] = e
+                    data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     # user comments on one post
     # check auth(phonenum) firstly
-    @app.route('/home/comment_post', method=['POST'])
+    @app.route('/home/comment_post', methods=['POST'])
     def comment_post():
         data = {}
         content = request.form.get('content')
-        ctime = datetime.datetime.strptime(request.form.get('ctime'), "%Y-%m-%d %H:%M:%S")
+        ctime = request.form.get('ctime')
         pid = int(request.form.get('pid'))
-        phonenum = int(request.form.get('phonenum'))
+        phonenum = request.form.get('phonenum')
         try:
             schema(
                 {
@@ -381,6 +377,7 @@ def init_api(app):
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -393,8 +390,7 @@ def init_api(app):
                 data['status'] = 404
                 data['message'] = "Post {} doesn't exist".format(pid)
             else:
-                comment = CommentTable(cid=CommentTable.getid(CommentTable) + 10000,
-                                       content=content,
+                comment = CommentTable(content=content,
                                        ctime=ctime,
                                        pid=pid,
                                        phonenum=phonenum)
@@ -403,16 +399,14 @@ def init_api(app):
                     data['status'] = 200
                     data['message'] = 'commented successfully!'
                 except Exception as e:
-                    data['status'] = 400
-                    data['message'] = e
+                    data['status'] = 406
+                    data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     # user un-comments on one post
     # check auth(phonenum) firstly
-    @app.route('/home/uncomment_post', method=['POST'])
+    @app.route('/home/uncomment_post', methods=['POST'])
     def uncomment_post():
         data = {}
         cid = int(request.form.get('cid'))
@@ -426,6 +420,7 @@ def init_api(app):
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -444,30 +439,28 @@ def init_api(app):
                     data['message'] = 'uncommented successfully!'
                 except Exception as e:
                     data['status'] = 406
-                    data['message'] = e
+                    data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     ###########################################
     # follow
     ###########################################
-    # for each user, get followers
+    # for each user, get followers -> the ones who are following you
     # check auth(phonenum==followee) firstly
-    @app.route('/mine/get_followers', method=['POST'])
+    @app.route('/mine/get_followers', methods=['POST'])
     def get_followers():
         data = {}
-        # equals to current user's phonenum
-        followee = int(request.form.get('followee'))
+        phonenum = request.form.get('phonenum')
         try:
             schema(
                 {
-                    "followee": followee
+                    "phonenum": phonenum
                 }
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -476,37 +469,35 @@ def init_api(app):
 
         if conforms_to_schema:
             try:
-                followers = FollowTable.get_followers(FollowTable, followee=followee)
+                followers = FollowTable.get_followers(FollowTable, followee=phonenum)
                 res = list()
-                for phonenum in followers:
-                    user = User.get(User, phonenum=phonenum)
+                for follower in followers:
+                    # print(FollowTable.out(FollowTable, follower))
+                    user = User.get(User, phonenum=follower.follower)
                     res.append(User.out(User, user))
                 data['message'] = res
                 data['status'] = 200
-                data['message'] = 'got all followers successfully!'
             except Exception as e:
                 data['status'] = 406
-                data['message'] = e
+                data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
-    # for each user, get followees
+    # for each user, get followees -> the ones you are following
     # check auth(phonenum) firstly
-    @app.route('/mine/get_followees', method=['POST'])
+    @app.route('/mine/get_followees', methods=['POST'])
     def get_followees():
         data = {}
-        # equals to current user's phonenum
-        follower = int(request.form.get('follower'))
+        phonenum = request.form.get('phonenum')
         try:
             schema(
                 {
-                    "follower": follower
+                    "phonenum": phonenum
                 }
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -515,40 +506,39 @@ def init_api(app):
 
         if conforms_to_schema:
             try:
-                followees = FollowTable.get_followees(FollowTable, follower=follower)
+                followees = FollowTable.get_followees(FollowTable, follower=phonenum)
                 res = list()
-                for phonenum in followees:
-                    user = User.get(User, phonenum=phonenum)
+                for followee in followees:
+                    # print(FollowTable.out(FollowTable, followee))
+                    user = User.get(User, phonenum=followee.followee)
                     res.append(User.out(User, user))
                 data['message'] = res
                 data['status'] = 200
-                data['message'] = 'got all followees successfully!'
             except Exception as e:
                 data['status'] = 406
-                data['message'] = e
+                data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     # user follow another one
     # check auth(phonenum) firstly
-    @app.route('/home/follow_user', method=['POST'])
+    @app.route('/home/follow_user', methods=['POST'])
     def follow_user():
         data = {}
-        ftime = datetime.datetime.strptime(request.form.get('ftime'), "%Y-%m-%d %H:%M:%S")
-        follower = int(request.form.get('follower'))
-        followee = int(request.form.get('followee'))
+        ftime = request.form.get('ftime')
+        phonenum = request.form.get('phonenum')
+        followee = request.form.get('followee')
         try:
             schema(
                 {
                     "ftime": ftime,
-                    "follower": follower,
+                    "phonenum": phonenum,
                     "followee": followee
                 }
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -556,36 +546,48 @@ def init_api(app):
                 data['message'] = e.msg + " for " + e.path[0]
 
         if conforms_to_schema:
-            follow = FollowTable(fid=FollowTable.getid(FollowTable) + 10000,
-                                 ftime=ftime,
-                                 follower=follower,
-                                 followee=followee)
-            try:
-                _ = FollowTable.add(FollowTable, follow)
-                data['status'] = 200
-                data['message'] = 'followed successfully!'
-            except Exception as e:
-                data['status'] = 406
-                data['message'] = e
+            # check user secondly
+            if User.get(User, followee) is None:
+                data['status'] = 404
+                data['message'] = "User {} doesn't exist".format(followee)
+            elif phonenum == followee:
+                data['status'] = 400
+                data['message'] = 'self-following is forbidden'
+            elif FollowTable.getbyff(FollowTable, phonenum, followee):
+                data['status'] = 400
+                data['message'] = 'repeat following is forbidden'
+            else:
+                follow = FollowTable(ftime=ftime,
+                                     follower=phonenum,
+                                     followee=followee)
+                try:
+                    _ = FollowTable.add(FollowTable, follow)
+                    data['status'] = 200
+                    data['message'] = 'followed successfully!'
+                except Exception as e:
+                    data['status'] = 406
+                    data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     # user un-follow another one
     # check auth(phonenum) firstly
-    @app.route('/home/unfollow_user', method=['POST'])
+    @app.route('/home/unfollow_user', methods=['POST'])
     def unfollow_user():
         data = {}
-        fid = int(request.form.get('fid'))
+        # fid = int(request.form.get('fid'))
+        phonenum = request.form.get('phonenum')
+        followee = request.form.get('followee')
         try:
             schema(
                 {
-                    "fid": fid
+                    "phonenum": phonenum,
+                    "followee": followee
                 }
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -593,24 +595,25 @@ def init_api(app):
                 data['message'] = e.msg + " for " + e.path[0]
 
         if conforms_to_schema:
-                # check follew thirdly
-                try:
-                    _ = FollowTable.delete(FollowTable, fid)
-                    data['status'] = 200
-                    data['message'] = 'unfollowed successfully!'
-                except Exception as e:
-                    data['status'] = 406
-                    data['message'] = e
+            # check follew thirdly
+            try:
+                # consider the inconvenience of obtaining the fid ...
+                # _ = FollowTable.delete(FollowTable, fid)
+                follow = FollowTable.getbyff(FollowTable, phonenum, followee)
+                _ = FollowTable.delete(FollowTable, follow.fid)
+                data['status'] = 200
+                data['message'] = 'unfollowed successfully!'
+            except Exception as e:
+                data['status'] = 406
+                data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     ###########################################
     # rank
     ###########################################
     # for ranking list, get all posts by number of likes in last week
-    @app.route('/home/get_posts_by_likes', method=['POST'])
+    @app.route('/home/get_posts_by_likes', methods=['POST'])
     def get_posts_by_likes():
         data = {}
         start = datetime.datetime.strptime(request.form.get('time'), "%Y-%m-%d %H:%M:%S")
@@ -660,7 +663,7 @@ def init_api(app):
         return resp
 
     # for ranking list, get all posts by aes_score in last week
-    @app.route('/home/get_posts_by_aes_score', method=['POST'])
+    @app.route('/home/get_posts_by_aes_score', methods=['POST'])
     def get_posts_by_aes_score():
         data = {}
         start = datetime.datetime.strptime(request.form.get('time'), "%Y-%m-%d %H:%M:%S")
@@ -702,7 +705,7 @@ def init_api(app):
     # discover
     ###########################################
     # recommend posts in discover page
-    @app.route('/discover/recommend_posts', method=['POST'])
+    @app.route('/discover/recommend_posts', methods=['POST'])
     def recommend_posts():
         data = {}
         start = datetime.datetime.strptime(request.form.get('time'), "%Y-%m-%d %H:%M:%S")
@@ -741,7 +744,7 @@ def init_api(app):
         return resp
 
     # search posts in discover page
-    @app.route('/discover/search', method=['POST'])
+    @app.route('/discover/search', methods=['POST'])
     def search():
         data = {}
         keyword = request.form.get('keyword')
@@ -775,3 +778,19 @@ def init_api(app):
         resp = jsonify(data)
         resp.status_code = data['status']
         return resp
+
+
+    # for testing
+    @app.route('/')
+    def index():
+        return jsonify({'message': 'test'})
+
+    @app.route('/api/test', methods=['POST'])
+    def test():
+        phonenum = request.form.get('phonenum')
+        print(request.form)
+        print(phonenum)
+        if phonenum == '18260071012':
+            return jsonify({'message': 'success'})
+        else:
+            return jsonify({'message': 'fail'})
