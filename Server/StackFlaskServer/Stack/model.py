@@ -15,6 +15,8 @@ class User(db.Model):
     email = db.Column(db.String(320), nullable=True)
     gender = db.Column(db.Boolean, nullable=True)
     bio = db.Column(db.String(100), nullable=True)
+    token = db.Column(db.String(100), nullable=True)
+    extime = db.Column(db.DateTime, nullable=True)
 
     def __repr__(self):
         return '<User %r>' % self.phonenum
@@ -31,6 +33,8 @@ class User(db.Model):
 
     def get(self, phonenum):
         return self.query.filter_by(phonenum=phonenum).first()
+
+
 
     # def add(self, user):
     #     db.session.add(user)
@@ -56,39 +60,53 @@ class User(db.Model):
             'bio': user.bio
         }
 
+    def partly_out(self, user):
+        return {
+            'phonenum': user.phonenum,
+            'photo': user.photo,
+            'username': user.username
+        }
+
 class Post(db.Model):
     __tablename__ = 'post'
     pid = db.Column(db.INTEGER, primary_key=True, nullable=False)
-    image = db.Column(db.String(200), nullable=False)
     ptime = db.Column(db.DateTime, nullable=False)
     isre = db.Column(db.Boolean, nullable=False)
-    label = db.Column(db.String(32), nullable=True)
-    aes_score = db.Column(db.DECIMAL, nullable=False)
     phonenum = db.Column(db.String(11), nullable=False)
 
     def __repr__(self):
-        return '<User %r>' % self.pid
+        return '<Post %r>' % self.pid
 
-    def __init__(self, image, ptime, label, aes_score, phonenum, isre=False):
-        self.image = image
+    def __init__(self, ptime, phonenum, isre=False):
         self.ptime = ptime
-        self.label = label
-        self.aes_score = aes_score
         self.phonenum = phonenum
         self.isre = isre
 
     def get(self, pid):
         return self.query.filter_by(pid=pid).first()
 
+    def get_followees_posts(self, phonenum, time):
+        from Stack.config import SHOWPOSTS_LIMIT
+        return self.query.filter(self.phonenum == FollowTable.followee)\
+                         .filter(FollowTable.follower == phonenum) \
+                         .filter(self.ptime < time) \
+                         .order_by(self.ptime.desc())\
+                         .limit(SHOWPOSTS_LIMIT)\
+                         .all()
+
     def getbylabel(self, keyword):
         return self.query.filter_by(label=keyword).order_by(self.aes_score.desc()).all()
 
+    def getbylabel_fuzzy(self, keyword):
+        # keyword cannot be blank(must be checked in frond end)
+        return self.query.filter(self.label.like("%" + keyword + "%")).all()
+
     def getbyaesscore(self, start, end):
         from Stack.config import RANK_LIMIT
-        return self.query.filter(start < self.ptime, self.ptime <= end).order_by(self.aes_score.desc()).limit(RANK_LIMIT).all()
+        return self.query.filter(end < self.ptime, self.ptime <= start).order_by(self.aes_score.desc()).limit(RANK_LIMIT).all()
 
     def getlastweek(self, start, end):
-        return self.query.filter(start < self.ptime, self.ptime <= end).order_by(self.ptime.desc()).all()
+        return self.query.filter(end < self.ptime, self.ptime <= start).order_by(self.ptime.desc()).all()
 
     def getbyuser(self, phonenum):
         return self.query.filter_by(phonenum=phonenum).all()
@@ -108,13 +126,40 @@ class Post(db.Model):
     def out(self, post):
         return {
             'pid': post.pid,
-            'image': post.image,
             'ptime': str(post.ptime),
             'isre': post.isre,
-            'label': post.label,
-            'aes_score': str(post.aes_score),
             'phonenum': post.phonenum
         }
+
+class Image(db.Model):
+    __tablename__ = 'image'
+    iid = db.Column(db.INTEGER, primary_key=True, nullable=False)
+    url = db.Column(db.String(100), nullable=False)
+    label = db.Column(db.String(32), nullable=True)
+    aes_score = db.Column(db.DECIMAL, nullable=False)
+    pid = db.Column(db.INTEGER, nullable=False)
+
+    def __repr__(self):
+        return '<Image %r>' % self.iid
+
+    def __init__(self, url, label, aes_score, pid):
+        self.url = url
+        self.label = label
+        self.aes_score = aes_score
+        self.pid = pid
+
+    def getbypid(self, pid):
+        return self.query.filter_by(pid=pid).all()
+
+    def out(self, image):
+        return {
+            'iid': image.iid,
+            'url': image.url,
+            'label': image.label,
+            'aes_score': str(image.aes_score),
+            'pid': image.pid
+        }
+
 
 class LikeTable(db.Model):
     __tablename__ = 'liketable'
@@ -137,6 +182,9 @@ class LikeTable(db.Model):
     def getbypp(self, pid, phonenum):
         return self.query.filter(self.pid == pid, self.phonenum == phonenum).first()
 
+    def getisliked(self, pid, phonenum):
+        return self.query.filter(self.pid == pid, self.phonenum == phonenum).first()
+
     def getbypid(self, pid):
         return self.query.filter_by(pid=pid).all()
 
@@ -153,6 +201,10 @@ class LikeTable(db.Model):
 
     def delete(self, lid):
         self.query.filter_by(lid=lid).delete()
+        return session_commit()
+
+    def deletepost(self, pid):
+        self.query.filter_by(pid=pid).delete()
         return session_commit()
 
     def out(self, like):
@@ -172,7 +224,7 @@ class CommentTable(db.Model):
     phonenum = db.Column(db.String(11), nullable=False)
 
     def __repr__(self):
-        return '<LikeTable %r>' % self.cid
+        return '<CommentTable %r>' % self.cid
 
     def __init__(self, content, ctime, pid, phonenum):
         self.content = content
@@ -183,8 +235,14 @@ class CommentTable(db.Model):
     def get(self, cid):
         return self.query.filter_by(cid=cid).first()
 
+    def getselfcomment(self, pid, phonenum):
+        return self.query.filter(self.pid==pid, self.phonenum==phonenum).order_by(self.ctime.asc()).first()
+
     def getbypid(self, pid):
         return self.query.filter_by(pid=pid).all()
+
+    def getcountbypid(self, pid):
+        return self.query.filter_by(pid=pid).count()
 
     def add(self, comment):
         db.session.add(comment)
@@ -196,6 +254,10 @@ class CommentTable(db.Model):
 
     def delete(self, cid):
         self.query.filter_by(cid=cid).delete()
+        return session_commit()
+
+    def deletepost(self, pid):
+        self.query.filter_by(pid=pid).delete()
         return session_commit()
 
     def out(self, comment):
@@ -215,7 +277,7 @@ class FollowTable(db.Model):
     followee = db.Column(db.String(11), nullable=False)
 
     def __repr__(self):
-        return '<LikeTable %r>' % self.fid
+        return '<FollowTable %r>' % self.fid
 
     def __init__(self, ftime, follower, followee):
         self.ftime = ftime

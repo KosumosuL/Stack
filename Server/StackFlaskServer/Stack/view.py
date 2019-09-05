@@ -1,5 +1,4 @@
 from flask import jsonify, request
-from flask_restful import Api, Resource, reqparse, abort
 from Stack.model import *
 from Stack.valid import *
 import datetime
@@ -9,15 +8,60 @@ def init_api(app):
 
     # home page
     # show all the posts
-    # @app.route('/home/get_posts', method=['POST'])
-    # def get_posts():
-    #     pass
+    @app.route('/timeline/fresh', methods=['POST'])
+    def fresh():
+        data = {}
+        phonenum = request.form.get('phonenum')
+        time = request.form.get('time')
+        try:
+            schema(
+                {
+                    "phonenum": phonenum,
+                    "ptime": time
+                }
+            )
+            conforms_to_schema = True
+        except MultipleInvalid as e:
+            data['status'] = 400
+            conforms_to_schema = False
+            if "expected" in e.msg:
+                data['message'] = e.path[0] + " is not in the correct format"
+            else:
+                data['message'] = e.msg + " for " + e.path[0]
+
+        if conforms_to_schema:
+            try:
+                posts = Post.get_followees_posts(Post, phonenum=phonenum, time=time)
+                res = list()
+                for post in posts:
+                    postdic = Post.out(Post, post)
+                    images = Image.getbypid(Image, pid=post.pid)
+                    imgs = list()
+                    for image in images:
+                        imgs.append(Image.out(Image, image))
+                    postdic['images'] = imgs
+                    postdic['likes'] = LikeTable.getcountbypid(LikeTable, pid=post.pid)
+                    postdic['isliked'] = True if LikeTable.getbypp(LikeTable, pid=post.pid, phonenum=phonenum) is not None else False
+                    postdic['comments'] = CommentTable.getcountbypid(CommentTable, pid=post.pid)
+                    comment = CommentTable.getselfcomment(CommentTable, pid=post.pid, phonenum=post.phonenum)
+                    postdic['selfcomment'] = comment.content if comment is not None else ""
+                    usr = User.partly_out(User, User.get(User, post.phonenum))
+                    postdic = dict(postdic, **usr)
+                    res.append(postdic)
+                data['message'] = res
+                data['status'] = 200
+            except Exception as e:
+                data['status'] = 406
+                data['message'] = str(e)
+
+        return jsonify(data)
+
     ###########################################
     # post
     ###########################################
     # for each user, get all posts
     # check auth(phonenum) firstly
-    @app.route('/home/get_posts', methods=['POST'])
+    @app.route('/post/get_posts', methods=['POST'])
     def get_posts():
         data = {}
         phonenum = request.form.get('phonenum')
@@ -52,7 +96,7 @@ def init_api(app):
 
     # user creates one post
     # check auth(phonenum) firstly
-    @app.route('/home/create_post', methods=['POST'])
+    @app.route('/post/create_post', methods=['POST'])
     def create_post():
         data = {}
         image = request.form.get('image')
@@ -98,7 +142,7 @@ def init_api(app):
 
     # user deletes one post
     # check auth(phonenum) firstly
-    @app.route('/home/delete_post', methods=['POST'])
+    @app.route('/post/delete_post', methods=['POST'])
     def delete_post():
         data = {}
         pid = int(request.form.get('pid'))
@@ -122,6 +166,8 @@ def init_api(app):
             try:
                 _ = Post.delete(Post, pid)
                 # 还需删除所有包含的likes和comments
+                # _ = LikeTable.deletepost(LikeTable, pid)
+                # _ = CommentTable.deletepost(CommentTable, pid)
                 data['status'] = 200
                 data['message'] = 'deleted successfully!'
             except Exception as e:
@@ -132,7 +178,7 @@ def init_api(app):
 
     # user repost/retweet one post
     # check auth(phonenum) firstly
-    @app.route('/home/re_post', methods=['POST'])
+    @app.route('/post/re_post', methods=['POST'])
     def re_post():
         data = {}
         ptime = request.form.get('ptime')
@@ -183,7 +229,7 @@ def init_api(app):
     ###########################################
     # for each post, get the number of likes
     # check auth(phonenum) firstly
-    @app.route('/home/get_likes', methods=['POST'])
+    @app.route('/like/get_likes', methods=['POST'])
     def get_likes():
         data = {}
         pid = int(request.form.get('pid'))
@@ -225,7 +271,7 @@ def init_api(app):
 
     # user likes one post
     # check auth(phonenum) firstly
-    @app.route('/home/like_post', methods=['POST'])
+    @app.route('/like/like_post', methods=['POST'])
     def like_post():
         data = {}
         ltime = request.form.get('ltime')
@@ -272,7 +318,7 @@ def init_api(app):
 
     # user unlikes one post
     # check auth(phonenum) firstly
-    @app.route('/home/unlike_post', methods=['POST'])
+    @app.route('/like/unlike_post', methods=['POST'])
     def unlike_post():
         data = {}
         # lid = int(request.form.get('lid'))
@@ -319,7 +365,7 @@ def init_api(app):
     ###########################################
     # for each post, get comments
     # check auth(phonenum) firstly
-    @app.route('/home/get_comments', methods=['POST'])
+    @app.route('/comment/get_comments', methods=['POST'])
     def get_comments():
         data = {}
         pid = int(request.form.get('pid'))
@@ -359,7 +405,7 @@ def init_api(app):
 
     # user comments on one post
     # check auth(phonenum) firstly
-    @app.route('/home/comment_post', methods=['POST'])
+    @app.route('/comment/comment_post', methods=['POST'])
     def comment_post():
         data = {}
         content = request.form.get('content')
@@ -406,7 +452,7 @@ def init_api(app):
 
     # user un-comments on one post
     # check auth(phonenum) firstly
-    @app.route('/home/uncomment_post', methods=['POST'])
+    @app.route('/comment/uncomment_post', methods=['POST'])
     def uncomment_post():
         data = {}
         cid = int(request.form.get('cid'))
@@ -448,7 +494,7 @@ def init_api(app):
     ###########################################
     # for each user, get followers -> the ones who are following you
     # check auth(phonenum==followee) firstly
-    @app.route('/mine/get_followers', methods=['POST'])
+    @app.route('/follow/get_followers', methods=['POST'])
     def get_followers():
         data = {}
         phonenum = request.form.get('phonenum')
@@ -485,7 +531,7 @@ def init_api(app):
 
     # for each user, get followees -> the ones you are following
     # check auth(phonenum) firstly
-    @app.route('/mine/get_followees', methods=['POST'])
+    @app.route('/follow/get_followees', methods=['POST'])
     def get_followees():
         data = {}
         phonenum = request.form.get('phonenum')
@@ -522,7 +568,7 @@ def init_api(app):
 
     # user follow another one
     # check auth(phonenum) firstly
-    @app.route('/home/follow_user', methods=['POST'])
+    @app.route('/follow/follow_user', methods=['POST'])
     def follow_user():
         data = {}
         ftime = request.form.get('ftime')
@@ -572,7 +618,7 @@ def init_api(app):
 
     # user un-follow another one
     # check auth(phonenum) firstly
-    @app.route('/home/unfollow_user', methods=['POST'])
+    @app.route('/follow/unfollow_user', methods=['POST'])
     def unfollow_user():
         data = {}
         # fid = int(request.form.get('fid'))
@@ -613,12 +659,14 @@ def init_api(app):
     # rank
     ###########################################
     # for ranking list, get all posts by number of likes in last week
-    @app.route('/home/get_posts_by_likes', methods=['POST'])
-    def get_posts_by_likes():
+    @app.route('/rank/get_rank_by_week', methods=['POST'])
+    def get_rank_by_week():
         data = {}
         start = datetime.datetime.strptime(request.form.get('time'), "%Y-%m-%d %H:%M:%S")
         delta = datetime.timedelta(days=7)
         end = start - delta
+        start = start.strftime('%Y-%m-%d %H:%M:%S')
+        end = end.strftime('%Y-%m-%d %H:%M:%S')
         try:
             schema(
                 {
@@ -628,6 +676,7 @@ def init_api(app):
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -636,39 +685,39 @@ def init_api(app):
 
         if conforms_to_schema:
             try:
-
                 posts = Post.getlastweek(Post, start=start, end=end)
                 tmp = list()
                 for post in posts:
                     tmp.append([post, LikeTable.getcountbypid(LikeTable, pid=post.pid)])
-                tmp.sort(key=lambda x:x[1], reverse=False)
+                tmp.sort(key=lambda x:x[1], reverse=True)
 
                 from Stack.config import RANK_LIMIT
                 res = list()
                 count = 0
                 for post, likes in tmp:
                     count += 1
-                    res.append([Post.out(Post, post), likes])
+                    postdic = Post.out(Post, post)
+                    postdic['likes'] = likes
+                    res.append(postdic)
                     if count >= RANK_LIMIT:
                         break
                 data['message'] = res
                 data['status'] = 200
-                data['message'] = 'got all posts successfully!'
             except Exception as e:
                 data['status'] = 406
-                data['message'] = e
+                data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     # for ranking list, get all posts by aes_score in last week
-    @app.route('/home/get_posts_by_aes_score', methods=['POST'])
-    def get_posts_by_aes_score():
+    @app.route('/rank/get_rank_by_day', methods=['POST'])
+    def get_rank_by_day():
         data = {}
         start = datetime.datetime.strptime(request.form.get('time'), "%Y-%m-%d %H:%M:%S")
-        delta = datetime.timedelta(days=7)
+        delta = datetime.timedelta(days=1)
         end = start - delta
+        start = start.strftime('%Y-%m-%d %H:%M:%S')
+        end = end.strftime('%Y-%m-%d %H:%M:%S')
         try:
             schema(
                 {
@@ -678,6 +727,7 @@ def init_api(app):
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -692,14 +742,11 @@ def init_api(app):
                     res.append(Post.out(Post, post))
                 data['message'] = res
                 data['status'] = 200
-                data['message'] = 'got all posts successfully!'
             except Exception as e:
                 data['status'] = 406
-                data['message'] = e
+                data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     ###########################################
     # discover
@@ -737,11 +784,9 @@ def init_api(app):
                 data['message'] = 'got all posts successfully!'
             except Exception as e:
                 data['status'] = 406
-                data['message'] = e
+                data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
 
     # search posts in discover page
     @app.route('/discover/search', methods=['POST'])
@@ -756,6 +801,7 @@ def init_api(app):
             )
             conforms_to_schema = True
         except MultipleInvalid as e:
+            data['status'] = 400
             conforms_to_schema = False
             if "expected" in e.msg:
                 data['message'] = e.path[0] + " is not in the correct format"
@@ -764,20 +810,63 @@ def init_api(app):
 
         if conforms_to_schema:
             try:
-                posts = Post.getbylabel(Post, keyword=keyword)
+                posts = Post.getbylabel_fuzzy(Post, keyword=keyword)
                 res = list()
                 for post in posts:
                     res.append(Post.out(Post, post))
                 data['message'] = res
                 data['status'] = 200
-                data['message'] = 'got all posts successfully!'
             except Exception as e:
                 data['status'] = 406
-                data['message'] = e
+                data['message'] = str(e)
 
-        resp = jsonify(data)
-        resp.status_code = data['status']
-        return resp
+        return jsonify(data)
+
+    ###########################################
+    # recommend
+    ###########################################
+    # # for each user, recommend some users for u
+    # # check auth(phonenum) firstly
+    # @app.route('/home/recommend_users', methods=['POST'])
+    # def recommend_users():
+    #     data = {}
+    #     phonenum = request.form.get('phonenum')
+    #     try:
+    #         schema(
+    #             {
+    #                 "phonenum": phonenum
+    #             }
+    #         )
+    #         conforms_to_schema = True
+    #     except MultipleInvalid as e:
+    #         data['status'] = 400
+    #         conforms_to_schema = False
+    #         if "expected" in e.msg:
+    #             data['message'] = e.path[0] + " is not in the correct format"
+    #         else:
+    #             data['message'] = e.msg + " for " + e.path[0]
+    #
+    #     if conforms_to_schema:
+    #         try:
+    #             followees = FollowTable.get_followees(FollowTable, follower=phonenum)
+    #             res = dict()
+    #             for followee in followees:
+    #                 # print(FollowTable.out(FollowTable, followee))
+    #                 user = User.get(User, phonenum=followee.followee)
+    #                 fs = FollowTable.get_followees(FollowTable, follower=user.phonenum)
+    #                 for f in fs:
+    #                     u = User.get(User, phonenum=f.followee)
+    #                     if u.phonenum not in res:
+    #                         res[u.phonenum] = list()
+    #                     res[u.phonenum].append(user)
+    #                 res.append(User.out(User, user))
+    #             data['message'] = res
+    #             data['status'] = 200
+    #         except Exception as e:
+    #             data['status'] = 406
+    #             data['message'] = str(e)
+    #
+    #     return jsonify(data)
 
 
     # for testing
