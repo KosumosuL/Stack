@@ -1,0 +1,195 @@
+<import name='component-post' src='./component/component-post.ux'></import>
+
+<template>
+  <!-- template里只能有一个根节点 -->
+  <div class="container">
+    <refresh offset="100px" refreshing={{isRefreshing}} onrefresh="refresh" type="overscroll" class="refresh">
+      <list onscrollbottom="scrollbottom" class="list" scrollpage="true">
+        <list-item type="test" class="test">
+          <text onclick="toCamera">camera</text>
+        </list-item>
+        <!-- 列表元素，属性type值相同时，需要确保渲染后的视图布局也完全相同，用show代替if，确保布局视图不变 -->
+        <list-item type="listItem" for={{postData}}>
+          <component-post swiperdata={{$item.swiperdata}} likedata={{$item.likedata}} poster={{$item.poster}} postericon={{$item.postericon}} postercomment={{$item.postercomment}} commentnumber={{$item.commentnumber}} posttime={{$item.posttime}} like={{$item.like}}></component-post>
+        </list-item>
+        <!-- 加载更多 -->
+        <list-item type="loadMore" show="{{loadMore}}">
+          <div class="loadMore">
+            <progress type="circular" class="circular-progress"></progress>
+            <text font-size="40px">加载更多</text>  
+          </div>
+        </list-item>
+      </list>
+    </refresh>
+  </div>
+</template>
+
+<style>
+  .container {
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    background-color: #ffffff;
+  }
+  .refresh {
+    height: 100%;
+    background-color: #ffffff;
+    progress-color: #0faeff;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+  }
+  .list {
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+  }
+  .listItem {
+  }
+  .loadMore {
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+  }
+  .circular-progress {
+    width: 96px;
+    height: 96px;
+  }
+  .test {
+    margin-left: 20px;
+    margin-bottom: 20px;
+  }
+</style>
+
+<script>
+  import fetch from '@system.fetch'
+  import prompt from '@system.prompt'
+  import router from '@system.router'
+  module.exports = {
+    data: {
+      loadMore: false,
+      isRefreshing: false,
+      postData:
+        [
+          {
+            swiperdata:
+              [
+                { src: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png" },
+                { src: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg" },
+                { src: "/Community/img/01.jpg" },
+                { src: "/Community/img/02.jpg" },
+                { src: "/Community/img/03.jpg" },
+                { src: "/Community/img/05.jpg" },
+                { src: "/Community/img/06.jpg" },
+                { src: "/Community/img/07.jpg" },
+                { src: "/Community/img/08.jpg" },
+                { src: "/Community/img/09.jpg" }
+              ],
+            likedata: "6,507,684",
+            poster: 'instagram',
+            postercomment: "Instagram (also known as IG or Insta[9]) is a photo and video-sharing social networking service owned by Facebook, Inc. It was created by Kevin Systrom and Mike Krieger, and launched in October 2010 exclusively on iOS. A version for Android devices was released a year and half later, in April 2012, followed by a feature-limited website interface in November 2012, and apps for Windows 10 Mobile and Windows 10 in April 2016 and October 2016 respectively. The app allows users to upload photos and videos to the service, which can be edited with various filters, and organized with tags and location information. An account's posts can be shared publicly or with pre-approved followers. Users can browse other users' content by tags and locations, and view trending content. Users can \"like\" photos, and follow other users to add their content to a feed.",
+            commentnumber: "7,479",
+            postericon: "/Common/logo.png",
+            posttime: "2019-9-4 15:52:00",
+            like: false
+          },
+          {
+            swiperdata:
+              [
+                { src: "/Community/img/08.jpg" },
+                { src: "/Community/img/09.jpg" }
+              ],
+            likedata: "1,234,567",
+            poster: 'nike',
+            postercomment: "just do it.",
+            commentnumber: "7",
+            postericon: "/Common/logo.png",
+            posttime: "2019-9-4 20:30:00",
+            like: true
+          }
+        ]
+    },
+    onInit() {
+      this.$page.setTitleBar({
+        //titlebar的状态，在manifest.json中display设置的
+        textColor: '#1a1a1a',
+        text: 'Stack社区',
+        menu: true
+      });
+    },
+    refreshPost: function (that) {
+      return function (data) {
+        that.postData = data.data.message.map(that.mapPost);
+        that.isRefreshing = false;
+      }
+    },
+    loadMorePost: function (that) {
+      return function (data) {
+        that.postData = that.postData.concat(data.data.message.map(that.mapPost));
+        that.loadMore = false;
+      }
+    },
+    showError: function (that) {
+      return function (errcode, errmsg) {
+        prompt.showToast({ message: errcode + ': ' + errmsg, image:'/Common/logo.png' });
+        that.isRefreshing = false;
+        that.loadMore = false;
+      }
+    },
+    post: function (url, data) {
+      return new Promise((resolve, reject) => {
+        fetch.fetch({
+          url: url,
+          data: data,
+          responseType: 'json',
+          method: 'post',
+          success: function (data) {
+            console.log("post success");
+            resolve(data);
+          },
+          fail: function (errmsg, errcode) {
+            console.log("post fail " + errcode + ": " + errmsg);
+            reject(errcode, errmsg);
+          }
+        });  
+      })
+    },
+    refresh: function (e) {
+      var that = this;
+      that.isRefreshing = e.refreshing;
+      var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":"18260071011", "time":"2019-09-01 15:24:07"});
+      promise.then(this.refreshPost(this), this.showError(this));
+      setTimeout(function () { that.isRefreshing = false; }, 5000);
+    },
+    scrollbottom: function () {
+      var that = this;
+      this.loadMore = true;
+      var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":"18260071011", "time":"2019-09-01 15:24:07"});
+      promise.then(this.loadMorePost(this), this.showError(this));
+      setTimeout(function () { that.loadMore = false; }, 5000);
+    },
+    mapPost: function (item) {
+      return {
+        swiperdata: item.images.map(function (image) { return {src: image.url} }),
+        likedata: item.likes,
+        poster: item.username,
+        postercomment: item.selfcomment,
+        commentnumber: item.comments,
+        postericon: item.photo,
+        posttime: item.ptime,
+        like: item.isliked
+      }
+    },
+    toCamera: function () {
+      router.push({         
+        uri: '/Photo',
+      })
+    }
+  }
+</script>

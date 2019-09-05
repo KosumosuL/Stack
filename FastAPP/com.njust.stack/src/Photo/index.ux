@@ -1,45 +1,46 @@
 <template> 
-	<!-- Only one root node is allowed in template. -->
-	<div class="container">
-    	<div class="item-container">
-            <image src="{{displayUri}}" class="image"></image>
-            <div class="list-item">
-                <image src="img/takePhoto.png" class="btn" onclick="takePhoto"></image>
-                <image src="img/pickPhoto.png" class="btn" onclick="pickPhoto"></image>
-                <image src="img/editPhoto.png" class="btn" onclick="editPhoto"></image>
-                <image src="img/savePhoto.png" class="btn" onclick="savePhoto"></image>
-                <image src="img/resetPhoto.png" class="btn" onclick="resetPhoto"></image>
+  <!-- Only one root node is allowed in template. -->
+  <div class="container">
+      <div class="item-container">
+            <image src="{{displayUri}}" class="image" object-fit="contain" onclick="viewImage"></image>
+            <div class="list-center">
+                <image src="/Photo/img/takePhoto.png" class="btn" onclick="takePhoto" object-fit="contain"></image>
+                <image src="/Photo/img/pickPhoto.png" class="btn" onclick="pickPhoto" object-fit="contain"></image>
+                <image src="/Photo/img/editPhoto.png" class="btn" onclick="editPhoto" object-fit="contain"></image>
+                <image src="/Photo/img/savePhoto.png" class="btn" onclick="savePhoto" object-fit="contain"></image>
+                <image src="/Photo/img/resetPhoto.png" class="btn" onclick="resetPhoto" object-fit="contain"></image>
             </div>
-    	</div>
-	</div >
+      </div>
+  </div>
 </template>
 
 <style>
-    @import 'common.css';
-
+    .container{
+        flex: 1;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        background-color: #ffffff;
+    }
     .item-container {
-        margin-top: 30px;
-        margin-right: 60px;
-        margin-left: 60px;
+        width: 100%;
         flex-direction: column;
     }
     .image {
-        margin: 30px 0px;
-        width: 650px;
-        height: 1100px;
-        background-color:#fffafa;
+        width: 100%;
+        height: 90%;
+        background-color:#ffffff;
     }
-    .title {
-        font-size: 60px;
-    }
-    .list-item {
-        align-items: center;
+    .list-center {
+        margin-left: 20px;
+        margin-right: 20px;
+        margin-top: 10px;
+        justify-content: space-between;
     }
     .btn {
-        width: 84px;
-        height: 84px;
-        margin-right: 20px;
-        margin-left: 20px;
+        width: 64px;
+        height: 64px;
     } 
 </style>
 
@@ -128,6 +129,19 @@
         this.displayUri = this.originUri
         prompt.showToast({ message: "取消修改" })
         console.log('resetPhoto----------success')
-    }
+    },
+    viewImage: function () {
+        var that = this;
+        media.previewImage({
+            current: that.displayUri,
+            uris: [that.displayUri],
+            success: function () {
+                console.log('previewImage success');
+            },
+            fail: function (erromsg, errocode) {
+                console.log('previewImage fail ' + errocode + ': ' + erromsg);
+            }
+        });
+    }   
   }
 </script>

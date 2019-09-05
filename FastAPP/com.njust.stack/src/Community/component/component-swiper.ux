@@ -1,0 +1,53 @@
+<template>
+    <div class="container">
+        <div class="item-container">
+            <swiper class="swiper" autoplay=true onchange="sync">
+                <image for={{swiperdata}} class="image" src={{$item.src}} onclick="viewImage" object-fit="contain"></image>
+            </swiper>
+        </div>
+    </div>
+</template>
+
+<style>
+    .item-container {
+        flex-direction: column;
+    }
+    .swiper {
+        height: 700px;
+        indicator-color: rgba(0,0,0,0.2);
+        indicator-selected-color: #ffffff;
+    }
+    .image {
+        width: 100%;
+        height: 100%;
+    }
+</style>
+
+<script>
+    import media from '@system.media'
+    export default {
+        props: [
+            'swiperdata'
+        ],
+        data: {
+            image_id: 0
+        },
+        viewImage: function () {
+            var that = this;
+            var images = this.swiperdata.map(item=>item.src);
+            media.previewImage({
+                current: images[that.image_id],
+                uris: images,
+                success: function () {
+                    console.log('previewImage success');
+                },
+                fail: function (erromsg, errocode) {
+                    console.log('previewImage fail ' + errocode + ': ' + erromsg);
+                }
+            });
+        },
+        sync: function (dict) {
+            this.image_id = dict.index;
+        }        
+    }
+</script>
