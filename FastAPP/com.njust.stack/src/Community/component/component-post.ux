@@ -1,60 +1,76 @@
-<import name='component-swiper' src='./component-swiper.ux'></import>
-
 <template>
   <!-- template里只能有一个根节点 -->
-  <div class="container">
-    <div class="item-container">
-      <div class="header-container">
-        <div class="header-poster" onclick="viewPoster">
-          <image src={{postericon}} class="icon" object-fit="contain"></image>
-          <text value="&ensp;"></text>
-          <text>{{poster}}</text>
-        </div>
-        <div class="header-time">
-          <text>{{posttime}}</text>
-        </div>
+  <div class="item-container">
+    <div class="header-container">
+      <div class="header-poster" onclick="viewPoster">
+        <image src={{postericon}} class="icon" object-fit="contain"></image>
+        <text value="&ensp;"></text>
+        <text color="black" font-weight="bold">{{poster}}</text>
       </div>
-      <component-swiper swiperdata={{swiperdata}}></component-swiper>
-      <div class="list-main">
-        <div class="list-main-left">
-          <text color="black" font-size="33px" font-weight="bold">{{likedata}}个赞</text>
-        </div>
-        <div class="list-main-right">
-          <image src="/Community/img/retweet.png" class="btn" onclick="retweet" object-fit="contain"></image>
-          <image src="/Community/img/comment.png" class="btn" onclick="comment" object-fit="contain"></image>
-          <image src="{{like===true?'/Community/img/like.png':'/Community/img/dislike.png'}}" class="btn" onclick="like" object-fit="contain"></image>
-        </div>
+      <div class="header-time">
+        <text>{{posttime}}</text>
       </div>
-      <text class="poster-comment" lines={{posterCommentLines}} text-overflow="ellipsis" onclick="expandPosterComment">
-        <a color="black" font-weight="bold">{{poster}}</a>
-        <span value="&ensp;"></span>
-        <span color="black">{{postercomment}}</span>
-      </text>
-      <text class="comment-number" color="gray" font-size="27px" onclick="comment">查看全部{{commentnumber}}则留言</text>
     </div>
+    <swiper class="swiper" autoplay=true id="swiper">
+        <image for={{swiperdata}} class="image" src={{$item.src}} onclick="viewImage(this)" object-fit="contain"></image>
+    </swiper>
+    <div class="list-main">
+      <div class="list-main-left">
+        <text color="black" font-size="33px" font-weight="bold">{{likedata}}个赞</text>
+      </div>
+      <div class="list-main-right">
+        <image src="/Community/img/retweet.png" class="btn" onclick="retweet" object-fit="contain"></image>
+        <image src="/Community/img/comment.png" class="btn" onclick="comment" object-fit="contain"></image>
+        <image src="{{liked===true?'/Community/img/like.png':'/Community/img/dislike.png'}}" class="btn" onclick="like" object-fit="contain"></image>
+      </div>
+    </div>
+    <text class="poster-comment" lines={{posterCommentLines}} text-overflow="ellipsis" onclick="expandPosterComment">
+      <a color="black" font-weight="bold">{{poster}}</a>
+      <a value="&ensp;"></a>
+      <a color="black">{{postercomment}}</a>
+    </text>
+    <text class="comment-number" color="gray" font-size="27px" onclick="comment">查看全部{{commentnumber}}则留言</text>
   </div>
 </template>
 
 <style>
-  .container {
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    align-content: center;
-    align-items: center;
-    background-color: #ffffff;
-    margin-bottom: 50px;
-  }
   .item-container {
-    width: 100%;
     flex-direction: column;
+    background-color: #ffffff;
+    width: 100%;
+    margin-bottom: 40px;
+  }
+  .header-container {
+    height: 64px;
+    justify-content: space-between;
+    margin-left: 20px;
+    margin-right: 20px;
+  }
+  .header-poster {
+  }
+  .icon {
+    width: 64px;
+  }
+  .header-time {
+    justify-content: flex-end;
+  }
+  .swiper {
+    height: 1000px;
+    width: 100%;
+    indicator-color: rgba(0,0,0,0.2);
+    indicator-selected-color: #ffffff;
+  }
+  .image {
+    width: 100%;
+    height: 100%;
   }
   .list-main {
     margin-top: 10px;
     justify-content: space-between;
+    margin-left: 20px;
+    margin-right: 5px;
   }
   .list-main-left {
-    margin-left: 20px;
   }
   .list-main-right {
     justify-content: flex-end;
@@ -73,23 +89,10 @@
     margin-left: 20px;
     margin-right: 20px;
   }
-  .header-container {
-    height: 64px;
-    justify-content: space-between;
-    margin-left: 20px;
-    margin-right: 20px;
-  }
-  .header-poster {
-    flex-direction: row;
-  }
-  .icon {
-  }
-  .header-time {
-    justify-content: flex-end;
-  }
 </style>
 
 <script>
+  import media from '@system.media'
   import prompt from '@system.prompt'
   module.exports = {
     props: [
@@ -100,26 +103,45 @@
         'commentnumber',
         'postericon',
         'posttime',
-        'like'
+        'liked'
     ],
     data: {
         posterCommentLines: 2
     },
     retweet: function () {
-      prompt.showToast({ message: 'retweet', image:'/Common/logo.png' });
+      prompt.showToast({ message: 'retweet', image: '/Common/logo.png' });
     },
     comment: function () {
-      prompt.showToast({ message: 'comment', image:'/Common/logo.png' });
+      prompt.showToast({ message: 'comment', image: '/Common/logo.png' });
     },
     like: function () {
-      this.like = this.like === true ? false : true;
-      prompt.showToast({ message: this.like === true ? 'like' : 'dislike', image:'/Common/logo.png' });
+      this.liked = !this.liked;
+      prompt.showToast({ message: this.liked === true ? 'like' : 'dislike', image: '/Common/logo.png' });
     },
     expandPosterComment: function () {
       this.posterCommentLines = this.posterCommentLines === -1 ? 2 : -1;
     },
     viewPoster: function () {
-      prompt.showToast({ message: 'viewPoster', image:'/Common/logo.png' });
+      prompt.showToast({ message: 'viewPoster', image: '/Common/logo.png' });
+    },
+    viewImage: function (obj) {
+      var that = this;
+      media.previewImage({
+        current: obj.$item.src,
+        uris: that.swiperdata.map(item=>item.src),
+        success: function () {
+          console.log('previewImage success');
+        },
+        fail: function (errmsg, errcode) {
+          console.log('previewImage fail (' + errcode + ') ' + errmsg);
+        }
+      });
+    },
+    onInit: function () {
+      this.$watch('swiperdata', 'handleUpdate');
+    },
+    handleUpdate: function (newVal, oldVal) {
+      this.$element('swiper').swipeTo({index: 0});
     }
   }
 </script>
