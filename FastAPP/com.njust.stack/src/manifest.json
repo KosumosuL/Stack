@@ -1,8 +1,8 @@
 {
   "package": "com.njust.stack",
   "name": "Stack",
-  "versionName": "1.0.2",
-  "versionCode": 3,
+  "versionName": "1.0.3",
+  "versionCode": 4,
   "icon": "/Common/logo.png",
   "minPlatformVersion": 1040,
   "features": [
