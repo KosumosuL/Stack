@@ -13,7 +13,7 @@
         <list-item type="loadMore" show={{isLoading}}>
           <div class="loadMore">
             <progress type="circular" class="circular-progress"></progress>
-            <text font-size="37px">加载更多</text>  
+            <text class="loadMoreText">加载更多</text>  
           </div>
         </list-item>
       </list>
@@ -45,6 +45,9 @@
   .circular-progress {
     width: 96px;
     height: 96px;
+  }
+  .loadMoreText {
+    font-size: 37px;
   }
 </style>
 

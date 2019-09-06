@@ -2,13 +2,13 @@
   <!-- Only one root node is allowed in template. -->
   <div class="container">
       <div class="item-container">
-            <image src={{displayuri}} class="image" onclick="viewPhoto" object-fit="contain"></image>
+            <image src={{displayuri}} class="image image-contain" onclick="viewPhoto" />
             <div class="list-center">
-                <image src="/Photo/img/takePhoto.png" class="btn" onclick="takePhoto" object-fit="contain"></image>
-                <image src="/Photo/img/pickPhoto.png" class="btn" onclick="pickPhoto" object-fit="contain"></image>
-                <image src="/Photo/img/editPhoto.png" class="btn" onclick="editPhoto" object-fit="contain"></image>
-                <image src="/Photo/img/savePhoto.png" class="btn" onclick="savePhoto" object-fit="contain"></image>
-                <image src="/Photo/img/resetPhoto.png" class="btn" onclick="resetPhoto" object-fit="contain"></image>
+                <image src="/Photo/img/takePhoto.png" class="btn image-contain" onclick="takePhoto" />
+                <image src="/Photo/img/pickPhoto.png" class="btn image-contain" onclick="pickPhoto" />
+                <image src="/Photo/img/editPhoto.png" class="btn image-contain" onclick="editPhoto" />
+                <image src="/Photo/img/savePhoto.png" class="btn image-contain" onclick="savePhoto" />
+                <image src="/Photo/img/resetPhoto.png" class="btn image-contain" onclick="resetPhoto" />
             </div>
       </div>
   </div>
@@ -28,7 +28,7 @@
     }
     .image {
         width: 100%;
-        height: 90%;
+        height: 92%;
         background-color:#ffffff;
     }
     .list-center {
@@ -40,7 +40,10 @@
     .btn {
         width: 64px;
         height: 64px;
-    } 
+    }
+    .image-contain {
+        object-fit: contain;
+    }
 </style>
 
 <script>

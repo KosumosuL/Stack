@@ -1,0 +1,74 @@
+<import name='community' src='../../Community/index'></import>
+<import name='photo' src='../../Photo/index'></import>
+
+<template>
+  <!-- template里只能有一个根节点 -->
+  <div class="container">
+    <tabs onchange="switchContent">
+      <tab-content>
+        <community></community>
+        <community></community>
+        <photo></photo>
+        <community></community>
+        <community></community>
+      </tab-content>
+      <tab-bar>
+        <block for={{datas}}>
+          <div class="tab-item">
+            <image class="icon" src="{{$item.show?$item.icon_choice:$item.icon}}" />
+          </div>
+        </block>
+      </tab-bar>
+    </tabs>
+  </div>
+
+</template>
+
+<style>
+	.container {
+		flex-direction: column;
+	}
+	.tabs {
+		width: 100%;
+		position: fixed;
+	}
+	.tab-content {
+    margin-bottom: 100px;
+	}
+	.tab-item {
+    background-color: #f2f2f2;
+		flex-direction: column;
+		align-items: center;
+		padding-top: 25px;
+		width: 200px;
+		height: 100px;
+	}
+	.icon {
+		width: 48px;
+		height: 48px;
+		object-fit: contain;
+	}
+</style>
+
+<script>
+  module.exports = {
+    props: [
+      'datas'
+    ],
+    switchContent: function (e) {
+      let index = e.index;
+      for (let i = 0; i < this.datas.length; i++) {
+        let element = this.datas[i];
+        element.show = false;
+        if (i === index) {
+          element.show = true;
+          this.$page.setTitleBar({
+            textColor: 'black',
+            text: element.title,
+            menu: true,
+          });
+        }
+      }
+    }
+  }
+</script>

@@ -38,7 +38,7 @@
   ],
   "config": {},
   "router": {
-    "entry": "Community",
+    "entry": "Main",
     "pages": {
       "Photo": {
         "component": "index",
@@ -47,6 +47,10 @@
       "Community": {
         "component": "index",
         "path": "/Community"
+      },
+      "Main": {
+        "component": "index",
+        "path": "/Main"
       }
     }
   },
