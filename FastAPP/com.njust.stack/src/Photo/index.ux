@@ -2,13 +2,13 @@
   <!-- Only one root node is allowed in template. -->
   <div class="container">
       <div class="item-container">
-            <image src="{{displayUri}}" class="image" object-fit="contain" onclick="viewImage"></image>
+            <image src={{displayuri}} class="image image-contain" onclick="viewPhoto" />
             <div class="list-center">
-                <image src="/Photo/img/takePhoto.png" class="btn" onclick="takePhoto" object-fit="contain"></image>
-                <image src="/Photo/img/pickPhoto.png" class="btn" onclick="pickPhoto" object-fit="contain"></image>
-                <image src="/Photo/img/editPhoto.png" class="btn" onclick="editPhoto" object-fit="contain"></image>
-                <image src="/Photo/img/savePhoto.png" class="btn" onclick="savePhoto" object-fit="contain"></image>
-                <image src="/Photo/img/resetPhoto.png" class="btn" onclick="resetPhoto" object-fit="contain"></image>
+                <image src="/Photo/img/takePhoto.png" class="btn image-contain" onclick="takePhoto" />
+                <image src="/Photo/img/pickPhoto.png" class="btn image-contain" onclick="pickPhoto" />
+                <image src="/Photo/img/editPhoto.png" class="btn image-contain" onclick="editPhoto" />
+                <image src="/Photo/img/savePhoto.png" class="btn image-contain" onclick="savePhoto" />
+                <image src="/Photo/img/resetPhoto.png" class="btn image-contain" onclick="resetPhoto" />
             </div>
       </div>
   </div>
@@ -16,7 +16,6 @@
 
 <style>
     .container{
-        flex: 1;
         flex-direction: column;
         justify-content: center;
         align-content: center;
@@ -29,7 +28,7 @@
     }
     .image {
         width: 100%;
-        height: 90%;
+        height: 92%;
         background-color:#ffffff;
     }
     .list-center {
@@ -41,107 +40,108 @@
     .btn {
         width: 64px;
         height: 64px;
-    } 
+    }
+    .image-contain {
+        object-fit: contain;
+    }
 </style>
 
 <script>
-  import media from '@system.media'
-  import prompt from '@system.prompt'
-  import image from '@system.image'
-  export default {
-    data: {
-        displayUri: null
-    },
-    onInit: function () {
-        this.$page.setTitleBar({
-            //titlebar的状态在manifest.json中display设置的
-            textColor: '#1a1a1a',
-            text: '图片处理',
-            menu: true
-        })
-    },
-    takePhoto: function () {
-        var that = this;
-        media.takePhoto({
-            success: function (data) {
-                that.originUri = data.uri
-                that.displayUri = data.uri
-                console.log('media.takePhoto----------success' + ' ' + that.displayUri)
-            },
-            fail: function (errmsg, errcode) {
-                prompt.showToast({ message: "拍摄失败\n" + errcode + ': ' + errmsg, image:'/Common/logo.png' })
-                console.log('media.takePhoto----------fail ' + errcode + ': ' + errmsg)
-            },
-            cancel: function () {
-                console.log('media.takePhoto----------cancel')
+    import media from '@system.media'
+    import prompt from '@system.prompt'
+    import image from '@system.image'
+    export default {
+        data: {
+            originuri: '',
+            displayuri: ''
+        },
+        onInit: function () {
+            this.$page.setTitleBar({
+                textColor: 'black',
+                text: '相机',
+                menu: true
+            })
+        },
+        takePhoto: function () {
+            var that = this;
+            media.takePhoto({
+                success: function (data) {
+                    that.originuri = data.uri;
+                    that.displayuri = data.uri;
+                    console.log('media.takePhoto success ' + that.displayuri);
+                },
+                fail: function (errmsg, errcode) {
+                    prompt.showToast({ message: '拍摄失败', image: '/Common/logo.png' });
+                    console.log('media.takePhoto fail (' + errcode + ') ' + errmsg);
+                }
+            })
+        },
+        pickPhoto: function () {
+            var that = this;
+            media.pickImage({
+                success: function (data) {
+                    that.originuri = data.uri;
+                    that.displayuri = data.uri;
+                    console.log('media.pickImage success ' + that.displayuri);
+                },
+                fail: function (errmsg, errcode) {
+                    prompt.showToast({ message: "选取失败", image: '/Common/logo.png' });
+                    console.log('media.pickImage fail (' + errcode + ') ' + errmsg);
+                }
+            })
+        },
+        editPhoto: function () {
+            if (this.displayuri !== '') {
+                var that = this;
+                image.editImage({
+                    uri: that.displayuri,
+                    success: function (data) {
+                        that.displayuri = data.uri;
+                        console.log('image.editImage success ' + that.displayuri);
+                    },
+                    fail: function (errmsg, errcode) {
+                        prompt.showToast({ message: "编辑失败", image: '/Common/logo.png' });
+                        console.log('media.editImage fail (' + errcode + ') ' + errmsg);
+                    }
+                })    
             }
-        })
-    },
-    pickPhoto: function () {
-        var that = this;
-        media.pickImage({
-            success: function (data) {
-                that.originUri = data.uri
-                that.displayUri = data.uri
-                console.log('media.pickImage----------success' + ' ' + that.displayUri)
-            },
-            fail: function (erromsg, errocode) {
-                prompt.showToast({ message: "选取失败\n" + errocode + ': ' + erromsg, image:'/Common/logo.png' })
-                console.log('media.pickImage----------fail ' + errocode + ': ' + erromsg)
-            },
-            cancel: function () {
-                console.log('media.pickImage----------cancel')
+        },
+        savePhoto: function () {
+            if (this.displayuri !== '') {
+                var that = this;
+                media.saveToPhotosAlbum({
+                    uri: that.displayuri,
+                    success: function () {
+                        prompt.showToast({ message: "保存成功" });
+                        console.log('media.saveToPhotosAlbum success ' + that.displayuri);
+                    },
+                    fail: function (errmsg, errcode) {
+                        prompt.showToast({ message: "保存失败", image: '/Common/logo.png' });
+                        console.log('media.saveToPhotosAlbum fail (' + errcode + ') ' + errmsg);
+                    }
+                })    
             }
-        })
-    },
-    editPhoto: function () {
-        var that = this;
-        image.editImage({
-            uri: that.displayUri,
-            success: function (data) {
-                that.displayUri = data.uri
-                console.log('image.editImage----------success' + ' ' + that.displayUri)
-            },
-            fail: function (erromsg, errocode) {
-                prompt.showToast({ message: "编辑失败\n" + errocode + ': ' + erromsg, image:'/Common/logo.png' })
-                console.log('media.editImage----------fail ' + errocode + ': ' + erromsg)
-            },
-            cancel: function () {
-                console.log("image.editImage----------cancel")
+        },
+        resetPhoto: function () {
+            if (this.originuri !== this.displayuri) {
+                this.displayuri = this.originuri;
+                prompt.showToast({ message: "取消编辑" });    
             }
-        })
-    },
-    savePhoto: function () {
-        var that = this;
-        media.saveToPhotosAlbum({
-            uri: that.displayUri,
-            success: function () {
-                prompt.showToast({ message: "保存成功" })
-                console.log('media.saveToPhotosAlbum----------success' + ' ' + that.displayUri)
-            },
-            fail: function (erromsg, errocode) {
-                prompt.showToast({ message: "保存失败\n" + errocode + ': ' + erromsg, image:'/Common/logo.png' })
-                console.log('media.saveToPhotosAlbum----------fail ' + errocode + ': ' + erromsg)
+        },
+        viewPhoto: function () {
+            if (this.displayuri !== '') {
+                var that = this;
+                media.previewImage({
+                    current: that.displayuri,
+                    uris: [that.displayuri],
+                    success: function () {
+                        console.log('previewImage success');
+                    },
+                    fail: function (errmsg, errcode) {
+                        console.log('previewImage fail (' + errcode + ') ' + errmsg);
+                    }
+                });    
             }
-        })
-    },
-    resetPhoto: function () {
-        this.displayUri = this.originUri
-        prompt.showToast({ message: "取消修改" })
-        console.log('resetPhoto----------success')
-    },
-    viewImage: function () {
-        var that = this;
-        media.previewImage({
-            current: that.displayUri,
-            uris: [that.displayUri],
-            success: function () {
-                console.log('previewImage success');
-            },
-            fail: function (erromsg, errocode) {
-                console.log('previewImage fail ' + errocode + ': ' + erromsg);
-            }
-        });
-    }   
-  }
+        }
+    }
 </script>

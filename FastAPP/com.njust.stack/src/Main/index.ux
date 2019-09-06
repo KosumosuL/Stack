@@ -1,0 +1,22 @@
+<import name='maintab' src='./component/fixed-maintab.ux'></import>
+<template>
+  <!-- template里只能有一个根节点 -->
+  <maintab datas={{datas}}></maintab>
+</template>
+
+<style>
+</style>
+
+<script>
+module.exports = {
+    data: {
+        datas: [
+            { idx: 0, icon: './img/community.png', icon_choice: './img/selected-community.png', show: true, title: 'Stack社区'},
+            { idx: 1, icon: './img/search.png', icon_choice: './img/selected-search.png', show: false, title: '发现'},
+            { idx: 2, icon: './img/new.png', icon_choice: './img/selected-new.png', show: false, title: '新增'},
+            { idx: 3, icon: './img/rank.png', icon_choice: './img/selected-rank.png', show: false, title: '排行榜'},
+            { idx: 4, icon: './img/mine.png', icon_choice: './img/selected-mine.png', show: false, title: '个人'}
+        ]
+    }
+}
+</script>

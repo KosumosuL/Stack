@@ -3,20 +3,17 @@
 <template>
   <!-- template里只能有一个根节点 -->
   <div class="container">
-    <refresh offset="100px" refreshing={{isRefreshing}} onrefresh="refresh" type="overscroll" class="refresh">
-      <list onscrollbottom="scrollbottom" class="list" scrollpage="true">
-        <list-item type="test" class="test">
-          <text onclick="toCamera">camera</text>
-        </list-item>
+    <refresh offset="130px" refreshing={{isRefreshing}} onrefresh="refresh" type="overscroll" class="refresh">
+      <list onscrollbottom="scrollBottom" class="list">
         <!-- 列表元素，属性type值相同时，需要确保渲染后的视图布局也完全相同，用show代替if，确保布局视图不变 -->
-        <list-item type="listItem" for={{postData}}>
-          <component-post swiperdata={{$item.swiperdata}} likedata={{$item.likedata}} poster={{$item.poster}} postericon={{$item.postericon}} postercomment={{$item.postercomment}} commentnumber={{$item.commentnumber}} posttime={{$item.posttime}} like={{$item.like}}></component-post>
+        <list-item for={{postData}} type="listItem{{$idx}}">
+          <component-post swiperdata={{$item.swiperdata}} likedata={{$item.likedata}} poster={{$item.poster}} postericon={{$item.postericon}} postercomment={{$item.postercomment}} commentnumber={{$item.commentnumber}} posttime={{$item.posttime}} liked={{$item.liked}}></component-post>
         </list-item>
         <!-- 加载更多 -->
-        <list-item type="loadMore" show="{{loadMore}}">
+        <list-item type="loadMore" show={{isLoading}}>
           <div class="loadMore">
             <progress type="circular" class="circular-progress"></progress>
-            <text font-size="40px">加载更多</text>  
+            <text class="loadMoreText">加载更多</text>  
           </div>
         </list-item>
       </list>
@@ -26,7 +23,6 @@
 
 <style>
   .container {
-    flex: 1;
     flex-direction: column;
     justify-content: center;
     align-content: center;
@@ -34,47 +30,34 @@
     background-color: #ffffff;
   }
   .refresh {
-    height: 100%;
     background-color: #ffffff;
     progress-color: #0faeff;
     flex-direction: column;
-    justify-content: center;
-    align-content: center;
-    align-items: center;
   }
   .list {
-    flex-direction: column;
-    justify-content: center;
-    align-content: center;
-    align-items: center;
-  }
-  .listItem {
+    width: 100%;
   }
   .loadMore {
     width: 100%;
-    flex-direction: row;
+    margin-bottom: 50px;
     justify-content: center;
-    align-content: center;
-    align-items: center;
   }
   .circular-progress {
     width: 96px;
     height: 96px;
   }
-  .test {
-    margin-left: 20px;
-    margin-bottom: 20px;
+  .loadMoreText {
+    font-size: 37px;
   }
 </style>
 
 <script>
   import fetch from '@system.fetch'
   import prompt from '@system.prompt'
-  import router from '@system.router'
   module.exports = {
     data: {
-      loadMore: false,
       isRefreshing: false,
+      isLoading: false,
       postData:
         [
           {
@@ -97,7 +80,7 @@
             commentnumber: "7,479",
             postericon: "/Common/logo.png",
             posttime: "2019-9-4 15:52:00",
-            like: false
+            liked: false
           },
           {
             swiperdata:
@@ -107,18 +90,18 @@
               ],
             likedata: "1,234,567",
             poster: 'nike',
-            postercomment: "just do it.",
+            postercomment: "Just do it.",
             commentnumber: "7",
             postericon: "/Common/logo.png",
             posttime: "2019-9-4 20:30:00",
-            like: true
+            liked: true
           }
         ]
     },
     onInit() {
       this.$page.setTitleBar({
         //titlebar的状态，在manifest.json中display设置的
-        textColor: '#1a1a1a',
+        textColor: 'black',
         text: 'Stack社区',
         menu: true
       });
@@ -127,19 +110,23 @@
       return function (data) {
         that.postData = data.data.message.map(that.mapPost);
         that.isRefreshing = false;
+        clearTimeout(that.timeout);
       }
     },
     loadMorePost: function (that) {
       return function (data) {
         that.postData = that.postData.concat(data.data.message.map(that.mapPost));
-        that.loadMore = false;
+        that.isLoading = false;
+        clearTimeout(that.timeout);
       }
     },
     showError: function (that) {
       return function (errcode, errmsg) {
-        prompt.showToast({ message: errcode + ': ' + errmsg, image:'/Common/logo.png' });
+        console.log(errcode + ' ' + errmsg);
+        prompt.showToast({ message: "请求错误", image: '/Common/logo.png' });
         that.isRefreshing = false;
-        that.loadMore = false;
+        that.isLoading = false;
+        clearTimeout(that.timeout);
       }
     },
     post: function (url, data) {
@@ -154,7 +141,7 @@
             resolve(data);
           },
           fail: function (errmsg, errcode) {
-            console.log("post fail " + errcode + ": " + errmsg);
+            console.log("post fail");
             reject(errcode, errmsg);
           }
         });  
@@ -162,34 +149,29 @@
     },
     refresh: function (e) {
       var that = this;
-      that.isRefreshing = e.refreshing;
+      this.isRefreshing = e.refreshing;
       var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":"18260071011", "time":"2019-09-01 15:24:07"});
+      this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshPost(this), this.showError(this));
-      setTimeout(function () { that.isRefreshing = false; }, 5000);
     },
-    scrollbottom: function () {
+    scrollBottom: function () {
       var that = this;
-      this.loadMore = true;
+      this.isLoading = true;
       var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":"18260071011", "time":"2019-09-01 15:24:07"});
+      this.timeout = setTimeout(function () { that.isLoading = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.loadMorePost(this), this.showError(this));
-      setTimeout(function () { that.loadMore = false; }, 5000);
     },
     mapPost: function (item) {
       return {
         swiperdata: item.images.map(function (image) { return {src: image.url} }),
         likedata: item.likes,
-        poster: item.username,
+        poster: item.cur_user.username,
         postercomment: item.selfcomment,
         commentnumber: item.comments,
-        postericon: item.photo,
+        postericon: item.cur_user.photo,
         posttime: item.ptime,
-        like: item.isliked
+        liked: item.isliked
       }
-    },
-    toCamera: function () {
-      router.push({         
-        uri: '/Photo',
-      })
     }
   }
 </script>
