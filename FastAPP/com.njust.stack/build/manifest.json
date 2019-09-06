@@ -1,0 +1,58 @@
+{
+  "package": "com.njust.stack",
+  "name": "Stack",
+  "versionName": "1.0.2",
+  "versionCode": 3,
+  "icon": "/Common/logo.png",
+  "minPlatformVersion": 1040,
+  "features": [
+    {
+      "name": "system.image"
+    },
+    {
+      "name": "system.media"
+    },
+    {
+      "name": "system.prompt"
+    },
+    {
+      "name": "system.device"
+    },
+    {
+      "name": "system.audio"
+    },
+    {
+      "name": "system.router"
+    },
+    {
+      "name": "system.ai"
+    },
+    {
+      "name": "system.fetch"
+    }
+  ],
+  "permissions": [
+    {
+      "origin": "*"
+    }
+  ],
+  "config": {},
+  "router": {
+    "entry": "Community",
+    "pages": {
+      "Photo": {
+        "component": "index",
+        "path": "/Photo"
+      },
+      "Community": {
+        "component": "index",
+        "path": "/Community"
+      }
+    }
+  },
+  "display": {
+    "titleBarBackgroundColor": "#ffffff",
+    "pages": {}
+  },
+  "debugable": true
+}

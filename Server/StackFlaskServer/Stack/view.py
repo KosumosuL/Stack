@@ -35,18 +35,33 @@ def init_api(app):
                 res = list()
                 for post in posts:
                     postdic = Post.out(Post, post)
-                    images = Image.getbypid(Image, pid=post.pid)
-                    imgs = list()
-                    for image in images:
-                        imgs.append(Image.out(Image, image))
-                    postdic['images'] = imgs
+                    # current like
                     postdic['likes'] = LikeTable.getcountbypid(LikeTable, pid=post.pid)
                     postdic['isliked'] = True if LikeTable.getbypp(LikeTable, pid=post.pid, phonenum=phonenum) is not None else False
+                    # current comment
                     postdic['comments'] = CommentTable.getcountbypid(CommentTable, pid=post.pid)
                     comment = CommentTable.getselfcomment(CommentTable, pid=post.pid, phonenum=post.phonenum)
                     postdic['selfcomment'] = comment.content if comment is not None else ""
+                    # current user info
                     usr = User.partly_out(User, User.get(User, post.phonenum))
-                    postdic = dict(postdic, **usr)
+                    postdic['cur_user'] = usr
+                    if post.isre == 0:
+                        # content
+                        images = Image.getbypid(Image, pid=post.pid)
+                        imgs = list()
+                        for image in images:
+                            imgs.append(Image.out(Image, image))
+                        postdic['images'] = imgs
+                    else:
+                        # origin content
+                        images = Image.getbypid(Image, pid=post.isre)
+                        imgs = list()
+                        for image in images:
+                            imgs.append(Image.out(Image, image))
+                        postdic['images'] = imgs
+                        # origin user info
+                        or_usr = User.partly_out(User, User.get(User, Post.get(Post, post.isre)))
+                        postdic['ori_user'] = or_usr
                     res.append(postdic)
                 data['message'] = res
                 data['status'] = 200
@@ -61,39 +76,44 @@ def init_api(app):
     ###########################################
     # for each user, get all posts
     # check auth(phonenum) firstly
-    @app.route('/post/get_posts', methods=['POST'])
-    def get_posts():
-        data = {}
-        phonenum = request.form.get('phonenum')
-        try:
-            schema(
-                {
-                    "phonenum": phonenum
-                }
-            )
-            conforms_to_schema = True
-        except MultipleInvalid as e:
-            data['status'] = 400
-            conforms_to_schema = False
-            if "expected" in e.msg:
-                data['message'] = e.path[0] + " is not in the correct format"
-            else:
-                data['message'] = e.msg + " for " + e.path[0]
+    # @app.route('/post/get_posts', methods=['POST'])
+    # def get_posts():
+    #     data = {}
+    #     phonenum = request.form.get('phonenum')
+    #     try:
+    #         schema(
+    #             {
+    #                 "phonenum": phonenum
+    #             }
+    #         )
+    #         conforms_to_schema = True
+    #     except MultipleInvalid as e:
+    #         data['status'] = 400
+    #         conforms_to_schema = False
+    #         if "expected" in e.msg:
+    #             data['message'] = e.path[0] + " is not in the correct format"
+    #         else:
+    #             data['message'] = e.msg + " for " + e.path[0]
+    #
+    #     if conforms_to_schema:
+    #         try:
+    #             posts = Post.getbyuser(Post, phonenum=phonenum)
+    #             res = list()
+    #             for post in posts:
+    #                 res.append(Post.out(Post, post))
+    #             data['message'] = res
+    #             data['status'] = 200
+    #         except Exception as e:
+    #             data['status'] = 406
+    #             data['message'] = str(e)
+    #
+    #     return jsonify(data)
 
-        if conforms_to_schema:
-            try:
-                posts = Post.getbyuser(Post, phonenum=phonenum)
-                res = list()
-                for post in posts:
-                    res.append(Post.out(Post, post))
-                data['message'] = res
-                data['status'] = 200
-            except Exception as e:
-                data['status'] = 406
-                data['message'] = str(e)
-
-        return jsonify(data)
-
+    # (aes_score-50)+likes*0.005
+    # to ensure the balance between about 10k likes and high score
+    # when number of likes is small, to expand the influence of the aes_score
+    # and when it is large(>10k), to expand the affect of the likes
+    # (100-50) == 10k*0.005 == 50
     # user creates one post
     # check auth(phonenum) firstly
     @app.route('/post/create_post', methods=['POST'])
@@ -125,10 +145,7 @@ def init_api(app):
                 data['message'] = e.msg + " for " + e.path[0]
 
         if conforms_to_schema:
-            post = Post(image=image,
-                        ptime=ptime,
-                        label=label,
-                        aes_score=aes_score,
+            post = Post(ptime=ptime,
                         phonenum=phonenum)
             try:
                 _ = Post.add(Post, post)
@@ -166,8 +183,9 @@ def init_api(app):
             try:
                 _ = Post.delete(Post, pid)
                 # 还需删除所有包含的likes和comments
-                # _ = LikeTable.deletepost(LikeTable, pid)
-                # _ = CommentTable.deletepost(CommentTable, pid)
+                _ = Image.delete_post(Image, pid)
+                _ = LikeTable.delete_post(LikeTable, pid)
+                _ = CommentTable.delete_post(CommentTable, pid)
                 data['status'] = 200
                 data['message'] = 'deleted successfully!'
             except Exception as e:
@@ -208,12 +226,9 @@ def init_api(app):
                 data['status'] = 404
                 data['message'] = "Post {} doesn't exist".format(pid)
             else:
-                post = Post(image=origin_post.image,
-                            ptime=ptime,
-                            label=origin_post.label,
-                            aes_score=origin_post.aes_score,
+                post = Post(ptime=ptime,
                             phonenum=phonenum,
-                            isre=True)
+                            isre=pid)
                 try:
                     _ = Post.add(Post, post)
                     data['status'] = 200
@@ -659,19 +674,18 @@ def init_api(app):
     # rank
     ###########################################
     # for ranking list, get all posts by number of likes in last week
-    @app.route('/rank/get_rank_by_week', methods=['POST'])
-    def get_rank_by_week():
+    @app.route('/rank/get_rank', methods=['POST'])
+    def get_rank():
         data = {}
-        start = datetime.datetime.strptime(request.form.get('time'), "%Y-%m-%d %H:%M:%S")
-        delta = datetime.timedelta(days=7)
-        end = start - delta
-        start = start.strftime('%Y-%m-%d %H:%M:%S')
-        end = end.strftime('%Y-%m-%d %H:%M:%S')
+        phonenum = request.form.get('phonenum')
+        period = int(request.form.get('period'))
+        cur = request.form.get('time')
         try:
             schema(
                 {
-                    "ptime": start,
-                    "ltime": end
+                    "phonenum": phonenum,
+                    "ptime": cur,
+                    "period": period
                 }
             )
             conforms_to_schema = True
@@ -683,63 +697,23 @@ def init_api(app):
             else:
                 data['message'] = e.msg + " for " + e.path[0]
 
-        if conforms_to_schema:
-            try:
-                posts = Post.getlastweek(Post, start=start, end=end)
-                tmp = list()
-                for post in posts:
-                    tmp.append([post, LikeTable.getcountbypid(LikeTable, pid=post.pid)])
-                tmp.sort(key=lambda x:x[1], reverse=True)
-
-                from Stack.config import RANK_LIMIT
-                res = list()
-                count = 0
-                for post, likes in tmp:
-                    count += 1
-                    postdic = Post.out(Post, post)
-                    postdic['likes'] = likes
-                    res.append(postdic)
-                    if count >= RANK_LIMIT:
-                        break
-                data['message'] = res
-                data['status'] = 200
-            except Exception as e:
-                data['status'] = 406
-                data['message'] = str(e)
-
-        return jsonify(data)
-
-    # for ranking list, get all posts by aes_score in last week
-    @app.route('/rank/get_rank_by_day', methods=['POST'])
-    def get_rank_by_day():
-        data = {}
-        start = datetime.datetime.strptime(request.form.get('time'), "%Y-%m-%d %H:%M:%S")
-        delta = datetime.timedelta(days=1)
-        end = start - delta
-        start = start.strftime('%Y-%m-%d %H:%M:%S')
-        end = end.strftime('%Y-%m-%d %H:%M:%S')
-        try:
-            schema(
-                {
-                    "ptime": start,
-                    "ltime": end
-                }
-            )
-            conforms_to_schema = True
-        except MultipleInvalid as e:
-            data['status'] = 400
-            conforms_to_schema = False
-            if "expected" in e.msg:
-                data['message'] = e.path[0] + " is not in the correct format"
-            else:
-                data['message'] = e.msg + " for " + e.path[0]
+        delta = datetime.timedelta(days=period)
+        cur = datetime.datetime.strptime(cur, "%Y-%m-%d %H:%M:%S")
+        pre = cur - delta
 
         if conforms_to_schema:
             try:
-                posts = Post.getbyaesscore(Post, start=start, end=end)
+                images = Image.get_by_score(Image, start=pre, end=cur)
                 res = list()
-                for post in posts:
-                    res.append(Post.out(Post, post))
+                for image in images:
+                    imgdic = Image.out(Image, image)
+                    post = Post.get(Post, image.pid)
+                    imgdic['likes'] = LikeTable.getcountbypid(LikeTable, pid=post.pid)
+                    imgdic['isliked'] = True if LikeTable.getbypp(LikeTable, pid=post.pid,
+                                                                   phonenum=phonenum) is not None else False
+                    usr = User.partly_out(User, User.get(User, post.phonenum))
+                    imgdic['cur_user'] = usr
+                    res.append(imgdic)
                 data['message'] = res
                 data['status'] = 200
             except Exception as e:
@@ -749,20 +723,19 @@ def init_api(app):
         return jsonify(data)
 
     ###########################################
-    # discover
+    # recommend
     ###########################################
     # recommend posts in discover page
-    @app.route('/discover/recommend_posts', methods=['POST'])
+    @app.route('/recommend/recommend_posts', methods=['POST'])
     def recommend_posts():
         data = {}
-        start = datetime.datetime.strptime(request.form.get('time'), "%Y-%m-%d %H:%M:%S")
-        delta = datetime.timedelta(days=7)
-        end = start - delta
+        phonenum = request.form.get('phonenum')
+        token = request.form.get('token')
         try:
             schema(
                 {
-                    "ptime": start,
-                    "ltime": end
+                    "phonenum": phonenum,
+                    "token": token
                 }
             )
             conforms_to_schema = True
@@ -788,6 +761,96 @@ def init_api(app):
 
         return jsonify(data)
 
+    # # for each user, recommend some users for u
+    # # check auth(phonenum) firstly
+    @app.route('/recommend/recommend_users', methods=['POST'])
+    def recommend_users():
+        data = {}
+        phonenum = request.form.get('phonenum')
+        try:
+            schema(
+                {
+                    "phonenum": phonenum
+                }
+            )
+            conforms_to_schema = True
+        except MultipleInvalid as e:
+            data['status'] = 400
+            conforms_to_schema = False
+            if "expected" in e.msg:
+                data['message'] = e.path[0] + " is not in the correct format"
+            else:
+                data['message'] = e.msg + " for " + e.path[0]
+
+        if conforms_to_schema:
+            try:
+                followees = FollowTable.get_followees(FollowTable, follower=phonenum)
+                res = dict()
+                for followee in followees:
+                    # print(FollowTable.out(FollowTable, followee))
+                    user = User.get(User, phonenum=followee.followee)
+                    fs = FollowTable.get_followees(FollowTable, follower=user.phonenum)
+                    for f in fs:
+                        u = User.get(User, phonenum=f.followee)
+                        if u.phonenum not in res:
+                            res[u.phonenum] = list()
+                        res[u.phonenum].append(user)
+                    res.append(User.out(User, user))
+                data['message'] = res
+                data['status'] = 200
+            except Exception as e:
+                data['status'] = 406
+                data['message'] = str(e)
+
+        return jsonify(data)
+
+    # # for each user, recommend some users for u
+    # # check auth(phonenum) firstly
+    @app.route('/recommend/recommend_labels', methods=['POST'])
+    def recommend_labels():
+        data = {}
+        phonenum = request.form.get('phonenum')
+        try:
+            schema(
+                {
+                    "phonenum": phonenum
+                }
+            )
+            conforms_to_schema = True
+        except MultipleInvalid as e:
+            data['status'] = 400
+            conforms_to_schema = False
+            if "expected" in e.msg:
+                data['message'] = e.path[0] + " is not in the correct format"
+            else:
+                data['message'] = e.msg + " for " + e.path[0]
+
+        if conforms_to_schema:
+            try:
+                followees = FollowTable.get_followees(FollowTable, follower=phonenum)
+                res = dict()
+                for followee in followees:
+                    # print(FollowTable.out(FollowTable, followee))
+                    user = User.get(User, phonenum=followee.followee)
+                    fs = FollowTable.get_followees(FollowTable, follower=user.phonenum)
+                    for f in fs:
+                        u = User.get(User, phonenum=f.followee)
+                        if u.phonenum not in res:
+                            res[u.phonenum] = list()
+                        res[u.phonenum].append(user)
+                    res.append(User.out(User, user))
+                data['message'] = res
+                data['status'] = 200
+            except Exception as e:
+                data['status'] = 406
+                data['message'] = str(e)
+
+        return jsonify(data)
+
+
+    ###########################################
+    # search
+    ###########################################
     # search posts in discover page
     @app.route('/discover/search', methods=['POST'])
     def search():
@@ -821,52 +884,6 @@ def init_api(app):
                 data['message'] = str(e)
 
         return jsonify(data)
-
-    ###########################################
-    # recommend
-    ###########################################
-    # # for each user, recommend some users for u
-    # # check auth(phonenum) firstly
-    # @app.route('/home/recommend_users', methods=['POST'])
-    # def recommend_users():
-    #     data = {}
-    #     phonenum = request.form.get('phonenum')
-    #     try:
-    #         schema(
-    #             {
-    #                 "phonenum": phonenum
-    #             }
-    #         )
-    #         conforms_to_schema = True
-    #     except MultipleInvalid as e:
-    #         data['status'] = 400
-    #         conforms_to_schema = False
-    #         if "expected" in e.msg:
-    #             data['message'] = e.path[0] + " is not in the correct format"
-    #         else:
-    #             data['message'] = e.msg + " for " + e.path[0]
-    #
-    #     if conforms_to_schema:
-    #         try:
-    #             followees = FollowTable.get_followees(FollowTable, follower=phonenum)
-    #             res = dict()
-    #             for followee in followees:
-    #                 # print(FollowTable.out(FollowTable, followee))
-    #                 user = User.get(User, phonenum=followee.followee)
-    #                 fs = FollowTable.get_followees(FollowTable, follower=user.phonenum)
-    #                 for f in fs:
-    #                     u = User.get(User, phonenum=f.followee)
-    #                     if u.phonenum not in res:
-    #                         res[u.phonenum] = list()
-    #                     res[u.phonenum].append(user)
-    #                 res.append(User.out(User, user))
-    #             data['message'] = res
-    #             data['status'] = 200
-    #         except Exception as e:
-    #             data['status'] = 406
-    #             data['message'] = str(e)
-    #
-    #     return jsonify(data)
 
 
     # for testing

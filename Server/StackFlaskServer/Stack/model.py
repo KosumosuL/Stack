@@ -71,13 +71,13 @@ class Post(db.Model):
     __tablename__ = 'post'
     pid = db.Column(db.INTEGER, primary_key=True, nullable=False)
     ptime = db.Column(db.DateTime, nullable=False)
-    isre = db.Column(db.Boolean, nullable=False)
+    isre = db.Column(db.INTEGER, nullable=False)
     phonenum = db.Column(db.String(11), nullable=False)
 
     def __repr__(self):
         return '<Post %r>' % self.pid
 
-    def __init__(self, ptime, phonenum, isre=False):
+    def __init__(self, ptime, phonenum, isre=0):
         self.ptime = ptime
         self.phonenum = phonenum
         self.isre = isre
@@ -87,26 +87,20 @@ class Post(db.Model):
 
     def get_followees_posts(self, phonenum, time):
         from Stack.config import SHOWPOSTS_LIMIT
-        return self.query.filter(self.phonenum == FollowTable.followee)\
-                         .filter(FollowTable.follower == phonenum) \
-                         .filter(self.ptime < time) \
-                         .order_by(self.ptime.desc())\
-                         .limit(SHOWPOSTS_LIMIT)\
-                         .all()
+        return self.query\
+            .filter(self.phonenum == FollowTable.followee)\
+            .filter(FollowTable.follower == phonenum) \
+            .filter(self.ptime < time) \
+            .order_by(self.ptime.desc())\
+            .limit(SHOWPOSTS_LIMIT)\
+            .all()
 
-    def getbylabel(self, keyword):
+    def get_by_label(self, keyword):
         return self.query.filter_by(label=keyword).order_by(self.aes_score.desc()).all()
 
-    def getbylabel_fuzzy(self, keyword):
+    def get_by_label_fuzzy(self, keyword):
         # keyword cannot be blank(must be checked in frond end)
         return self.query.filter(self.label.like("%" + keyword + "%")).all()
-
-    def getbyaesscore(self, start, end):
-        from Stack.config import RANK_LIMIT
-        return self.query.filter(end < self.ptime, self.ptime <= start).order_by(self.aes_score.desc()).limit(RANK_LIMIT).all()
-
-    def getlastweek(self, start, end):
-        return self.query.filter(end < self.ptime, self.ptime <= start).order_by(self.ptime.desc()).all()
 
     def getbyuser(self, phonenum):
         return self.query.filter_by(phonenum=phonenum).all()
@@ -150,6 +144,19 @@ class Image(db.Model):
 
     def getbypid(self, pid):
         return self.query.filter_by(pid=pid).all()
+
+    def get_by_score(self, start, end):
+        from Stack.config import RANK_LIMIT
+        return self.query\
+            .filter(start < Post.ptime, Post.ptime <= end)\
+            .filter(self.pid == Post.pid)\
+            .order_by(self.aes_score.desc())\
+            .limit(RANK_LIMIT)\
+            .all()
+
+    def delete_post(self, pid):
+        self.query.filter_by(pid=pid).delete()
+        return session_commit()
 
     def out(self, image):
         return {
@@ -203,7 +210,7 @@ class LikeTable(db.Model):
         self.query.filter_by(lid=lid).delete()
         return session_commit()
 
-    def deletepost(self, pid):
+    def delete_post(self, pid):
         self.query.filter_by(pid=pid).delete()
         return session_commit()
 
@@ -256,7 +263,7 @@ class CommentTable(db.Model):
         self.query.filter_by(cid=cid).delete()
         return session_commit()
 
-    def deletepost(self, pid):
+    def delete_post(self, pid):
         self.query.filter_by(pid=pid).delete()
         return session_commit()
 
