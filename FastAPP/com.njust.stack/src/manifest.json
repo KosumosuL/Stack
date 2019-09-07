@@ -63,7 +63,7 @@
       "Main": {
         "component": "index",
         "path": "/Main"
-      }   ,  
+      },
       "Photo": {
         "component": "index",
         "path": "/Photo"
@@ -71,7 +71,7 @@
       "Rank": {
         "component": "index",
         "path": "/Rank"
-      },      
+      },
       "Search": {
         "component": "index",
         "path": "/Search"
