@@ -1,17 +1,25 @@
 <template> 
-  <!-- Only one root node is allowed in template. -->
-  <div class="container">
-      <div class="item-container">
-            <image src={{displayuri}} class="image image-contain" onclick="viewPhoto" />
-            <div class="list-center">
-                <image src="/Photo/img/takePhoto.png" class="btn image-contain" onclick="takePhoto" />
-                <image src="/Photo/img/pickPhoto.png" class="btn image-contain" onclick="pickPhoto" />
-                <image src="/Photo/img/editPhoto.png" class="btn image-contain" onclick="editPhoto" />
-                <image src="/Photo/img/savePhoto.png" class="btn image-contain" onclick="savePhoto" />
-                <image src="/Photo/img/resetPhoto.png" class="btn image-contain" onclick="resetPhoto" />
+    <div class="container">
+        <div class="camera">
+            <image src={{displayuri}} class="image image-cover" onclick="viewPhoto" onlongpress="undoPhoto" />
+        </div>
+        <div class="image-wall">
+            <div class="image-wall-container">
+                <div class="image-wall-list">
+                    <div for={{uris}} class="image-wall-product" >
+                        <image class="image-wall-image" src="{{$item}}" onclick="selectPhoto(this)" onlongpress="deletePhoto(this)" />
+                    </div>
+                </div>
             </div>
-      </div>
-  </div>
+        </div>
+        <div class="list-center">
+            <image src="/Photo/img/takePhoto.png" class="btn image-contain" onclick="takePhoto" />
+            <image src="/Photo/img/pickPhoto.png" class="btn image-contain" onclick="pickPhoto" />
+            <image src="/Photo/img/editPhoto.png" class="btn image-contain" onclick="editPhoto" />
+            <image src="/Photo/img/clearPhoto.png" class="btn image-contain" onclick="clearPhoto" />
+            <image src="/Photo/img/uploadPhoto.png" class="btn image-contain" onclick="uploadPhoto" />
+        </div>
+    </div>
 </template>
 
 <style>
@@ -22,27 +30,56 @@
         align-items: center;
         background-color: #ffffff;
     }
-    .item-container {
-        width: 100%;
-        flex-direction: column;
+    .camera {
+        height: 800px;
+        position: fixed;
     }
     .image {
         width: 100%;
-        height: 92%;
+        height: 100%;
         background-color:#ffffff;
     }
+    .image-wall {
+        margin-top: 801px;
+        margin-bottom: 100px;
+    }
+    .image-wall-container {
+		flex-direction: column;
+		width: 100%;
+	}
+	.image-wall-list {
+		flex-wrap: wrap;
+	}
+	.image-wall-product {
+		height: 187.5px;
+		width: 25%;
+	}
+	.image-wall-image {
+		object-fit: cover;
+		height: 100%;
+		width: 100%;
+		margin: 1px 1px 1px 1px;
+	}
     .list-center {
-        margin-left: 20px;
-        margin-right: 20px;
-        margin-top: 10px;
+        position: fixed;
+        bottom: 0px;
         justify-content: space-between;
+        background-color: #f2f2f2;
+        width: 100%;
+        height: 100px;
     }
     .btn {
         width: 64px;
         height: 64px;
+        margin-left: 40px;
+        margin-right: 40px;
+        margin-top: 16px;
     }
     .image-contain {
         object-fit: contain;
+    }
+    .image-cover {
+        object-fit: cover;
     }
 </style>
 
@@ -52,23 +89,41 @@
     import image from '@system.image'
     export default {
         data: {
-            originuri: '',
-            displayuri: ''
-        },
-        onInit: function () {
-            this.$page.setTitleBar({
-                textColor: 'black',
-                text: '相机',
-                menu: true
-            })
+            uris: [
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',
+                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg'
+            ],
+            idx: -1,
+            displayuri: '',
+            backup: ''
         },
         takePhoto: function () {
             var that = this;
             media.takePhoto({
                 success: function (data) {
-                    that.originuri = data.uri;
+                    that.uris = that.uris.concat(data.uri);
+                    that.idx = that.uris.length - 1;
                     that.displayuri = data.uri;
-                    console.log('media.takePhoto success ' + that.displayuri);
+                    that.backup = '';
+                    console.log('media.takePhoto success');
                 },
                 fail: function (errmsg, errcode) {
                     prompt.showToast({ message: '拍摄失败', image: '/Common/logo.png' });
@@ -80,9 +135,11 @@
             var that = this;
             media.pickImage({
                 success: function (data) {
-                    that.originuri = data.uri;
+                    that.uris = that.uris.concat(data.uri);
+                    that.idx = that.uris.length - 1;
                     that.displayuri = data.uri;
-                    console.log('media.pickImage success ' + that.displayuri);
+                    that.backup = '';
+                    console.log('media.pickImage success');
                 },
                 fail: function (errmsg, errcode) {
                     prompt.showToast({ message: "选取失败", image: '/Common/logo.png' });
@@ -96,8 +153,10 @@
                 image.editImage({
                     uri: that.displayuri,
                     success: function (data) {
+                        that.uris.splice(that.idx, 1, data.uri);
+                        that.backup = that.displayuri;
                         that.displayuri = data.uri;
-                        console.log('image.editImage success ' + that.displayuri);
+                        console.log('image.editImage success');
                     },
                     fail: function (errmsg, errcode) {
                         prompt.showToast({ message: "编辑失败", image: '/Common/logo.png' });
@@ -106,26 +165,19 @@
                 })    
             }
         },
-        savePhoto: function () {
-            if (this.displayuri !== '') {
+        uploadPhoto: function () {
+            if (this.uris.length !== 0) {
                 var that = this;
-                media.saveToPhotosAlbum({
-                    uri: that.displayuri,
-                    success: function () {
-                        prompt.showToast({ message: "保存成功" });
-                        console.log('media.saveToPhotosAlbum success ' + that.displayuri);
-                    },
-                    fail: function (errmsg, errcode) {
-                        prompt.showToast({ message: "保存失败", image: '/Common/logo.png' });
-                        console.log('media.saveToPhotosAlbum fail (' + errcode + ') ' + errmsg);
-                    }
-                })    
+                
             }
         },
-        resetPhoto: function () {
-            if (this.originuri !== this.displayuri) {
-                this.displayuri = this.originuri;
-                prompt.showToast({ message: "取消编辑" });    
+        clearPhoto: function () {
+            if (this.uris.length !== 0) {
+                this.uris = [];
+                this.idx = -1;
+                this.displayuri = '';
+                this.backup = '';
+                prompt.showToast({ message: "清空相片" });    
             }
         },
         viewPhoto: function () {
@@ -133,14 +185,88 @@
                 var that = this;
                 media.previewImage({
                     current: that.displayuri,
-                    uris: [that.displayuri],
+                    uris: that.uris,
                     success: function () {
                         console.log('previewImage success');
                     },
                     fail: function (errmsg, errcode) {
                         console.log('previewImage fail (' + errcode + ') ' + errmsg);
                     }
-                });    
+                });     
+            }
+        },
+        selectPhoto: function (obj) {
+            if (this.idx !== obj.$idx) {
+                this.idx = obj.$idx;
+                this.displayuri = this.uris[this.idx];
+                this.backup = '';    
+            }
+        },
+        deletePhoto: function (obj) {
+            var that = this;
+            prompt.showDialog({
+                message: '删除该相片？',
+                buttons: [
+                    {
+                        text: '确认',
+                        color: '#33dd44'
+                    },
+                    {
+                        text: '取消',
+                        color: '#33dd44'
+                    }
+                ],
+                success: function (data) {
+                    console.log("prompt.showDialog success");
+                    if (data.index === 0) {
+                        that.uris.splice(obj.$idx, 1);
+                        if (that.uris.length === 0) {
+                            that.idx = -1;
+                            that.displayuri = '';
+                            that.backup = '';
+                        } else if (that.idx > obj.$idx) {
+                            that.idx -= 1;
+                        } else if (that.idx === obj.$idx) {
+                            that.backup = '';
+                            if (that.idx >= that.uris.length) {
+                                that.idx = that.uris.length - 1;
+                            }
+                            that.displayuri = that.uris[that.idx];
+                        }
+                    }
+                },
+                fail: function (errmsg, errcode) {
+                    console.log("prompt.showDialog fail (" + errcode + ") " + errmsg);
+                }
+            });
+        },
+        undoPhoto: function () {
+            var that = this;
+            if (this.backup !== '') {
+                prompt.showDialog({
+                    message: '取消编辑？',
+                    buttons: [
+                        {
+                            text: '确认',
+                            color: '#33dd44'
+                        },
+                        {
+                            text: '取消',
+                            color: '#33dd44'
+                        }
+                    ],
+                    success: function (data) {
+                        console.log("prompt.showDialog success");
+                        if (data.index === 0) {
+                            that.uris.splice(that.idx, 1, that.backup);
+                            that.displayuri = that.backup;
+                            that.backup = '';
+                        }
+                    },
+                    fail: function (errmsg, errcode) {
+                        console.log("prompt.showDialog fail (" + errcode + ") " + errmsg);
+                    }
+                }); 
             }
         }
     }

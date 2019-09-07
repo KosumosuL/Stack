@@ -1,6 +1,6 @@
 <import name='community' src='../Community/index'></import>
 <import name='discover' src='../Discover/index'></import>
-<import name='photo' src='../Photo/index'></import>
+<!-- <import name='photo' src='../Photo/index'></import> -->
 <import name='rank' src='../Rank/index'></import>
 
 <template>
@@ -10,7 +10,7 @@
         <tab-content>
             <community></community>
             <discover></discover>
-            <photo></photo>
+            <image src="/Common/logo.png" />
             <rank></rank>
             <community></community>
         </tab-content>
@@ -47,6 +47,7 @@
 </style>
 
 <script>
+    import router from '@system.router' 
     module.exports = {
         data: {
             idx: 0,
@@ -61,6 +62,11 @@
         switchTab: function (e) {
             this.idx = e.index;
             this.$page.setTitleBar({text: this.pages[this.idx].title});
+            if (this.idx === 2) {
+                router.push({
+                    uri: "/Photo"
+                })
+            }
         }
     }
 </script>
