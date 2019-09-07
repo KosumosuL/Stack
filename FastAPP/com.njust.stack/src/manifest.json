@@ -40,9 +40,21 @@
   "router": {
     "entry": "Main",
     "pages": {
+      "Rank": {
+        "component": "index",
+        "path": "/Rank"
+      },
+      "Comments": {
+        "component": "index",
+        "path": "/Comments"
+      },
       "Photo": {
         "component": "index",
         "path": "/Photo"
+      },
+      "Search": {
+        "component": "index",
+        "path": "/Search"
       },
       "Community": {
         "component": "index",
@@ -57,7 +69,11 @@
   "display": {
     "titleBarBackgroundColor": "#ffffff",
     "pages": {
-      
+        "Search": { 
+        "titleBar": false,
+        "menu":false,
+        "titleBarBackgroundColor": "#ffffff"
+      }
     }
   }
 }

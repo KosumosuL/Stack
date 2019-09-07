@@ -1,0 +1,107 @@
+<import name='comment_list' src='./component/comment_list'></import>
+<import name='comment' src='./component/comment'></import>
+<template>
+  <!-- template里只能有一个根节点 -->
+  <div class="container">
+    <!-- <div class="component4"> -->
+      <comment_list comments="{{comments}}"></comment_list>
+    <!-- </div> -->
+    <comment userphoto="{{userphoto}}"></comment>
+  </div>
+</template>
+
+<style>
+  .container {
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    background-color: #ffffff;
+  }
+
+
+  .component4 {
+    /* margin-top: 0px; */
+  }
+
+</style>
+
+<script>
+  module.exports = {
+    data: {
+      // 推荐音频
+      comments: [
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+          'username': "吃出亮",
+          'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+          'username': "忽视黑天鹅",
+          'comment': "现象的外在机制",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+          'username': "拒绝主食？",
+          'comment': "真的能减肥吗",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+          'username': "吃出亮",
+          'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+          'username': "忽视黑天鹅",
+          'comment': "现象的外在机制",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+          'username': "拒绝主食？",
+          'comment': "真的能减肥吗",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+          'username': "吃出亮",
+          'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+          'username': "忽视黑天鹅",
+          'comment': "现象的外在机制",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+          'username': "拒绝主食？",
+          'comment': "真的能减肥吗",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+          'username': "吃出亮",
+          'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+          'username': "忽视黑天鹅",
+          'comment': "现象的外在机制",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+          'username': "拒绝主食？",
+          'comment': "真的能减肥吗",
+        }
+      ],
+      userphoto: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+    },
+    onInit() {
+      this.$page.setTitleBar({
+        //titlebar的状态，在manifest.json中display设置的
+        text: '评论',
+        textColor: '##1A1A1A',
+        backgroundColor: 'rgba(242,242,242,0.95)',
+        menu: true
+      });
+    }
+  }
+</script>

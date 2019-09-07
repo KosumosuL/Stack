@@ -1,0 +1,91 @@
+<import name='search_box' src='./component/search_box'></import>
+<import name='label_swiper' src='./component/label_swiper'></import>
+<import name='image_wall' src='./component/image_wall'></import>
+
+<template>
+  <!-- template里只能有一个根节点 -->
+  <div class="discover-container">
+    <!-- 搜索框 -->
+    <div class="search-box">
+      <search_box searchbar={{searchbar}}></search_box>
+    </div>
+    <!-- 专题推荐 -->
+    <div class="label-swiper">
+      <label_swiper list="{{labels}}"></label_swiper>
+    </div>
+    <!-- 为你推荐 -->
+    <div class="image-wall">
+      <image_wall list="{{imgs}}"></image_wall>
+    </div>
+  </div>
+</template>
+
+<style>
+  .discover-container {
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+  }
+
+  .search-box {
+    width: 683px;
+    margin: 17px 34px 17px 34px;
+  }
+
+  .label-swiper {
+    /* margin-top: 1px; */
+  }
+
+  .image-wall {
+    margin-top: 17px;
+  }
+</style>
+
+<script>
+  module.exports = {
+    props: [],
+    data: {
+      searchbar: "/Discover/img/search.png",
+      imgs:
+        [
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',},
+        ],
+      labels:
+        [
+          {name: 'People'},
+          {name: 'Sea'},
+          {name: 'Car'},
+          {name: 'Cat'},
+          {name: 'Sports'},
+          {name: 'Cloud'},
+          {name: 'Forest'},
+          {name: 'Sun'},
+        ]
+    },
+
+    onInit() {
+      this.$page.setTitleBar({
+        //titlebar的状态在manifest.json中display设置的
+        menu: false
+      });
+    },
+  }
+</script>

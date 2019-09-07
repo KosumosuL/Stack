@@ -28,7 +28,7 @@
       <a value="&ensp;"></a>
       <a class="black">{{postercomment}}</a>
     </text>
-    <text class="comment-number gray font-size-sm" onclick="comment">查看全部{{commentnumber}}则留言</text>
+    <text class="comment-number gray font-size-sm" onclick="clickToComments">查看全部{{commentnumber}}则留言</text>
   </div>
 </template>
 
@@ -117,6 +117,8 @@
 <script>
   import media from '@system.media'
   import prompt from '@system.prompt'
+  import router from '@system.router'
+
   module.exports = {
     props: [
         'swiperdata',
@@ -136,6 +138,9 @@
     },
     comment: function () {
       prompt.showToast({ message: 'comment', image: '/Common/logo.png' });
+    },
+    clickToComments() {
+        router.push({ uri: '/Comments' });
     },
     like: function () {
       this.liked = !this.liked;

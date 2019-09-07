@@ -1,0 +1,59 @@
+<template>
+
+	<div class="label-swiper-container">
+		<list class="label-swiper-list">
+			<block for="{{list}}">
+				<list-item type="prod" class="label-swiper-list-item">
+					<stack class="label-swiper-stack">
+						<a class="a_item">{{$item.name}}</a>
+					</stack>
+				</list-item>
+			</block>
+		</list>
+
+	</div>
+</template>
+
+<style>
+  .a_item {
+		display: flex;
+		justify-content: center; /* 水平居中 */
+		align-items: center;     /* 垂直居中 */
+    background-color: rgba(0, 0, 0, 0);
+    /* text-align: center; */
+    /* height: 100%; */
+    border-radius: 8.3px;
+		border-color: #c9c0c0;
+		border-width: 3px;
+    padding: 20px 20px;
+		/* font-size: 40px; */
+		font-size: 35px;
+    color: #000000;
+    lines: 1;
+  }
+
+	.label-swiper-container {
+		flex-direction: column;
+	}
+
+	.label-swiper-stack {
+		margin: 0px 8px 0px 8px;
+	}
+
+	.label-swiper-list {
+		flex-direction: row;
+		height: 67px;
+	}
+
+	.label-swiper-list-item {
+		flex-direction: column;
+	}
+</style>
+
+<script>
+	module.exports = {
+		onInit() {
+
+		}
+	}
+</script>

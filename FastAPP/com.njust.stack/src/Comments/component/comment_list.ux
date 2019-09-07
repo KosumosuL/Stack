@@ -1,0 +1,82 @@
+<template>
+	<div class="comment-container">
+		<block for={{comments}}>
+			<div class="content-list">
+				<div class="content-left">
+					<image class="icon" src={{$item.image}}></image>
+				</div>
+				<div class="content-right">
+					<text>
+						<a color="black" font-weight="bold">{{$item.username}}</a>
+						<span value="&ensp;"></span>
+						<span color="black">{{$item.comment}}</span>
+					</text>
+					<text color="gray" font-size="27px">1h</text>
+				</div>
+			</div>
+		</block>
+	</div>
+</template>
+
+<style>
+	.icon {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 44px;
+		/* considering */
+		border-color: #dc143c;
+		border-width: 4px;
+	}
+
+	.comment-container {
+		margin: 0px 34px;
+		flex-direction: column;
+	}
+
+	.content-list {
+		/* height: 153px; */
+		width: 100%;
+		margin-top: 20px;
+		/* align-items: center; */
+		/* border-bottom-color: #F2F2F2;
+		border-bottom-width: 1px; */
+	}
+
+	.content-left {
+		width: 88px;
+		height: 88px;
+		margin-right: 33px;
+		margin-top: 10px;
+		/* margin-bottom: 33px; */
+	}
+
+	.content-right {
+		width: 560px;
+		height: 100%;
+		flex-direction: column;
+		justify-content: center;
+	}
+</style>
+
+<script>
+	import router from '@system.router';
+
+	export default {
+		data: {
+			props: [
+				'userinfos',
+			]
+		},
+		// press(item) {
+		// 	console.error("on press event param : " + item);
+		// },
+
+		// routePage(url) {
+		// 	//跳转到应用内的某个页面
+		// 	router.push({
+		// 		uri: "/Page_Hearingdetail"
+		// 	})
+		// },
+	}
+</script>

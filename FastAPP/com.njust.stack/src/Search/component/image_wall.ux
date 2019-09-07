@@ -1,0 +1,55 @@
+<template>
+	<div class="image-wall-container">
+		<div class="image-wall-list">
+			<div for="{{list}}" class="image-wall-product" onclick="routePage()">
+				<image class="image-wall-image" src="{{$item.uri}}"></image>
+			</div>
+		</div>
+	</div>
+</template>
+
+<style>
+	.image-wall-container {
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.image-wall-list {
+		border-color: #0000ff;
+		flex-wrap: wrap;
+		/* margin-left: 25px; */
+		/* margin-right: 25px; */
+		/* margin-top: 0px; */
+	}
+
+	.image-wall-product {
+		flex-direction: column;
+		height: 250px;
+		width: 33.3%;
+	}
+
+	.image-wall-image {
+		object-fit: cover;
+		height: 100%;
+		width: 100%;
+		margin: 1px 1px 1px 1px;
+	}
+</style>
+
+<script>
+	import router from '@system.router';
+
+	export default {
+		data: {
+			props: [
+				'list'
+			],
+		},
+		routePage(url) {
+			//跳转到应用内的某个页面
+			// router.push({
+			// 	uri: "/Page_Bookdetails"
+			// })
+		},
+	}
+</script>

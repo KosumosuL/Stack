@@ -1,0 +1,376 @@
+<import name='user_list' src='./component/user_list'></import>
+<import name='image_wall' src='./component/image_wall'></import>
+<template>
+  <div class="container">
+    <div class="search_bar_container">
+      <!-- back  -->
+      <div class="image_search_back_div_search" onclick="back">
+        <image class="image_search_back" src="./img/search_back.png"></image>
+      </div>
+      <!-- close -->
+      <div class="search_close">
+        <div class="image_search_back_div" onclick="search">
+          <image class="image_search_result " src="./img/search.png"></image>
+        </div>
+        <input class="search" id="search" name="search" value="{{inputValue}}" placeholder="搜索书籍、作者" onchange="updateValue()"></input>
+        <div show="{{inputValue!=''}}" class="image_search_back_div" onclick="resetSearchValue">
+          <image class="image_search_result close_size" src="./img/search_close.png"></image>
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+    <!-- tab 部分开始 -->
+      <tabs onchange="onChangeTabIndex">
+        <tab-bar class="tab-bar" mode="scrollable">
+          <block for="tabs">
+            <div class="tab-item">
+              <text>{{$item}}</text>
+              <div class="{{$idx==currIndex? 'item_bg_active' : 'item_bg'}}"></div>
+            </div>
+          </block>
+        </tab-bar>
+        
+        <tab-content class="tab_content">
+          <block if="{{showPageType === 'searchBar'}}">
+            <!-- tabs的body部分 -->
+            <div class="div_tabcontent">
+                <user_list userinfos="{{userinfos}}"></user_list>
+            </div>
+            <div class="div_tabcontent">
+                <user_list userinfos="{{userinfos}}"></user_list>
+            </div>
+          </block>
+
+          <!-- 搜索结果页面展示区域 -->
+          <block if="{{showPageType ==='result'}}">   
+            <!-- tabs的body部分 -->
+            <div class="div_tabcontent">
+                <user_list userinfos="{{userinfos}}"></user_list>
+            </div>
+            <div class="div_tabcontent">
+                <user_list userinfos="{{userinfos}}"></user_list>
+            </div>
+          </block>           
+        </tab-content>
+      </tabs>
+
+    </div>
+  </div>
+</template>
+
+<style>
+  /* .container {
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+  } */
+
+  .container {
+    flex-direction: column;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: #FFFFFF;
+  }
+  .panel {
+    width: 100%;
+    height: 100%;
+    /* margin-left: 33px;
+    margin-right: 33px; */
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    background-color: #FFFFFF;
+  }
+  .item_bg {
+    width: 100%;
+    height: 2px;
+    background-color: transparent;
+  }
+
+  .item_bg_active {
+    width: 100%;
+    height: 2px;
+    background-color: black;
+  }
+
+  .div_tabcontent {
+    width: 100%;
+  }
+
+  .div_tabcontent text{
+    width:100%;
+    text-align: center;
+  }
+
+  .tab-bar {
+    width: 100%;
+    height: 90px;
+  }
+
+  .tab-item {
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+  }
+
+  .tab-item text {
+    opacity: 0.5;
+    margin-top: 27.5px;
+    margin-bottom: 27.5px;
+    font-size: 35px;
+  }
+
+  .tab-item text:active {
+    font-size: 35px;
+    margin-top: 27.5px;
+    margin-bottom: 27.5px;
+    font-weight: bold;
+    color: black;
+  }
+
+  .tab_content {
+    width: 100%;
+  }
+
+
+  .title {
+    font-size: 100px;
+  }
+
+  .search_bar_container {
+    align-items: center;
+    width: 696px;
+    height: 100px;
+    margin-left: 17px;
+    margin-right: 33px;
+  }
+
+  .search_close {
+    background-color: #f2f2f2;
+    align-items: center;
+    border-radius: 8px;
+    height: 64px;
+    width: 608px;
+  }
+
+  .search {
+    width: 440px;
+    height: 40px;
+    color: #1a1a1a;
+    font-size: 28px;
+    line-height: 40px;
+    margin-right: 33px;
+  }
+
+  .image_search_back_div_search {
+    width: 84px;
+    height: 100px;
+    align-items: center;
+    justify-content: center;
+
+  }
+
+  .image_search_back_div {
+    width: 84px;
+    height: 100px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .image_search_back {
+    width: 40px;
+    height: 40px;
+  }
+
+  .search_text {
+    color: #cd853f;
+    font-size: 30px;
+  }
+
+  .div_image {
+    width: 60px;
+    height: 60px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .div_allsearch {
+    border-radius: 5px;
+    flex-direction: column;
+  }
+
+  .change_search {
+    width: 684px;
+    height: 30px;
+    margin-top: 41px;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .spare_bar {
+    width: 684px;
+    height: 16px;
+  }
+
+  .a_change_search {
+    font-size: 27.1px;
+    color: #CD2325;
+    height: 34px;
+    line-height: 34px;
+    padding-left: 10px;
+    text-align: center;
+  }
+
+  .all_find {
+    font-size: 31px;
+    color: #1a1a1a;
+    height: 34px;
+    line-height: 34px;
+  }
+
+  .change_content {
+    width: 682px;
+    flex-wrap: wrap;
+  }
+
+  .a_item {
+    background-color: rgba(0, 0, 0, 0.05);
+    text-align: center;
+    height: 50px;
+    border-radius: 8.3px;
+    line-height: 50px;
+    padding: 10px 20px;
+    margin: 17px 17px 0 0;
+    font-size: 25px;
+    color: #000000;
+    lines: 1;
+  }
+
+  .image_search_result {
+    width: 33px;
+    height: 33px;
+    margin-left: 17px;
+    margin-right: 17px;
+  }
+
+
+  .margin_left {
+    margin-left: 40px;
+  }
+
+  .hight_light_item {
+    width: 700px;
+    height: 120px;
+    align-items: center;
+  }
+
+  .close_size {
+    width: 30px;
+    height: 30px;
+  }
+
+</style>
+
+<script>
+  import router from '@system.router';
+
+  export default {
+    data: {
+      // key: "",
+      inputValue: "",
+      showPageType: "searchBar",
+      isAutoClick: true,
+      tabs: ["ACCOUNTS", "LABELS"],
+      currIndex: 0,
+      imgs:[
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
+          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
+        ],
+      userinfos: [
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+          'username': "吃出漂亮：健康白领的女人都喜欢的美丽食品",
+          'name': "./img/time.png",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+          'username': "忽视黑天鹅现象的外在机制",
+          'name': "./img/time.png",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+          'username': "拒绝主食真的能减肥吗？",
+          'name': "./img/time.png",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+          'username': "吃出漂亮：健康白领的女人都喜欢的美丽食品",
+          'name': "./img/time.png",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+          'username': "忽视黑天鹅现象的外在机制",
+          'name': "./img/time.png",
+        },
+        {
+          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+          'username': "拒绝主食真的能减肥吗？",
+          'name': "./img/time.png",
+        }
+      ]
+    },
+    onInit: function () {
+      //titlebar的状态，在manifest.json中display设置的
+      this.$page.setTitleBar({
+        menu: false
+      });
+      },
+  
+    find() {
+      if (this.inputValue === null || this.inputValue === undefined || this.inputValue === "") {
+        return;
+      }
+      //增加历史搜索记录
+      // this.addHistory();
+      // use the search api
+    },
+    search() {
+      if (this.inputValue === null || this.inputValue === undefined || this.inputValue === "") {
+        return;
+      }
+      this.showPageType = "result";
+      this.find();
+    },
+    updateValue(e) {
+      this.inputValue = e.text;
+      if (this.inputValue !== "" && this.inputValue !== undefined && this.inputValue !== null) {
+        if (this.isAutoClick) {
+          this.showPageType = "result";
+          this.find();
+        }
+      }
+    },
+    // setInputValue(text) {
+    //   this.inputValue = text || "请输入搜索词汇";
+    // },
+    back() {
+      router.back();
+    },
+    resetSearchValue() {
+      this.showPageType = "searchBar";
+      this.inputValue = "";
+    },
+    onChangeTabIndex(evt) {
+      this.currIndex = evt.index;
+    }
+  }
+</script>

@@ -1,0 +1,88 @@
+<template>
+	<div class="user-container">
+		<block for={{userinfos}}>
+			<div class="content-list">
+				<div class="content-left">
+					<image class="icon" src={{$item.image}}></image>
+				</div>
+				<div class="content-right">
+					<a class="username">{{$item.username}}</a>
+					<a class="name">{{$item.name}}</a>
+				</div>
+			</div>
+		</block>
+	</div>
+</template>
+
+<style>
+	.username {
+		color: black;
+		font-weight: bold;
+		lines: 1;
+		text-overflow: ellipsis;
+	}
+
+	.name {
+		color: gray;
+		lines: 1;
+		text-overflow: ellipsis;
+	}
+
+	.icon {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		border-radius: 62px;
+		/* considering */
+		border-color: #dc143c;
+		border-width: 4px;
+	}
+
+	.user-container {
+		margin: 0px 34px;
+		flex-direction: column;
+	}
+
+	.content-list {
+		height: 153px;
+		width: 100%;
+		align-items: center;
+	}
+
+	.content-left {
+		width: 124px;
+		height: 124px;
+		margin-right: 33px;
+	}
+
+	.content-right {
+		width: 560px;
+		height: 100%;
+		flex-direction: column;
+		border-bottom-color: #F2F2F2;
+		border-bottom-width: 1px;
+		justify-content: center;
+	}
+</style>
+
+<script>
+	import router from '@system.router';
+
+	export default {
+		data: {
+			props: [
+				'userinfos',
+			]
+		},
+		press(item) {
+			console.error("on press event param : " + item);
+		},
+
+		routePage(url) {
+			//跳转到应用内的某个页面
+			// router.push({
+			// 	uri: "/Page_Hearingdetail"
+			// })
+		},
+	}
+</script>
