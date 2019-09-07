@@ -1,8 +1,8 @@
 {
   "package": "com.njust.stack",
   "name": "Stack",
-  "versionName": "1.0.3",
-  "versionCode": 4,
+  "versionName": "1.0.4",
+  "versionCode": 5,
   "icon": "/Common/logo.png",
   "minPlatformVersion": 1040,
   "features": [
@@ -40,39 +40,50 @@
   "router": {
     "entry": "Main",
     "pages": {
-      "Rank": {
-        "component": "index",
-        "path": "/Rank"
-      },
       "Comments": {
         "component": "index",
         "path": "/Comments"
       },
-      "Photo": {
-        "component": "index",
-        "path": "/Photo"
-      },
-      "Search": {
-        "component": "index",
-        "path": "/Search"
-      },
       "Community": {
         "component": "index",
         "path": "/Community"
+      },      
+      "Detail": {
+        "component": "index",
+        "path": "/Detail"
+      },     
+      "Discover": {
+        "component": "index",
+        "path": "/Discover"
+      },
+      "FollowInfo": {
+        "component": "index",
+        "path": "/FollowInfo"
       },
       "Main": {
         "component": "index",
         "path": "/Main"
+      }   ,  
+      "Photo": {
+        "component": "index",
+        "path": "/Photo"
+      },
+      "Rank": {
+        "component": "index",
+        "path": "/Rank"
+      },      
+      "Search": {
+        "component": "index",
+        "path": "/Search"
       }
     }
   },
   "display": {
     "titleBarBackgroundColor": "#ffffff",
+    "titleBarTextColor": "#000000",
     "pages": {
-        "Search": { 
-        "titleBar": false,
-        "menu":false,
-        "titleBarBackgroundColor": "#ffffff"
+      "Comments": {
+        "titleBarText": "评论"
       }
     }
   }

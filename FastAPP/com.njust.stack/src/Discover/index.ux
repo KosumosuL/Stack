@@ -10,9 +10,9 @@
       <search_box searchbar={{searchbar}}></search_box>
     </div>
     <!-- 专题推荐 -->
-    <div class="label-swiper">
+    <!-- <div class="label-swiper">
       <label_swiper list="{{labels}}"></label_swiper>
-    </div>
+    </div> -->
     <!-- 为你推荐 -->
     <div class="image-wall">
       <image_wall list="{{imgs}}"></image_wall>

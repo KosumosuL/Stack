@@ -8,19 +8,77 @@
 				<div class="content-down">
 					<div class="content-left">
 						<image class="icon" src={{$item.postericon}}></image>
+						<div class="content-mid">
+							<a class="username">{{$item.username}}</a>
+							<a class="name">{{$item.name}}</a>
+						</div>						
 					</div>
 					<div class="content-right">
-						<a class="username">{{$item.username}}</a>
-						<a class="name">{{$item.name}}</a>
+						<a class="likedata">{{$item.likedata}}个赞</a>
+						<image src="{{$item.liked===true?'/Rank/img/like.png':'/Rank/img/dislike.png'}}" class="btn" onclick="like"></image>
 					</div>
 				</div>
-
 			</div>
 		</block>
 	</div>
 </template>
 
 <style>
+
+
+	.rank-container {
+		flex-direction: column;
+	}
+
+	.content-list {
+		width: 100%;
+		align-items: center;
+		flex-direction: column;
+	}
+
+	.content-up {
+    height: 684px;
+    width: 100%;
+    indicator-color: rgba(0,0,0,0.2);
+    indicator-selected-color: #ffffff;
+	}
+
+  .image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+	}
+	
+	.content-down {
+		height: 114px;
+		width: 100%;
+		margin-left: 10px;
+		margin-right: 10px;
+		justify-content: space-between;
+	}
+
+	.content-left {
+	}
+
+	.icon {
+		width: 80px;
+		height: 80px;
+		object-fit: cover;
+		border-radius: 40px;
+		/* considering */
+		border-color: #dc143c;
+		border-width: 3px;
+		margin: 17px 17px 17px 17px;
+	}
+
+	.content-mid {
+		height: 100%;
+		flex-direction: column;
+		border-bottom-color: #F2F2F2;
+		border-bottom-width: 1px;
+		justify-content: center;
+	}
+
 	.username {
 		color: black;
 		font-weight: bold;
@@ -34,62 +92,26 @@
 		text-overflow: ellipsis;
 	}
 
-	.icon {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-		border-radius: 62px;
-		/* considering */
-		border-color: #dc143c;
-		border-width: 4px;
-	}
-
-	.rank-container {
-		/* margin: 0px 34px; */
-		flex-direction: column;
-	}
-
-	.content-list {
-		/* height: 153px; */
-		width: 100%;
-		align-items: center;
-		flex-direction: column;
-	}
-
-	.content-up {
-    height: 484px;
-    width: 100%;
-    indicator-color: rgba(0,0,0,0.2);
-    indicator-selected-color: #ffffff;
-	}
-
-  .image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-	.content-down {
-		height: 153px;
-	}
-	.content-left {
-		width: 124px;
-		height: 124px;
-		margin-right: 33px;
-	}
-
 	.content-right {
-		width: 560px;
-		height: 100%;
-		flex-direction: column;
-		border-bottom-color: #F2F2F2;
-		border-bottom-width: 1px;
-		justify-content: center;
+		justify-content: flex-end;
 	}
+
+	.likedata {
+		color: black;
+	}
+
+  .btn {
+    width: 64px;
+		height: 64px;
+		margin: 25px 25px 25px 25px;
+    object-fit: contain;
+	}	
 </style>
 
 <script>
 	import router from '@system.router';
-
+  import prompt from '@system.prompt'
+	
 	export default {
 		data: {
 			props: [
@@ -99,7 +121,10 @@
 		press(item) {
 			console.error("on press event param : " + item);
 		},
-
+    like: function () {
+      this.liked = !this.liked;
+      prompt.showToast({ message: this.liked === true ? 'like' : 'dislike', image: '/Common/logo.png' });
+    },
 		routePage(url) {
 			//跳转到应用内的某个页面
 			// router.push({

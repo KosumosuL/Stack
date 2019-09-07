@@ -1,41 +1,25 @@
 <import name='component-post' src='./component/component-post.ux'></import>
 
 <template>
-  <!-- template里只能有一个根节点 -->
-  <div class="container">
-    <refresh offset="130px" refreshing={{isRefreshing}} onrefresh="refresh" type="overscroll" class="refresh">
-      <list onscrollbottom="scrollBottom" class="list">
-        <!-- 列表元素，属性type值相同时，需要确保渲染后的视图布局也完全相同，用show代替if，确保布局视图不变 -->
-        <list-item for={{postData}} type="listItem{{$idx}}">
-          <component-post swiperdata={{$item.swiperdata}} likedata={{$item.likedata}} poster={{$item.poster}} postericon={{$item.postericon}} postercomment={{$item.postercomment}} commentnumber={{$item.commentnumber}} posttime={{$item.posttime}} liked={{$item.liked}}></component-post>
-        </list-item>
-        <!-- 加载更多 -->
-        <list-item type="loadMore" show={{isLoading}}>
-          <div class="loadMore">
-            <progress type="circular" class="circular-progress"></progress>
-            <text class="loadMoreText">加载更多</text>  
-          </div>
-        </list-item>
-      </list>
-    </refresh>
-  </div>
+  <refresh offset="130px" refreshing={{isRefreshing}} onrefresh="refresh" class="refresh">
+    <list onscrollbottom="scrollBottom">
+      <list-item for={{postData}} type="listItem{{$idx}}">
+        <component-post swiperdata={{$item.swiperdata}} likedata={{$item.likedata}} poster={{$item.poster}} postericon={{$item.postericon}} postercomment={{$item.postercomment}} commentnumber={{$item.commentnumber}} posttime={{$item.posttime}} liked={{$item.liked}}></component-post>
+      </list-item>
+      <list-item type="loadMore" show={{isLoading}}>
+        <div class="loadMore">
+          <progress type="circular" class="circular-progress"></progress>
+          <text class="font-size-lg">加载更多</text>  
+        </div>
+      </list-item>
+    </list>
+  </refresh>  
 </template>
 
 <style>
-  .container {
-    flex-direction: column;
-    justify-content: center;
-    align-content: center;
-    align-items: center;
-    background-color: #ffffff;
-  }
   .refresh {
     background-color: #ffffff;
     progress-color: #0faeff;
-    flex-direction: column;
-  }
-  .list {
-    width: 100%;
   }
   .loadMore {
     width: 100%;
@@ -46,7 +30,7 @@
     width: 96px;
     height: 96px;
   }
-  .loadMoreText {
+  .font-size-lg {
     font-size: 37px;
   }
 </style>
@@ -97,14 +81,6 @@
             liked: true
           }
         ]
-    },
-    onInit() {
-      this.$page.setTitleBar({
-        //titlebar的状态，在manifest.json中display设置的
-        textColor: 'black',
-        text: 'Stack社区',
-        menu: true
-      });
     },
     refreshPost: function (that) {
       return function (data) {

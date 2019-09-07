@@ -76,38 +76,38 @@ def init_api(app):
     ###########################################
     # for each user, get all posts
     # check auth(phonenum) firstly
-    # @app.route('/post/get_posts', methods=['POST'])
-    # def get_posts():
-    #     data = {}
-    #     phonenum = request.form.get('phonenum')
-    #     try:
-    #         schema(
-    #             {
-    #                 "phonenum": phonenum
-    #             }
-    #         )
-    #         conforms_to_schema = True
-    #     except MultipleInvalid as e:
-    #         data['status'] = 400
-    #         conforms_to_schema = False
-    #         if "expected" in e.msg:
-    #             data['message'] = e.path[0] + " is not in the correct format"
-    #         else:
-    #             data['message'] = e.msg + " for " + e.path[0]
-    #
-    #     if conforms_to_schema:
-    #         try:
-    #             posts = Post.getbyuser(Post, phonenum=phonenum)
-    #             res = list()
-    #             for post in posts:
-    #                 res.append(Post.out(Post, post))
-    #             data['message'] = res
-    #             data['status'] = 200
-    #         except Exception as e:
-    #             data['status'] = 406
-    #             data['message'] = str(e)
-    #
-    #     return jsonify(data)
+    @app.route('/post/get_posts', methods=['POST'])
+    def get_posts():
+        data = {}
+        phonenum = request.form.get('phonenum')
+        try:
+            schema(
+                {
+                    "phonenum": phonenum
+                }
+            )
+            conforms_to_schema = True
+        except MultipleInvalid as e:
+            data['status'] = 400
+            conforms_to_schema = False
+            if "expected" in e.msg:
+                data['message'] = e.path[0] + " is not in the correct format"
+            else:
+                data['message'] = e.msg + " for " + e.path[0]
+
+        if conforms_to_schema:
+            try:
+                posts = Post.getbyuser(Post, phonenum=phonenum)
+                res = list()
+                for post in posts:
+                    res.append(Post.out(Post, post))
+                data['message'] = res
+                data['status'] = 200
+            except Exception as e:
+                data['status'] = 406
+                data['message'] = str(e)
+
+        return jsonify(data)
 
     # (aes_score-50)+likes*0.005
     # to ensure the balance between about 10k likes and high score
