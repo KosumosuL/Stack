@@ -1,0 +1,44 @@
+<import name='user_card' src='./component/user_card'></import>
+
+<template>
+  <!-- template里只能有一个根节点 -->
+  <div class="container">
+    <user_card userinfos="{{userinfos}}"></user_card>
+  </div>
+</template>
+
+<style>
+  .container {
+    flex-direction: column;
+    /* align-content: center;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: #FFFFFF; */
+  }
+
+
+</style>
+
+<script>
+
+  export default {
+    data: {
+      userinfos:{
+          username: 'lucaszhao',
+          name: 'liangzhao',
+          postericon: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+          email: 'hubukizhao@gmail.com',
+          gender: 'male',
+          bio: 'nothing.',
+          // bio: '鹦鹉来过吴江水，江上洲传鹦鹉名。鹦鹉西飞陇山去，芳洲之树何青青。烟开兰叶香风暖，岸夹桃花锦浪生。迁客此时徒极目，长洲孤月向谁明。',
+          followers: '1k',
+          following: '200',
+          posts: '59'
+        }
+    },
+    onInit() {
+      //TODO初始化 data中的数据
+      // this.$page.setTitleBar({text: '新闻',textColor: '#1A1A1A'});
+    }
+  }
+</script>

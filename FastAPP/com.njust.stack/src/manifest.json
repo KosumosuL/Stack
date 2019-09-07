@@ -64,6 +64,10 @@
         "component": "index",
         "path": "/Main"
       },
+      "Mine": {
+        "component": "index",
+        "path": "/Mine"
+      },
       "Photo": {
         "component": "index",
         "path": "/Photo"
@@ -84,6 +88,11 @@
     "pages": {
       "Comments": {
         "titleBarText": "评论"
+      },
+      "Search": {
+        "titleBar": false,
+        "menu": false,
+        "titleBarBackgroundColor": "#ffffff"
       }
     }
   }

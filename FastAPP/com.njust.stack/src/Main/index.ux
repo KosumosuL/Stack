@@ -2,6 +2,7 @@
 <import name='discover' src='../Discover/index'></import>
 <!-- <import name='photo' src='../Photo/index'></import> -->
 <import name='rank' src='../Rank/index'></import>
+<import name='mine' src='../Mine/index'></import>
 
 <template>
   <!-- template里只能有一个根节点 -->
@@ -12,7 +13,7 @@
             <discover></discover>
             <image src="/Common/logo.png" />
             <rank></rank>
-            <community></community>
+            <mine></mine>
         </tab-content>
         <tab-bar>
             <div class="tab-bar-item" for={{pages}}>
