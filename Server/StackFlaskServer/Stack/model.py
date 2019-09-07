@@ -64,6 +64,7 @@ class User(db.Model):
         return {
             'phonenum': user.phonenum,
             'photo': user.photo,
+            'name': user.name,
             'username': user.username
         }
 

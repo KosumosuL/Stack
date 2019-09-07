@@ -118,7 +118,6 @@
   import media from '@system.media'
   import prompt from '@system.prompt'
   import router from '@system.router'
-
   module.exports = {
     props: [
         'swiperdata',

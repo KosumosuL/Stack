@@ -1,52 +1,15 @@
 <import name='component-post' src='./component/component-post.ux'></import>
 
 <template>
-  <!-- template里只能有一个根节点 -->
-  <div class="container">
-    <refresh offset="130px" refreshing={{isRefreshing}} onrefresh="refresh" type="overscroll" class="refresh">
-      <list onscrollbottom="scrollBottom" class="list">
-        <!-- 列表元素，属性type值相同时，需要确保渲染后的视图布局也完全相同，用show代替if，确保布局视图不变 -->
-        <list-item for={{postData}} type="listItem{{$idx}}">
-          <component-post swiperdata={{$item.swiperdata}} likedata={{$item.likedata}} poster={{$item.poster}} postericon={{$item.postericon}} postercomment={{$item.postercomment}} commentnumber={{$item.commentnumber}} posttime={{$item.posttime}} liked={{$item.liked}}></component-post>
-        </list-item>
-        <!-- 加载更多 -->
-        <list-item type="loadMore" show={{isLoading}}>
-          <div class="loadMore">
-            <progress type="circular" class="circular-progress"></progress>
-            <text class="loadMoreText">加载更多</text>  
-          </div>
-        </list-item>
-      </list>
-    </refresh>
-  </div>
+  <component-post swiperdata="{{postData.swiperdata}}" likedata="{{postData.likedata}}" poster="{{postData.poster}}" postericon="{{postData.postericon}}" postercomment="{{postData.postercomment}}" commentnumber="{{postData.commentnumber}}" posttime="{{postData.posttime}}" liked="{{postData.liked}}"></component-post>
 </template>
 
 <style>
-  .container {
-    flex-direction: column;
-    justify-content: center;
-    align-content: center;
-    align-items: center;
-    background-color: #ffffff;
-  }
-  .refresh {
-    background-color: #ffffff;
-    progress-color: #0faeff;
-    flex-direction: column;
-  }
-  .list {
-    width: 100%;
-  }
-  .loadMore {
-    width: 100%;
-    margin-bottom: 50px;
-    justify-content: center;
-  }
   .circular-progress {
     width: 96px;
     height: 96px;
   }
-  .loadMoreText {
+  .font-size-lg {
     font-size: 37px;
   }
 </style>
@@ -58,9 +21,7 @@
     data: {
       isRefreshing: false,
       isLoading: false,
-      postData:
-        [
-          {
+      postData:{
             swiperdata:
               [
                 { src: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png" },
@@ -81,43 +42,6 @@
             postericon: "/Common/logo.png",
             posttime: "2019-9-4 15:52:00",
             liked: false
-          },
-          {
-            swiperdata:
-              [
-                { src: "/Community/img/08.jpg" },
-                { src: "/Community/img/09.jpg" }
-              ],
-            likedata: "1,234,567",
-            poster: 'nike',
-            postercomment: "Just do it.",
-            commentnumber: "7",
-            postericon: "/Common/logo.png",
-            posttime: "2019-9-4 20:30:00",
-            liked: true
-          }
-        ]
-    },
-    onInit() {
-      this.$page.setTitleBar({
-        //titlebar的状态，在manifest.json中display设置的
-        textColor: 'black',
-        text: 'Stack社区',
-        menu: true
-      });
-    },
-    refreshPost: function (that) {
-      return function (data) {
-        that.postData = data.data.message.map(that.mapPost);
-        that.isRefreshing = false;
-        clearTimeout(that.timeout);
-      }
-    },
-    loadMorePost: function (that) {
-      return function (data) {
-        that.postData = that.postData.concat(data.data.message.map(that.mapPost));
-        that.isLoading = false;
-        clearTimeout(that.timeout);
       }
     },
     showError: function (that) {
@@ -146,20 +70,6 @@
           }
         });  
       })
-    },
-    refresh: function (e) {
-      var that = this;
-      this.isRefreshing = e.refreshing;
-      var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":"18260071011", "time":"2019-09-01 15:24:07"});
-      this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
-      promise.then(this.refreshPost(this), this.showError(this));
-    },
-    scrollBottom: function () {
-      var that = this;
-      this.isLoading = true;
-      var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":"18260071011", "time":"2019-09-01 15:24:07"});
-      this.timeout = setTimeout(function () { that.isLoading = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
-      promise.then(this.loadMorePost(this), this.showError(this));
     },
     mapPost: function (item) {
       return {
