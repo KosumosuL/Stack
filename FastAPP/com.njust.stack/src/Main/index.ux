@@ -1,22 +1,66 @@
-<import name='maintab' src='./component/fixed-maintab.ux'></import>
+<import name='community' src='../Community/index'></import>
+<import name='discover' src='../Discover/index'></import>
+<import name='photo' src='../Photo/index'></import>
+<import name='rank' src='../Rank/index'></import>
+
 <template>
   <!-- template里只能有一个根节点 -->
-  <maintab datas={{datas}}></maintab>
+  <div class="container">
+    <tabs onchange="switchTab" index={{idx}}>
+        <tab-content>
+            <community></community>
+            <discover></discover>
+            <photo></photo>
+            <rank></rank>
+            <community></community>
+        </tab-content>
+        <tab-bar>
+            <div class="tab-bar-item" for={{pages}}>
+                <image class="icon" src="{{$idx===idx?$item.icon_choice:$item.icon}}" />
+            </div>
+        </tab-bar>
+    </tabs>
+  </div>
 </template>
 
 <style>
+    .container {
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        background-color: #ffffff;
+    }
+	.tab-bar-item {
+        background-color: #f2f2f2;
+		flex-direction: column;
+		align-items: center;
+		padding-top: 25px;
+		width: 200px;
+		height: 100px;
+	}
+	.icon {
+		width: 48px;
+		height: 48px;
+		object-fit: contain;
+	}
 </style>
 
 <script>
-module.exports = {
-    data: {
-        datas: [
-            { idx: 0, icon: './img/community.png', icon_choice: './img/selected-community.png', show: true, title: 'Stack社区'},
-            { idx: 1, icon: './img/search.png', icon_choice: './img/selected-search.png', show: false, title: '发现'},
-            { idx: 2, icon: './img/new.png', icon_choice: './img/selected-new.png', show: false, title: '新增'},
-            { idx: 3, icon: './img/rank.png', icon_choice: './img/selected-rank.png', show: false, title: '排行榜'},
-            { idx: 4, icon: './img/mine.png', icon_choice: './img/selected-mine.png', show: false, title: '个人'}
-        ]
+    module.exports = {
+        data: {
+            idx: 0,
+            pages: [
+                { icon: './img/community.png', icon_choice: './img/selected-community.png', title: 'Stack社区'},
+                { icon: './img/discover.png', icon_choice: './img/selected-discover.png', title: '发现'},
+                { icon: './img/new.png', icon_choice: './img/selected-new.png', title: '发布'},
+                { icon: './img/rank.png', icon_choice: './img/selected-rank.png', title: '排行榜'},
+                { icon: './img/mine.png', icon_choice: './img/selected-mine.png', title: '个人'}
+            ]
+        },
+        switchTab: function (e) {
+            this.idx = e.index;
+            this.$page.setTitleBar({text: this.pages[this.idx].title});
+        }
     }
-}
 </script>
