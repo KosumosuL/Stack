@@ -1,14 +1,14 @@
 <template>
 	<div class="rank-container">
 		<div class="content-list">
-			<div class="content-up">
+			<div class="content-up" onclick="clickToPostDetail(pid)">
 				<image class="image" src={{url}}></image>
 			</div>
 			<div class="content-down">
-				<div class="content-left">
+				<div class="content-left" onclick="clickToUserDetail(phonenum)">
 					<image class="icon" src={{postericon}}></image>
 					<div class="content-mid">
-						<a class="username">{{username}}</a>
+						<a class="username" >{{username}}</a>
 						<a class="name">{{name}}</a>
 					</div>						
 				</div>
@@ -123,11 +123,17 @@
       this.liked = !this.liked;
       prompt.showToast({ message: this.liked === true ? 'like' : 'dislike', image: '/Common/logo.png' });
     },
-		routePage(url) {
-			//跳转到应用内的某个页面
-			// router.push({
-			// 	uri: "/Page_Hearingdetail"
-			// })
+		clickToUserDetail(pn) {
+			router.push({
+				uri: "/UserDetail",
+				params: {phonenum: pn}
+			})
+		},
+		clickToPostDetail(pid) {
+			router.push({
+				uri: "/PostDetail",
+				params: {pid: pid}
+			})
 		},
 	}
 </script>

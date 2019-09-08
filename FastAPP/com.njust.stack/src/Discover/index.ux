@@ -14,9 +14,16 @@
       <label_swiper list="{{labels}}"></label_swiper>
     </div> -->
     <!-- 为你推荐 -->
-    <div class="image-wall">
+    <refresh offset="130px" refreshing={{isRefreshing}} class="refresh">
+      <div class="image-wall">
+        <!-- <list-item for={{imgs}} type="listItem{{$idx}}"> -->
+          <image_wall list="{{imgs}}"></image_wall>
+        <!-- </list-item> -->
+      </div>
+    </refresh>  
+    <!-- <div class="image-wall">
       <image_wall list="{{imgs}}"></image_wall>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -43,30 +50,32 @@
 </style>
 
 <script>
+  import fetch from '@system.fetch'
+  import prompt from '@system.prompt'
   module.exports = {
     props: [],
     data: {
       searchbar: "/Discover/img/search.png",
       imgs:
         [
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',},
+          // {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',},
         ],
       labels:
         [
@@ -81,11 +90,48 @@
         ]
     },
 
+    getImages: function (that) {
+      return function (data) {
+        that.imgs = data.data.message.map(that.mapPost);
+        clearTimeout(that.timeout);
+      }
+    },
+    showError: function (that) {
+      return function (errcode, errmsg) {
+        console.log(errcode + ' ' + errmsg);
+        prompt.showToast({ message: "请求错误", image: '/Common/logo.png' });
+        clearTimeout(that.timeout);
+      }
+    },
+    post: function (url, data) {
+      return new Promise((resolve, reject) => {
+        fetch.fetch({
+          url: url,
+          data: data,
+          responseType: 'json',
+          method: 'post',
+          success: function (data) {
+            console.log("post success");
+            resolve(data);
+          },
+          fail: function (errmsg, errcode) {
+            console.log("post fail");
+            reject(errcode, errmsg);
+          }
+        });  
+      })
+    },
+    mapPost: function (item) {
+      console.log(item.url);
+      return {
+        url: item.url,
+        pid: item.pid
+      }
+    },
     onInit() {
-      this.$page.setTitleBar({
-        //titlebar的状态在manifest.json中display设置的
-        menu: false
-      });
+      var promise = this.post("http://114.116.248.233:12345/recommend/recommend_images", {"phonenum":"18260071012"});
+      this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.getImages(this), this.showError(this));
     },
   }
 </script>

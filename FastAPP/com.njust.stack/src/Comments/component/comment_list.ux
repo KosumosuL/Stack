@@ -1,20 +1,20 @@
 <template>
 	<div class="comment-container">
-		<block for={{comments}}>
+		<!-- <block for={{comments}}> -->
 			<div class="content-list">
-				<div class="content-left">
-					<image class="icon" src={{$item.image}}></image>
+				<div class="content-left" onclick="clickToUserDetail(phonenum)">
+					<image class="icon" src={{image}}></image>
 				</div>
 				<div class="content-right">
 					<text>
-						<a color="black" font-weight="bold">{{$item.username}}</a>
+						<a color="black" font-weight="bold" onclick="clickToUserDetail(phonenum)">{{username}}</a>
 						<span value="&ensp;"></span>
-						<span color="black">{{$item.comment}}</span>
+						<span color="black">{{comment}}</span>
 					</text>
-					<text color="gray" font-size="27px">1h</text>
+					<text color="gray" font-size="27px">{{time}}</text>
 				</div>
 			</div>
-		</block>
+		<!-- </block> -->
 	</div>
 </template>
 
@@ -68,15 +68,11 @@
 				'userinfos',
 			]
 		},
-		// press(item) {
-		// 	console.error("on press event param : " + item);
-		// },
-
-		// routePage(url) {
-		// 	//跳转到应用内的某个页面
-		// 	router.push({
-		// 		uri: "/Page_Hearingdetail"
-		// 	})
-		// },
+		clickToUserDetail(pn) {
+			router.push({
+				uri: "/UserDetail",
+				params: {phonenum: pn}
+			})
+		},
 	}
 </script>

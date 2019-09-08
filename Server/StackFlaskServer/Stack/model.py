@@ -159,6 +159,14 @@ class Image(db.Model):
             .limit(RANK_LIMIT)\
             .all()
 
+    def get_recommended(self):
+        from Stack.config import RECOMMEND_LIMIT
+        return self.query\
+            .filter(self.weight > 10)\
+            .limit(RECOMMEND_LIMIT)\
+            .all()
+
+
     def add(self, image):
         db.session.add(image)
         return session_commit()

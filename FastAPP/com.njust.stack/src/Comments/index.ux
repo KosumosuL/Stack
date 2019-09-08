@@ -3,9 +3,14 @@
 <template>
   <!-- template里只能有一个根节点 -->
   <div class="container">
-    <!-- <div class="component4"> -->
-      <comment_list comments="{{comments}}"></comment_list>
-    <!-- </div> -->
+    <refresh offset="130px" refreshing={{isRefreshing}} onrefresh="refresh" class="refresh">
+      <list>
+        <list-item for={{comments}} type="listItem{{$idx}}">
+          <comment_list image={{$item.image}} username={{$item.username}} phonenum={{$item.phonenum}} comment={{$item.comment}} time={{$item.time}}></comment_list>
+        </list-item>
+      </list>
+    </refresh>
+    <!-- <comment_list comments="{{comments}}"></comment_list> -->
     <comment userphoto="{{userphoto}}"></comment>
   </div>
 </template>
@@ -19,89 +24,139 @@
     background-color: #ffffff;
   }
 
-
-  .component4 {
-    /* margin-top: 0px; */
+  .refresh {
+    /* height: 100%; */
+    background-color: #ffffff;
+    progress-color: #0faeff;
   }
 
 </style>
 
 <script>
+  import fetch from '@system.fetch'
+  import prompt from '@system.prompt'
   module.exports = {
     data: {
-      // 推荐音频
+      isRefreshing: false,
+      pid: '',
       comments: [
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-          'username': "吃出亮",
-          'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-          'username': "忽视黑天鹅",
-          'comment': "现象的外在机制",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-          'username': "拒绝主食？",
-          'comment': "真的能减肥吗",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-          'username': "吃出亮",
-          'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-          'username': "忽视黑天鹅",
-          'comment': "现象的外在机制",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-          'username': "拒绝主食？",
-          'comment': "真的能减肥吗",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-          'username': "吃出亮",
-          'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-          'username': "忽视黑天鹅",
-          'comment': "现象的外在机制",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-          'username': "拒绝主食？",
-          'comment': "真的能减肥吗",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-          'username': "吃出亮",
-          'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-          'username': "忽视黑天鹅",
-          'comment': "现象的外在机制",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-          'username': "拒绝主食？",
-          'comment': "真的能减肥吗",
-        }
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+        //   'username': "吃出亮",
+        //   'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+        //   'username': "忽视黑天鹅",
+        //   'comment': "现象的外在机制",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+        //   'username': "拒绝主食？",
+        //   'comment': "真的能减肥吗",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+        //   'username': "吃出亮",
+        //   'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+        //   'username': "忽视黑天鹅",
+        //   'comment': "现象的外在机制",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+        //   'username': "拒绝主食？",
+        //   'comment': "真的能减肥吗",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+        //   'username': "吃出亮",
+        //   'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+        //   'username': "忽视黑天鹅",
+        //   'comment': "现象的外在机制",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+        //   'username': "拒绝主食？",
+        //   'comment': "真的能减肥吗",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+        //   'username': "吃出亮",
+        //   'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+        //   'username': "忽视黑天鹅",
+        //   'comment': "现象的外在机制",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+        //   'username': "拒绝主食？",
+        //   'comment': "真的能减肥吗",
+        // }
       ],
       userphoto: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
     },
-    onInit() {
-      this.$page.setTitleBar({
-        //titlebar的状态，在manifest.json中display设置的
-        text: '评论',
-        textColor: '##1A1A1A',
-        backgroundColor: 'rgba(242,242,242,0.95)',
-        menu: true
-      });
+
+    refreshComment: function (that) {
+      return function (data) {
+        that.comments = data.data.message.map(that.mapPost);
+        that.isRefreshing = false;
+        clearTimeout(that.timeout);
+      }
+    },
+    showError: function (that) {
+      return function (errcode, errmsg) {
+        console.log(errcode + ' ' + errmsg);
+        prompt.showToast({ message: "请求错误", image: '/Common/logo.png' });
+        that.isRefreshing = false;
+        clearTimeout(that.timeout);
+      }
+    },
+    post: function (url, data) {
+      return new Promise((resolve, reject) => {
+        fetch.fetch({
+          url: url,
+          data: data,
+          responseType: 'json',
+          method: 'post',
+          success: function (data) {
+            console.log("post success");
+            resolve(data);
+          },
+          fail: function (errmsg, errcode) {
+            console.log("post fail");
+            reject(errcode, errmsg);
+          }
+        });  
+      })
+    },
+    refresh: function (e) {
+      var that = this;
+      this.isRefreshing = e.refreshing;
+      var promise = this.post("http://114.116.248.233:12345/comment/get_all_comments", {"pid":that.pid});
+      this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.refreshComment(this), this.showError(this));
+    },
+    mapPost: function (item) {
+      return {
+        comment: item.content,
+        username: item.user.username,
+        phonenum: item.user.phonenum,
+        image: item.user.photo,
+        time: item.ctime
+      }
+    },
+    onInit: function () {
+      var promise = this.post("http://114.116.248.233:12345/comment/get_all_comments", {"pid":this.pid});
+      this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.refreshComment(this), this.showError(this));
     }
   }
 </script>

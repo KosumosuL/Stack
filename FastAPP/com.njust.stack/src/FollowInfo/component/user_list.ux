@@ -3,11 +3,11 @@
 		<block for={{userinfos}}>
 			<div class="content-list">
 				<div class="content-left">
-					<image class="icon" src={{$item.image}}></image>
+					<image class="icon" src={{$item.image}} onclick="clickToUserDetail($item.phonenum)"></image>
 				</div>
 				<div class="content-right">
-					<a class="username">{{$item.username}}</a>
-					<a class="name">{{$item.name}}</a>
+					<a class="username" onclick="clickToUserDetail($item.phonenum)">{{$item.username}}</a>
+					<a class="name" onclick="clickToUserDetail($item.phonenum)">{{$item.name}}</a>
 				</div>
 			</div>
 		</block>
@@ -78,11 +78,11 @@
 			console.error("on press event param : " + item);
 		},
 
-		routePage(url) {
-			//跳转到应用内的某个页面
-			// router.push({
-			// 	uri: "/Page_Hearingdetail"
-			// })
+		clickToUserDetail(pn) {
+			router.push({
+				uri: "/UserDetail",
+				params: {phonenum: pn}
+			})
 		},
 	}
 </script>

@@ -20,7 +20,7 @@
           <refresh offset="130px" refreshing={{isRefreshing}} onrefresh="refresh" class="refresh">
             <list>
               <list-item for={{rankinfos_day}} type="listItem{{$idx}}">
-                <rank_list url={{$item.url}} postericon={{$item.postericon}} username={{$item.username}} name={{$item.name}} likedata={{$item.likedata}} liked={{$item.liked}}></rank_list>
+                <rank_list url={{$item.url}} postericon={{$item.postericon}} phonenum={{$item.phonenum}} pid={{$item.pid}} username={{$item.username}} name={{$item.name}} likedata={{$item.likedata}} liked={{$item.liked}}></rank_list>
               </list-item>
             </list>
           </refresh>
@@ -29,7 +29,7 @@
           <refresh offset="130px" refreshing={{isRefreshing}} onrefresh="refresh" class="refresh">
             <list>
               <list-item for={{rankinfos_week}} type="listItem{{$idx}}">
-                <rank_list url={{$item.url}} postericon={{$item.postericon}} username={{$item.username}} name={{$item.name}} likedata={{$item.likedata}} liked={{$item.liked}}></rank_list>
+                <rank_list url={{$item.url}} postericon={{$item.postericon}} phonenum={{$item.phonenum}} pid={{$item.pid}} username={{$item.username}} name={{$item.name}} likedata={{$item.likedata}} liked={{$item.liked}}></rank_list>
               </list-item>
             </list>
           </refresh>  
@@ -176,6 +176,8 @@
         url: item.url,
         likedata: item.likes,
         username: item.user.username,
+        phonenum: item.user.phonenum,
+        pid: item.pid,
         name: item.user.name,
         postericon: item.user.photo,
         liked: item.isliked

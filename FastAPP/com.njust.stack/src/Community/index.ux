@@ -4,7 +4,7 @@
   <refresh offset="130px" refreshing={{isRefreshing}} onrefresh="refresh" class="refresh">
     <list onscrollbottom="scrollBottom">
       <list-item for={{postData}} type="listItem{{$idx}}">
-        <component-post swiperdata={{$item.swiperdata}} likedata={{$item.likedata}} poster={{$item.poster}} postericon={{$item.postericon}} postercomment={{$item.postercomment}} commentnumber={{$item.commentnumber}} posttime={{$item.posttime}} liked={{$item.liked}}></component-post>
+        <component-post swiperdata={{$item.swiperdata}} pid={{$item.pid}} phonenum={{$item.phonenum}} likedata={{$item.likedata}} poster={{$item.poster}} postericon={{$item.postericon}} postercomment={{$item.postercomment}} commentnumber={{$item.commentnumber}} posttime={{$item.posttime}} liked={{$item.liked}}></component-post>
       </list-item>
       <list-item type="loadMore" show={{isLoading}}>
         <div class="loadMore">
@@ -105,6 +105,8 @@
         swiperdata: item.images.map(function (image) { return {src: image.url} }),
         likedata: item.likes,
         poster: item.user.username,
+        phonenum: item.phonenum,
+        pid: item.pid,
         postercomment: item.selfcomment,
         commentnumber: item.comments,
         postericon: item.user.photo,

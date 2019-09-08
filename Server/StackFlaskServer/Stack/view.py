@@ -124,6 +124,60 @@ def init_api(app):
 
         return jsonify(data)
 
+    # in discover or rank page, when user click the image, this api is invoked
+    @app.route('/post/get_one_post', methods=['POST'])
+    def get_one_post():
+        data = {}
+        phonenum = request.form.get('phonenum')         # logined user's phonenum
+        pid = int(request.form.get('pid'))
+        try:
+            schema(
+                {
+                    "phonenum": phonenum,
+                    "pid": pid
+                }
+            )
+            conforms_to_schema = True
+        except MultipleInvalid as e:
+            data['status'] = 400
+            conforms_to_schema = False
+            if "expected" in e.msg:
+                data['message'] = e.path[0] + " is not in the correct format"
+            else:
+                data['message'] = e.msg + " for " + e.path[0]
+
+        if conforms_to_schema:
+            if Post.get(Post, pid) is None:
+                data['status'] = 404
+                data['message'] = "Post {} doesn't exist".format(pid)
+            else:
+                try:
+                    post = Post.get(Post, pid=pid)
+                    postdic = Post.out(Post, post)
+                    # current like
+                    postdic['likes'] = LikeTable.get_count_by_pid(LikeTable, pid=pid)
+                    postdic['isliked'] = True if LikeTable.get_by_pp(LikeTable, pid=pid, phonenum=phonenum) is not None else False
+                    # current comment
+                    postdic['comments'] = CommentTable.get_count_by_pid(CommentTable, pid=pid)
+                    comment = CommentTable.get_selfcomment(CommentTable, pid=pid, phonenum=post.phonenum)
+                    postdic['selfcomment'] = comment.content if comment is not None else ""
+                    # current user info
+                    usr = User.partly_out(User, User.get(User, post.phonenum))
+                    postdic['user'] = usr
+                    # content
+                    images = Image.get_by_pid(Image, pid=pid)
+                    imgs = list()
+                    for image in images:
+                        imgs.append(Image.out(Image, image))
+                    postdic['images'] = imgs
+                    data['message'] = [postdic]
+                    data['status'] = 200
+                except Exception as e:
+                    data['status'] = 406
+                    data['message'] = str(e)
+
+        return jsonify(data)
+
     # (aes_score-50)+likes*0.005
     # to ensure the balance between about 10k likes and high score
     # when number of likes is small, to expand the influence of the aes_score
@@ -454,7 +508,10 @@ def init_api(app):
                     comments = CommentTable.get_by_pid(CommentTable, pid=pid)
                     res = list()
                     for comment in comments:
-                        res.append(CommentTable.out(CommentTable, comment))
+                        comdict = CommentTable.out(CommentTable, comment)
+                        usr = User.partly_out(User, User.get(User, comment.phonenum))
+                        comdict['user'] = usr
+                        res.append(comdict)
                     data['message'] = res
                     data['status'] = 200
                 except Exception as e:
@@ -857,16 +914,15 @@ def init_api(app):
     # recommend
     ###########################################
     # recommend posts in discover page
-    @app.route('/recommend/recommend_posts', methods=['POST'])
-    def recommend_posts():
+    @app.route('/recommend/recommend_images', methods=['POST'])
+    def recommend_images():
         data = {}
         phonenum = request.form.get('phonenum')
-        token = request.form.get('token')
+        # token = request.form.get('token')
         try:
             schema(
                 {
-                    "phonenum": phonenum,
-                    "token": token
+                    "phonenum": phonenum
                 }
             )
             conforms_to_schema = True
@@ -879,13 +935,14 @@ def init_api(app):
 
         if conforms_to_schema:
             try:
-                posts = Post.getbyaesscore(Post, start=start, end=end)
+                images = Image.get_recommended(Image)
+                import random
+                random.shuffle(images)
                 res = list()
-                for post in posts:
-                    res.append(Post.out(Post, post))
+                for image in images:
+                    res.append(Image.out(Image, image))
                 data['message'] = res
                 data['status'] = 200
-                data['message'] = 'got all posts successfully!'
             except Exception as e:
                 data['status'] = 406
                 data['message'] = str(e)

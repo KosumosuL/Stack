@@ -17,10 +17,10 @@
       <tab-content class="tab_content">
         <!-- tabs的body部分 -->
         <div class="div_tabcontent">
-            <user_list userinfos="{{userinfos}}"></user_list>
+            <user_list userinfos="{{followerInfo}}"></user_list>
         </div>
         <div class="div_tabcontent">
-            <user_list userinfos="{{userinfos}}"></user_list>
+            <user_list userinfos="{{followeeInfo}}"></user_list>
         </div>
       </tab-content>
     </tabs>
@@ -162,17 +162,15 @@
         // }
       // ]
     },
-    refreshDailyRank: function (that) {
+    getFollowers: function (that) {
       return function (data) {
         that.followerInfo = data.data.message.map(that.mapPost);
-        that.isRefreshing = false;
         clearTimeout(that.timeout);
       }
     },
-    refreshWeeklyRank: function (that) {
+    getFollowees: function (that) {
       return function (data) {
         that.followeeInfo = data.data.message.map(that.mapPost);
-        that.isRefreshing = false;
         clearTimeout(that.timeout1);
       }
     },
@@ -180,7 +178,6 @@
       return function (errcode, errmsg) {
         console.log(errcode + ' ' + errmsg);
         prompt.showToast({ message: "请求错误", image: '/Common/logo.png' });
-        that.isRefreshing = false;
         clearTimeout(that.timeout);
         clearTimeout(that.timeout1);
       }
@@ -203,33 +200,21 @@
         });  
       })
     },
-    refresh: function (e) {
-      var that = this;
-      this.isRefreshing = e.refreshing;
-      var promise = this.post("http://114.116.248.233:12345/rank/get_rank", {"phonenum":"18260071011", "time":"2019-09-08 15:24:07", "period":"1"});
-      this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
-      promise.then(this.refreshDailyRank(this), this.showError(this));
-      var promise1 = this.post("http://114.116.248.233:12345/rank/get_rank", {"phonenum":"18260071011", "time":"2019-09-08 15:24:07", "period":"30"});
-      this.timeout1 = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
-      promise1.then(this.refreshWeeklyRank(this), this.showError(this));
-    },
     mapPost: function (item) {
       return {
-        url: item.url,
-        likedata: item.likes,
-        username: item.user.username,
-        name: item.user.name,
-        postericon: item.user.photo,
-        liked: item.isliked
+        image: item.photo,
+        username: item.username,
+        name: item.name,
+        phonenum: item.phonenum
       }
     },
     onInit() {
       var promise = this.post("http://114.116.248.233:12345/follow/get_all_followers", {"phonenum":"18260071012"});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
-      promise.then(this.refreshDailyRank(this), this.showError(this));
+      promise.then(this.getFollowers(this), this.showError(this));
       var promise1 = this.post("http://114.116.248.233:12345/follow/get_all_followees", {"phonenum":"18260071012"});
       this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
-      promise1.then(this.refreshWeeklyRank(this), this.showError(this));
+      promise1.then(this.getFollowees(this), this.showError(this));
     },
     onChangeTabIndex(evt) {
       this.currIndex = evt.index;
