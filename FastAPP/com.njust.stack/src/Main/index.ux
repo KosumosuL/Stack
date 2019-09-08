@@ -8,7 +8,7 @@
   <!-- template里只能有一个根节点 -->
   <div class="container">
     <div class="header" show={{idx===0||idx===2}}>
-        <image class="header-image" src="/Common/stack.png" show={{idx===0}} />
+        <text class="header-text" show={{idx===0}}>Stack</text>
         <image class="header-back" src="/Common/back.png" show={{idx===2}} onclick="back" />
     </div>
     <tabs onchange="switchTab" index={{idx}}>
@@ -43,10 +43,18 @@
         width: 100%;
         background-color: #ffffff;
     }
-    .header-image {
+    @font-face {
+        font-family: 'Billabong';
+        src: url('/Common/Billabong.ttf');
+    }
+    .header-text {
         height: 100%;
         width: 100%;
-        object-fit: contain;
+        font-size: 55px;
+        margin-top: 6px;
+        text-align: center;
+        font-weight: bold;
+        font-family: Billabong;
     }
     .header-back {
         height: 100%;

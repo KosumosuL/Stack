@@ -1,8 +1,8 @@
 {
   "package": "com.njust.stack",
   "name": "Stack",
-  "versionName": "1.0.4",
-  "versionCode": 5,
+  "versionName": "1.0.6",
+  "versionCode": 7,
   "icon": "/Common/logo.png",
   "minPlatformVersion": 1040,
   "features": [
@@ -29,6 +29,9 @@
     },
     {
       "name": "system.fetch"
+    },
+    {
+      "name": "system.request"
     }
   ],
   "permissions": [
@@ -87,18 +90,8 @@
     }
   },
   "display": {
-    "titleBarBackgroundColor": "#ffffff",
-    "titleBarTextColor": "#000000",
-    "pages": {
-      "Comments": {
-        "titleBarText": "评论"
-      },
-      "Search": {
-        "titleBar": false,
-        "menu": false,
-        "titleBarBackgroundColor": "#ffffff"
-      }
-    }
+    "titleBar": false,
+    "pages": {}
   },
   "debugable": true
 }
