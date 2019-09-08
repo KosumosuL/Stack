@@ -89,81 +89,147 @@
 </style>
 
 <script>
+  import fetch from '@system.fetch'
+  import prompt from '@system.prompt'
 
   export default {
     data: {
       // placeholder: "关注",
       tabs: ["Followers", "Following"],
       currIndex: 0,
-      userinfos: [
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-          'username': "吃出漂亮：健康白领的女人都喜欢的美丽食品",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-          'username': "忽视黑天鹅现象的外在机制",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-          'username': "拒绝主食真的能减肥吗？",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-          'username': "吃出漂亮：健康白领的女人都喜欢的美丽食品",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-          'username': "忽视黑天鹅现象的外在机制",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-          'username': "拒绝主食真的能减肥吗？",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-          'username': "吃出漂亮：健康白领的女人都喜欢的美丽食品",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-          'username': "忽视黑天鹅现象的外在机制",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-          'username': "拒绝主食真的能减肥吗？",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-          'username': "吃出漂亮：健康白领的女人都喜欢的美丽食品",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-          'username': "忽视黑天鹅现象的外在机制",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-          'username': "拒绝主食真的能减肥吗？",
-          'name': "./img/time.png",
-        }
-      ]
+      followerInfo: [],
+      followeeInfo: []
+      // userinfos: [
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+        //   'username': "吃出漂亮：健康白领的女人都喜欢的美丽食品",
+        //   'name': "./img/time.png",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+        //   'username': "忽视黑天鹅现象的外在机制",
+        //   'name': "./img/time.png",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+        //   'username': "拒绝主食真的能减肥吗？",
+        //   'name': "./img/time.png",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+        //   'username': "吃出漂亮：健康白领的女人都喜欢的美丽食品",
+        //   'name': "./img/time.png",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+        //   'username': "忽视黑天鹅现象的外在机制",
+        //   'name': "./img/time.png",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+        //   'username': "拒绝主食真的能减肥吗？",
+        //   'name': "./img/time.png",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+        //   'username': "吃出漂亮：健康白领的女人都喜欢的美丽食品",
+        //   'name': "./img/time.png",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+        //   'username': "忽视黑天鹅现象的外在机制",
+        //   'name': "./img/time.png",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+        //   'username': "拒绝主食真的能减肥吗？",
+        //   'name': "./img/time.png",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+        //   'username': "吃出漂亮：健康白领的女人都喜欢的美丽食品",
+        //   'name': "./img/time.png",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
+        //   'username': "忽视黑天鹅现象的外在机制",
+        //   'name': "./img/time.png",
+        // },
+        // {
+        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
+        //   'username': "拒绝主食真的能减肥吗？",
+        //   'name': "./img/time.png",
+        // }
+      // ]
+    },
+    refreshDailyRank: function (that) {
+      return function (data) {
+        that.followerInfo = data.data.message.map(that.mapPost);
+        that.isRefreshing = false;
+        clearTimeout(that.timeout);
+      }
+    },
+    refreshWeeklyRank: function (that) {
+      return function (data) {
+        that.followeeInfo = data.data.message.map(that.mapPost);
+        that.isRefreshing = false;
+        clearTimeout(that.timeout1);
+      }
+    },
+    showError: function (that) {
+      return function (errcode, errmsg) {
+        console.log(errcode + ' ' + errmsg);
+        prompt.showToast({ message: "请求错误", image: '/Common/logo.png' });
+        that.isRefreshing = false;
+        clearTimeout(that.timeout);
+        clearTimeout(that.timeout1);
+      }
+    },
+    post: function (url, data) {
+      return new Promise((resolve, reject) => {
+        fetch.fetch({
+          url: url,
+          data: data,
+          responseType: 'json',
+          method: 'post',
+          success: function (data) {
+            console.log("post success");
+            resolve(data);
+          },
+          fail: function (errmsg, errcode) {
+            console.log("post fail");
+            reject(errcode, errmsg);
+          }
+        });  
+      })
+    },
+    refresh: function (e) {
+      var that = this;
+      this.isRefreshing = e.refreshing;
+      var promise = this.post("http://114.116.248.233:12345/rank/get_rank", {"phonenum":"18260071011", "time":"2019-09-08 15:24:07", "period":"1"});
+      this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.refreshDailyRank(this), this.showError(this));
+      var promise1 = this.post("http://114.116.248.233:12345/rank/get_rank", {"phonenum":"18260071011", "time":"2019-09-08 15:24:07", "period":"30"});
+      this.timeout1 = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise1.then(this.refreshWeeklyRank(this), this.showError(this));
+    },
+    mapPost: function (item) {
+      return {
+        url: item.url,
+        likedata: item.likes,
+        username: item.user.username,
+        name: item.user.name,
+        postericon: item.user.photo,
+        liked: item.isliked
+      }
     },
     onInit() {
-      //TODO初始化 data中的数据
-      this.$page.setTitleBar({text: '关注',textColor: '#1A1A1A'});
-    },
-    showContent(num) {
-      this.type = 'content_' + num
+      var promise = this.post("http://114.116.248.233:12345/follow/get_all_followers", {"phonenum":"18260071012"});
+      this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.refreshDailyRank(this), this.showError(this));
+      var promise1 = this.post("http://114.116.248.233:12345/follow/get_all_followees", {"phonenum":"18260071012"});
+      this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise1.then(this.refreshWeeklyRank(this), this.showError(this));
     },
     onChangeTabIndex(evt) {
       this.currIndex = evt.index;

@@ -17,10 +17,22 @@
       <tab-content class="tab_content">
         <!-- tabs的body部分 -->
         <div class="div_tabcontent">
-            <rank_list rankinfos="{{rankinfos}}"></rank_list>
+          <refresh offset="130px" refreshing={{isRefreshing}} onrefresh="refresh" class="refresh">
+            <list>
+              <list-item for={{rankinfos_day}} type="listItem{{$idx}}">
+                <rank_list url={{$item.url}} postericon={{$item.postericon}} username={{$item.username}} name={{$item.name}} likedata={{$item.likedata}} liked={{$item.liked}}></rank_list>
+              </list-item>
+            </list>
+          </refresh>
         </div>
         <div class="div_tabcontent">
-            <rank_list rankinfos="{{rankinfos}}"></rank_list>
+          <refresh offset="130px" refreshing={{isRefreshing}} onrefresh="refresh" class="refresh">
+            <list>
+              <list-item for={{rankinfos_week}} type="listItem{{$idx}}">
+                <rank_list url={{$item.url}} postericon={{$item.postericon}} username={{$item.username}} name={{$item.name}} likedata={{$item.likedata}} liked={{$item.liked}}></rank_list>
+              </list-item>
+            </list>
+          </refresh>  
         </div>
       </tab-content>
     </tabs>
@@ -86,45 +98,96 @@
   .tab_content {
     width: 100%;
   }
+
+  .refresh {
+    /* height: 100%; */
+    background-color: #ffffff;
+    progress-color: #0faeff;
+  }
 </style>
 
 <script>
-
-  export default {
+  import fetch from '@system.fetch'
+  import prompt from '@system.prompt'
+  module.exports= {
     data: {
-      // placeholder: "关注",
       tabs: ["Day", "Week"],
       currIndex: 0,
-      rankinfos: [
-        {
-          url: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png",
-          likedata: "6,507,684",
-          username: 'instagram',
-          name: 'inst',
-          postericon: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-          posttime: "2019-9-4 15:52:00",
-          liked: false
-        },
-        {
-          url: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg",
-          likedata: "1,234,567",
-          username: 'nike',
-          name: 'dgdf',
-          postericon: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-          posttime: "2019-9-4 20:30:00",
-          liked: true
-        }
-      ]
-    },
-    onInit() {
-      //TODO初始化 data中的数据
-      this.$page.setTitleBar({text: '新闻',textColor: '#1A1A1A'});
-    },
-    showContent(num) {
-      this.type = 'content_' + num
+      isRefreshing: false,
+      rankinfos_day: [],
+      rankinfos_week: []
     },
     onChangeTabIndex(evt) {
       this.currIndex = evt.index;
+    },
+    refreshDailyRank: function (that) {
+      return function (data) {
+        that.rankinfos_day = data.data.message.map(that.mapPost);
+        that.isRefreshing = false;
+        clearTimeout(that.timeout);
+      }
+    },
+    refreshWeeklyRank: function (that) {
+      return function (data) {
+        that.rankinfos_week = data.data.message.map(that.mapPost);
+        that.isRefreshing = false;
+        clearTimeout(that.timeout1);
+      }
+    },
+    showError: function (that) {
+      return function (errcode, errmsg) {
+        console.log(errcode + ' ' + errmsg);
+        prompt.showToast({ message: "请求错误", image: '/Common/logo.png' });
+        that.isRefreshing = false;
+        clearTimeout(that.timeout);
+        clearTimeout(that.timeout1);
+      }
+    },
+    post: function (url, data) {
+      return new Promise((resolve, reject) => {
+        fetch.fetch({
+          url: url,
+          data: data,
+          responseType: 'json',
+          method: 'post',
+          success: function (data) {
+            console.log("post success");
+            resolve(data);
+          },
+          fail: function (errmsg, errcode) {
+            console.log("post fail");
+            reject(errcode, errmsg);
+          }
+        });  
+      })
+    },
+    refresh: function (e) {
+      var that = this;
+      this.isRefreshing = e.refreshing;
+      var promise = this.post("http://114.116.248.233:12345/rank/get_rank", {"phonenum":"18260071011", "time":"2019-09-08 15:24:07", "period":"1"});
+      this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.refreshDailyRank(this), this.showError(this));
+      var promise1 = this.post("http://114.116.248.233:12345/rank/get_rank", {"phonenum":"18260071011", "time":"2019-09-08 15:24:07", "period":"30"});
+      this.timeout1 = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise1.then(this.refreshWeeklyRank(this), this.showError(this));
+    },
+    mapPost: function (item) {
+      return {
+        url: item.url,
+        likedata: item.likes,
+        username: item.user.username,
+        name: item.user.name,
+        postericon: item.user.photo,
+        liked: item.isliked
+      }
+    },
+    onInit: function () {
+      var promise = this.post("http://114.116.248.233:12345/rank/get_rank", {"phonenum":"18260071011", "time":"2019-09-08 15:24:07", "period":"1"});
+      this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.refreshDailyRank(this), this.showError(this));
+      var promise1 = this.post("http://114.116.248.233:12345/rank/get_rank", {"phonenum":"18260071011", "time":"2019-09-08 15:24:07", "period":"30"});
+      this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise1.then(this.refreshWeeklyRank(this), this.showError(this));
     }
   }
 </script>

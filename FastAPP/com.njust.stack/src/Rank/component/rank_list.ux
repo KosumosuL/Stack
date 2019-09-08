@@ -1,25 +1,23 @@
 <template>
 	<div class="rank-container">
-		<block for={{rankinfos}}>
-			<div class="content-list">
-				<div class="content-up">
-					<image class="image" src={{$item.url}}></image>
+		<div class="content-list">
+			<div class="content-up">
+				<image class="image" src={{url}}></image>
+			</div>
+			<div class="content-down">
+				<div class="content-left">
+					<image class="icon" src={{postericon}}></image>
+					<div class="content-mid">
+						<a class="username">{{username}}</a>
+						<a class="name">{{name}}</a>
+					</div>						
 				</div>
-				<div class="content-down">
-					<div class="content-left">
-						<image class="icon" src={{$item.postericon}}></image>
-						<div class="content-mid">
-							<a class="username">{{$item.username}}</a>
-							<a class="name">{{$item.name}}</a>
-						</div>						
-					</div>
-					<div class="content-right">
-						<a class="likedata">{{$item.likedata}}个赞</a>
-						<image src="{{$item.liked===true?'/Rank/img/like.png':'/Rank/img/dislike.png'}}" class="btn" onclick="like"></image>
-					</div>
+				<div class="content-right">
+					<a class="likedata">{{likedata}}个赞</a>
+					<image src="{{liked===true?'/Rank/img/like.png':'/Rank/img/dislike.png'}}" class="btn" onclick="like"></image>
 				</div>
 			</div>
-		</block>
+		</div>
 	</div>
 </template>
 

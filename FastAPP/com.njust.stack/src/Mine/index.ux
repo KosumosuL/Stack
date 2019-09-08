@@ -1,44 +1,139 @@
 <import name='user_card' src='./component/user_card'></import>
+<import name='component-post' src='./component/component-post.ux'></import>
 
 <template>
-  <!-- template里只能有一个根节点 -->
-  <div class="container">
-    <user_card userinfos="{{userinfos}}"></user_card>
-  </div>
+  <refresh offset="130px" refreshing={{isRefreshing}} onrefresh="refresh" class="refresh">
+    <!-- <div class="container">
+      <user_card userinfos="{{userinfos}}"></user_card>
+    </div>     -->
+    <list onscrollbottom="scrollBottom">
+      <list-item type="card">
+        <user_card userinfos="{{userinfos}}"></user_card>
+      </list-item>
+      <list-item for={{postData}} type="listItem{{$idx}}">
+        <component-post swiperdata={{$item.swiperdata}} likedata={{$item.likedata}} poster={{$item.poster}} postericon={{$item.postericon}} postercomment={{$item.postercomment}} commentnumber={{$item.commentnumber}} posttime={{$item.posttime}} liked={{$item.liked}}></component-post>
+      </list-item>
+      <list-item type="loadMore" show={{isLoading}}>
+        <div class="loadMore">
+          <progress type="circular" class="circular-progress"></progress>
+          <text class="font-size-lg">加载更多</text>  
+        </div>
+      </list-item>
+    </list>      
+  </refresh>  
 </template>
 
 <style>
   .container {
     flex-direction: column;
+    height: 50%;
     /* align-content: center;
     justify-content: center;
     align-items: flex-start;
     background-color: #FFFFFF; */
   }
 
+  .refresh {
+    flex-direction: column;
+    background-color: #ffffff;
+    progress-color: #0faeff;
+  }
 
+  .
 </style>
 
 <script>
-
-  export default {
+  import fetch from '@system.fetch'
+  import prompt from '@system.prompt'
+  module.exports = {
     data: {
+      isRefreshing: false,
+      isLoading: false,
       userinfos:{
-          username: 'lucaszhao',
-          name: 'liangzhao',
-          postericon: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-          email: 'hubukizhao@gmail.com',
-          gender: 'male',
-          // bio: 'nothing.',
-          bio: '鹦鹉来过吴江水，江上洲传鹦鹉名。鹦鹉西飞陇山去，芳洲之树何青青。烟开兰叶香风暖，岸夹桃花锦浪生。迁客此时徒极目，长洲孤月向谁明。',
-          followers: '1k',
-          following: '200',
-          posts: '59'
-        }
+        username: 'lucaszhao',
+        name: 'liangzhao',
+        postericon: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+        email: 'hubukizhao@gmail.com',
+        gender: 'male',
+        // bio: 'nothing.',
+        bio: '鹦鹉来过吴江水，江上洲传鹦鹉名。鹦鹉西飞陇山去，芳洲之树何青青。烟开兰叶香风暖，岸夹桃花锦浪生。迁客此时徒极目，长洲孤月向谁明。',
+        followers: '1k',
+        following: '200',
+        posts: '59'
+      },
+      postData: []
     },
-    onInit() {
-      //TODO初始化 data中的数据
-      // this.$page.setTitleBar({text: '新闻',textColor: '#1A1A1A'});
+    refreshPost: function (that) {
+      return function (data) {
+        that.postData = data.data.message.map(that.mapPost);
+        that.isRefreshing = false;
+        clearTimeout(that.timeout);
+      }
+    },
+    loadMorePost: function (that) {
+      return function (data) {
+        that.postData = that.postData.concat(data.data.message.map(that.mapPost));
+        that.isLoading = false;
+        clearTimeout(that.timeout);
+      }
+    },
+    showError: function (that) {
+      return function (errcode, errmsg) {
+        console.log(errcode + ' ' + errmsg);
+        prompt.showToast({ message: "请求错误", image: '/Common/logo.png' });
+        that.isRefreshing = false;
+        that.isLoading = false;
+        clearTimeout(that.timeout);
+      }
+    },
+    post: function (url, data) {
+      return new Promise((resolve, reject) => {
+        fetch.fetch({
+          url: url,
+          data: data,
+          responseType: 'json',
+          method: 'post',
+          success: function (data) {
+            console.log("post success");
+            resolve(data);
+          },
+          fail: function (errmsg, errcode) {
+            console.log("post fail");
+            reject(errcode, errmsg);
+          }
+        });  
+      })
+    },
+    refresh: function (e) {
+      var that = this;
+      this.isRefreshing = e.refreshing;
+      var promise = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":"18260071012", "tar_phonenum":"18260071012", "time":"2019-09-08 15:24:07"});
+      this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.refreshPost(this), this.showError(this));
+    },
+    scrollBottom: function () {
+      var that = this;
+      this.isLoading = true;
+      var promise = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":"18260071012", "tar_phonenum":"18260071012", "time":"2019-09-08 15:24:07"});
+      this.timeout = setTimeout(function () { that.isLoading = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.loadMorePost(this), this.showError(this));
+    },
+    mapPost: function (item) {
+      return {
+        swiperdata: item.images.map(function (image) { return {src: image.url} }),
+        likedata: item.likes,
+        poster: item.user.username,
+        postercomment: item.selfcomment,
+        commentnumber: item.comments,
+        postericon: item.user.photo,
+        posttime: item.ptime,
+        liked: item.isliked
+      }
+    },
+    onInit: function () {
+      var promise = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":"18260071012", "tar_phonenum":"18260071012", "time":"2019-09-08 15:24:07"});
+      this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.refreshPost(this), this.showError(this));
     }
   }
 </script>
