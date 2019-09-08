@@ -13,11 +13,12 @@
         </div>
       </list-item>
     </list>
-  </refresh>  
+  </refresh>    
 </template>
 
 <style>
   .refresh {
+    margin-top: 64px;
     background-color: #ffffff;
     progress-color: #0faeff;
   }
@@ -42,45 +43,7 @@
     data: {
       isRefreshing: false,
       isLoading: false,
-      postData:
-        [
-          {
-            swiperdata:
-              [
-                { src: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png" },
-                { src: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg" },
-                { src: "/Community/img/01.jpg" },
-                { src: "/Community/img/02.jpg" },
-                { src: "/Community/img/03.jpg" },
-                { src: "/Community/img/05.jpg" },
-                { src: "/Community/img/06.jpg" },
-                { src: "/Community/img/07.jpg" },
-                { src: "/Community/img/08.jpg" },
-                { src: "/Community/img/09.jpg" }
-              ],
-            likedata: "6,507,684",
-            poster: 'instagram',
-            postercomment: "Instagram (also known as IG or Insta[9]) is a photo and video-sharing social networking service owned by Facebook, Inc. It was created by Kevin Systrom and Mike Krieger, and launched in October 2010 exclusively on iOS. A version for Android devices was released a year and half later, in April 2012, followed by a feature-limited website interface in November 2012, and apps for Windows 10 Mobile and Windows 10 in April 2016 and October 2016 respectively. The app allows users to upload photos and videos to the service, which can be edited with various filters, and organized with tags and location information. An account's posts can be shared publicly or with pre-approved followers. Users can browse other users' content by tags and locations, and view trending content. Users can \"like\" photos, and follow other users to add their content to a feed.",
-            commentnumber: "7,479",
-            postericon: "/Common/logo.png",
-            posttime: "2019-9-4 15:52:00",
-            liked: false
-          },
-          {
-            swiperdata:
-              [
-                { src: "/Community/img/08.jpg" },
-                { src: "/Community/img/09.jpg" }
-              ],
-            likedata: "1,234,567",
-            poster: 'nike',
-            postercomment: "Just do it.",
-            commentnumber: "7",
-            postericon: "/Common/logo.png",
-            posttime: "2019-9-4 20:30:00",
-            liked: true
-          }
-        ]
+      postData: []
     },
     refreshPost: function (that) {
       return function (data) {
@@ -148,6 +111,11 @@
         posttime: item.ptime,
         liked: item.isliked
       }
+    },
+    onInit: function () {
+      var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":"18260071011", "time":"2019-09-01 15:24:07"});
+      this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.refreshPost(this), this.showError(this));
     }
   }
 </script>
