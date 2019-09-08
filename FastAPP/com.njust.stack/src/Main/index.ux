@@ -1,21 +1,25 @@
 <import name='community' src='../Community/index'></import>
 <import name='discover' src='../Discover/index'></import>
-<!-- <import name='photo' src='../Photo/index'></import> -->
+<import name='photo' src='../Photo/index'></import>
 <import name='rank' src='../Rank/index'></import>
 <import name='mine' src='../Mine/index'></import>
 
 <template>
   <!-- template里只能有一个根节点 -->
   <div class="container">
+    <div class="header" show={{idx===0||idx===2}}>
+        <image class="header-image" src="/Common/stack.png" show={{idx===0}} />
+        <image class="header-back" src="/Common/back.png" show={{idx===2}} onclick="back" />
+    </div>
     <tabs onchange="switchTab" index={{idx}}>
         <tab-content>
             <community></community>
             <discover></discover>
-            <image src="/Common/logo.png" />
+            <photo show={{idx===2}}></photo>
             <rank></rank>
             <mine></mine>
         </tab-content>
-        <tab-bar>
+        <tab-bar show={{idx!==2}}>
             <div class="tab-bar-item" for={{pages}}>
                 <image class="icon" src="{{$idx===idx?$item.icon_choice:$item.icon}}" />
             </div>
@@ -31,6 +35,23 @@
         align-content: center;
         align-items: center;
         background-color: #ffffff;
+    }
+    .header {
+        top: 0px;
+        height: 64px;
+        position: fixed;
+        width: 100%;
+        background-color: #ffffff;
+    }
+    .header-image {
+        height: 100%;
+        width: 100%;
+        object-fit: contain;
+    }
+    .header-back {
+        height: 100%;
+        width: 64px;
+        object-fit: contain;
     }
 	.tab-bar-item {
         background-color: #f2f2f2;
@@ -48,26 +69,24 @@
 </style>
 
 <script>
-    import router from '@system.router' 
     module.exports = {
         data: {
             idx: 0,
             pages: [
-                { icon: './img/community.png', icon_choice: './img/selected-community.png', title: 'Stack社区'},
-                { icon: './img/discover.png', icon_choice: './img/selected-discover.png', title: '发现'},
-                { icon: './img/new.png', icon_choice: './img/selected-new.png', title: '发布'},
-                { icon: './img/rank.png', icon_choice: './img/selected-rank.png', title: '排行榜'},
-                { icon: './img/mine.png', icon_choice: './img/selected-mine.png', title: '个人'}
-            ]
+                { icon: './img/community.png', icon_choice: './img/selected-community.png'},
+                { icon: './img/discover.png', icon_choice: './img/selected-discover.png'},
+                { icon: './img/new.png', icon_choice: './img/selected-new.png'},
+                { icon: './img/rank.png', icon_choice: './img/selected-rank.png'},
+                { icon: './img/mine.png', icon_choice: './img/selected-mine.png'}
+            ],
+            backup: 0
         },
         switchTab: function (e) {
+            this.backup = this.idx;
             this.idx = e.index;
-            this.$page.setTitleBar({text: this.pages[this.idx].title});
-            if (this.idx === 2) {
-                router.push({
-                    uri: "/Photo"
-                })
-            }
+        },
+        back: function () {
+            this.idx = this.backup;
         }
     }
 </script>

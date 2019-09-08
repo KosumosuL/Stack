@@ -1,6 +1,6 @@
 <template> 
     <div class="container">
-        <div class="camera">
+        <div class="camera" show={{show}}>
             <image src={{displayuri}} class="image image-cover" onclick="viewPhoto" onlongpress="undoPhoto" />
         </div>
         <div class="image-wall">
@@ -12,7 +12,7 @@
                 </div>
             </div>
         </div>
-        <div class="list-center">
+        <div class="list-center" show={{show}}>
             <image src="/Photo/img/takePhoto.png" class="btn image-contain" onclick="takePhoto" />
             <image src="/Photo/img/pickPhoto.png" class="btn image-contain" onclick="pickPhoto" />
             <image src="/Photo/img/editPhoto.png" class="btn image-contain" onclick="editPhoto" />
@@ -31,6 +31,7 @@
         background-color: #ffffff;
     }
     .camera {
+        top: 64px;
         height: 800px;
         position: fixed;
     }
@@ -40,7 +41,7 @@
         background-color:#ffffff;
     }
     .image-wall {
-        margin-top: 801px;
+        margin-top: 865px;
         margin-bottom: 100px;
     }
     .image-wall-container {
@@ -89,29 +90,11 @@
     import prompt from '@system.prompt'
     import image from '@system.image'
     export default {
+        props: [
+            'show'
+        ],
         data: {
-            uris: [
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',
-                'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg'
-            ],
+            uris: [],
             idx: -1,
             displayuri: '',
             backup: []
@@ -243,7 +226,7 @@
         },
         undoPhoto: function () {
             var that = this;
-            if (this.backup !== '') {
+            if (this.backup.length !== 0) {
                 prompt.showDialog({
                     message: '取消编辑？',
                     buttons: [
