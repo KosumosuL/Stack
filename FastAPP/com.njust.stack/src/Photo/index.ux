@@ -58,7 +58,8 @@
 		object-fit: cover;
 		height: 100%;
 		width: 100%;
-		margin: 1px 1px 1px 1px;
+        margin: 1px 1px 1px 1px;
+        background-color: #ffffff;
 	}
     .list-center {
         position: fixed;
@@ -113,16 +114,16 @@
             ],
             idx: -1,
             displayuri: '',
-            backup: ''
+            backup: []
         },
         takePhoto: function () {
             var that = this;
             media.takePhoto({
                 success: function (data) {
-                    that.uris = that.uris.concat(data.uri);
+                    that.uris.push(data.uri);
                     that.idx = that.uris.length - 1;
                     that.displayuri = data.uri;
-                    that.backup = '';
+                    that.backup = [];
                     console.log('media.takePhoto success');
                 },
                 fail: function (errmsg, errcode) {
@@ -135,10 +136,10 @@
             var that = this;
             media.pickImage({
                 success: function (data) {
-                    that.uris = that.uris.concat(data.uri);
+                    that.uris.push(data.uri);
                     that.idx = that.uris.length - 1;
                     that.displayuri = data.uri;
-                    that.backup = '';
+                    that.backup = [];
                     console.log('media.pickImage success');
                 },
                 fail: function (errmsg, errcode) {
@@ -154,7 +155,7 @@
                     uri: that.displayuri,
                     success: function (data) {
                         that.uris.splice(that.idx, 1, data.uri);
-                        that.backup = that.displayuri;
+                        that.backup.push(that.displayuri);
                         that.displayuri = data.uri;
                         console.log('image.editImage success');
                     },
@@ -176,7 +177,7 @@
                 this.uris = [];
                 this.idx = -1;
                 this.displayuri = '';
-                this.backup = '';
+                this.backup = [];
                 prompt.showToast({ message: "清空相片" });    
             }
         },
@@ -199,7 +200,7 @@
             if (this.idx !== obj.$idx) {
                 this.idx = obj.$idx;
                 this.displayuri = this.uris[this.idx];
-                this.backup = '';    
+                this.backup = [];    
             }
         },
         deletePhoto: function (obj) {
@@ -223,15 +224,15 @@
                         if (that.uris.length === 0) {
                             that.idx = -1;
                             that.displayuri = '';
-                            that.backup = '';
+                            that.backup = [];
                         } else if (that.idx > obj.$idx) {
                             that.idx -= 1;
                         } else if (that.idx === obj.$idx) {
-                            that.backup = '';
                             if (that.idx >= that.uris.length) {
                                 that.idx = that.uris.length - 1;
                             }
                             that.displayuri = that.uris[that.idx];
+                            that.backup = [];
                         }
                     }
                 },
@@ -258,9 +259,8 @@
                     success: function (data) {
                         console.log("prompt.showDialog success");
                         if (data.index === 0) {
-                            that.uris.splice(that.idx, 1, that.backup);
-                            that.displayuri = that.backup;
-                            that.backup = '';
+                            that.uris.splice(that.idx, 1, that.backup.pop());
+                            that.displayuri = that.uris[that.idx];
                         }
                     },
                     fail: function (errmsg, errcode) {
