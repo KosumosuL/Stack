@@ -44,24 +44,13 @@ def init_api(app):
                     postdic['selfcomment'] = comment.content if comment is not None else ""
                     # current user info
                     usr = User.partly_out(User, User.get(User, post.phonenum))
-                    postdic['cur_user'] = usr
-                    if post.isre == 0:
-                        # content
-                        images = Image.getbypid(Image, pid=post.pid)
-                        imgs = list()
-                        for image in images:
-                            imgs.append(Image.out(Image, image))
-                        postdic['images'] = imgs
-                    else:
-                        # origin content
-                        images = Image.getbypid(Image, pid=post.isre)
-                        imgs = list()
-                        for image in images:
-                            imgs.append(Image.out(Image, image))
-                        postdic['images'] = imgs
-                        # origin user info
-                        or_usr = User.partly_out(User, User.get(User, Post.get(Post, post.isre)))
-                        postdic['ori_user'] = or_usr
+                    postdic['user'] = usr
+                    # content
+                    images = Image.getbypid(Image, pid=post.pid)
+                    imgs = list()
+                    for image in images:
+                        imgs.append(Image.out(Image, image))
+                    postdic['images'] = imgs
                     res.append(postdic)
                 data['message'] = res
                 data['status'] = 200
@@ -227,8 +216,7 @@ def init_api(app):
                 data['message'] = "Post {} doesn't exist".format(pid)
             else:
                 post = Post(ptime=ptime,
-                            phonenum=phonenum,
-                            isre=pid)
+                            phonenum=phonenum)
                 try:
                     _ = Post.add(Post, post)
                     data['status'] = 200
@@ -712,7 +700,7 @@ def init_api(app):
                     imgdic['isliked'] = True if LikeTable.getbypp(LikeTable, pid=post.pid,
                                                                    phonenum=phonenum) is not None else False
                     usr = User.partly_out(User, User.get(User, post.phonenum))
-                    imgdic['cur_user'] = usr
+                    imgdic['user'] = usr
                     res.append(imgdic)
                 data['message'] = res
                 data['status'] = 200

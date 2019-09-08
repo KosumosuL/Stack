@@ -72,16 +72,14 @@ class Post(db.Model):
     __tablename__ = 'post'
     pid = db.Column(db.INTEGER, primary_key=True, nullable=False)
     ptime = db.Column(db.DateTime, nullable=False)
-    isre = db.Column(db.INTEGER, nullable=False)
     phonenum = db.Column(db.String(11), nullable=False)
 
     def __repr__(self):
         return '<Post %r>' % self.pid
 
-    def __init__(self, ptime, phonenum, isre=0):
+    def __init__(self, ptime, phonenum):
         self.ptime = ptime
         self.phonenum = phonenum
-        self.isre = isre
 
     def get(self, pid):
         return self.query.filter_by(pid=pid).first()
@@ -122,7 +120,6 @@ class Post(db.Model):
         return {
             'pid': post.pid,
             'ptime': str(post.ptime),
-            'isre': post.isre,
             'phonenum': post.phonenum
         }
 
