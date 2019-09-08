@@ -1,0 +1,168 @@
+<template>
+	<div class="user-container">
+    <div class="content-up">
+      <div class="content-left">
+        <image class="icon" src={{userinfos.postericon}}></image>
+      </div>
+      <div class="content-right">
+        <div class="usercard-bottom">
+            <div class="usercard-bottom-item">
+              <text class="item-key">{{userinfos.posts}}</text>
+              <text class="item-mount">Posts</text>
+            </div>
+            <div class="usercard-bottom-item" onclick="clickToFollowInfo">
+              <text class="item-key">{{userinfos.followers}}</text>
+              <text class="item-mount">Followers</text>
+            </div>
+            <div class="usercard-bottom-item" onclick="clickToFollowInfo">
+              <text class="item-key">{{userinfos.following}}</text>
+              <text class="item-mount">Following</text>
+            </div>
+        </div>
+        <a class="a_item">Edit Profile</a>
+      </div>
+    </div>
+    <div class="content-down">
+        <a class="username">{{userinfos.username}}</a>
+        <a class="name">{{userinfos.name}}</a>
+        <a class="email">{{userinfos.email}}</a>		
+        <a class="bio">{{userinfos.bio}}</a>		
+    </div>
+	</div>
+</template>
+
+<style>
+	.user-container {
+		flex-direction: column;
+	}
+
+	.content-up {
+    height: 280px;
+    width: 100%;
+    indicator-color: rgba(0,0,0,0.2);
+    indicator-selected-color: #ffffff;
+	}
+
+	.content-left {
+	}
+
+	.icon {
+		width: 200px;
+		height: 200px;
+		object-fit: cover;
+		border-radius: 100px;
+		/* considering */
+		border-color: #dc143c;
+		border-width: 5px;
+		margin: 40px 40px 0px 40px;
+  }
+  
+  .content-right {
+    flex-direction: column;
+    width: 430px;
+    margin-right: 40px;
+  }
+
+  .usercard-bottom {
+    margin-top: 55px;
+    margin-bottom: 10px;
+    height: 100px;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .usercard-bottom-item {
+    flex-direction: column;
+    align-items: center;
+    width: 33.3%;
+  }
+  
+  .item-key {
+    font-size: 35px;
+    text-align: center;
+    color: black;
+    font-weight: bold;
+  }
+
+  .item-mount {
+    color: gray;
+    font-size: 25px;
+    text-align: center;
+    
+  }
+
+  .a_item {
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0);
+    height: 60px;
+    width: 100%;
+    border-radius: 8.3px;
+		border-color: #bdbaba;
+		border-width: 2px;
+    padding: 20px 20px;
+    font-size: 35px;
+    color: #000000;
+    lines: 1;
+  }
+
+	.content-down {
+    margin-top: 5px;
+    margin-left: 40px;
+		/* height: 150px; */
+		flex-direction: column;
+		border-bottom-color: #F2F2F2;
+		border-bottom-width: 1px;
+		justify-content: center;
+	}
+
+	.username {
+		color: black;
+		font-weight: bold;
+	}
+
+	.name {
+		color: gray;
+	}
+
+	.email {
+		color: rgb(5, 5, 155);
+  }
+
+	.bio {
+		color: gray;
+  }
+
+	.likedata {
+		color: black;
+	}
+</style>
+
+<script>
+	import router from '@system.router';
+  import prompt from '@system.prompt'
+	
+	export default {
+		data: {
+			props: [
+				'userinfos',
+			]
+		},
+		press(item) {
+			console.error("on press event param : " + item);
+		},
+    like: function () {
+      this.liked = !this.liked;
+      prompt.showToast({ message: this.liked === true ? 'like' : 'dislike', image: '/Common/logo.png' });
+    },
+		routePage(url) {
+			//跳转到应用内的某个页面
+			// router.push({
+			// 	uri: "/Page_Hearingdetail"
+			// })
+		},
+    clickToFollowInfo() {
+        router.push({ uri: '/FollowInfo' });
+    }
+	}
+</script>

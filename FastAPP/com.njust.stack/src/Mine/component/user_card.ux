@@ -10,11 +10,11 @@
               <text class="item-key">{{userinfos.posts}}</text>
               <text class="item-mount">Posts</text>
             </div>
-            <div class="usercard-bottom-item">
+            <div class="usercard-bottom-item" onclick="clickToFollowInfo">
               <text class="item-key">{{userinfos.followers}}</text>
               <text class="item-mount">Followers</text>
             </div>
-            <div class="usercard-bottom-item">
+            <div class="usercard-bottom-item" onclick="clickToFollowInfo">
               <text class="item-key">{{userinfos.following}}</text>
               <text class="item-mount">Following</text>
             </div>
@@ -109,7 +109,7 @@
 	.content-down {
     margin-top: 5px;
     margin-left: 40px;
-		height: 150px;
+		/* height: 150px; */
 		flex-direction: column;
 		border-bottom-color: #F2F2F2;
 		border-bottom-width: 1px;
@@ -161,5 +161,8 @@
 			// 	uri: "/Page_Hearingdetail"
 			// })
 		},
+    clickToFollowInfo() {
+        router.push({ uri: '/FollowInfo' });
+    }
 	}
 </script>

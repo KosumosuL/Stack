@@ -160,7 +160,7 @@
     },
     onInit() {
       //TODO初始化 data中的数据
-      this.$page.setTitleBar({text: '新闻',textColor: '#1A1A1A'});
+      this.$page.setTitleBar({text: '关注',textColor: '#1A1A1A'});
     },
     showContent(num) {
       this.type = 'content_' + num

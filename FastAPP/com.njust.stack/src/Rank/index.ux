@@ -93,7 +93,7 @@
   export default {
     data: {
       // placeholder: "关注",
-      tabs: ["Followers", "Following"],
+      tabs: ["Day", "Week"],
       currIndex: 0,
       rankinfos: [
         {

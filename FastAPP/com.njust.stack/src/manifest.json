@@ -47,11 +47,7 @@
       "Community": {
         "component": "index",
         "path": "/Community"
-      },      
-      "Detail": {
-        "component": "index",
-        "path": "/Detail"
-      },     
+      },         
       "Discover": {
         "component": "index",
         "path": "/Discover"
@@ -72,6 +68,10 @@
         "component": "index",
         "path": "/Photo"
       },
+      "PostDetail": {
+        "component": "index",
+        "path": "/PostDetail"
+      },  
       "Rank": {
         "component": "index",
         "path": "/Rank"
@@ -79,6 +79,10 @@
       "Search": {
         "component": "index",
         "path": "/Search"
+      },
+      "UserDetail": {
+        "component": "index",
+        "path": "/UserDetail"
       }
     }
   },
