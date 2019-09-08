@@ -34,8 +34,6 @@ class User(db.Model):
     def get(self, phonenum):
         return self.query.filter_by(phonenum=phonenum).first()
 
-
-
     # def add(self, user):
     #     db.session.add(user)
     #     return session_commit()
@@ -94,6 +92,15 @@ class Post(db.Model):
             .limit(SHOWPOSTS_LIMIT)\
             .all()
 
+    def get_user_posts(self, phonenum, time):
+        from Stack.config import SHOWPOSTS_LIMIT
+        return self.query\
+            .filter(self.phonenum == phonenum)\
+            .filter(self.ptime < time) \
+            .order_by(self.ptime.desc())\
+            .limit(SHOWPOSTS_LIMIT)\
+            .all()
+
     def get_by_label(self, keyword):
         return self.query.filter_by(label=keyword).order_by(self.aes_score.desc()).all()
 
@@ -101,12 +108,10 @@ class Post(db.Model):
         # keyword cannot be blank(must be checked in frond end)
         return self.query.filter(self.label.like("%" + keyword + "%")).all()
 
-    def getbyuser(self, phonenum):
-        return self.query.filter_by(phonenum=phonenum).all()
-
     def add(self, post):
         db.session.add(post)
-        return session_commit()
+        db.session.flush()
+        return post.pid, session_commit()
 
     def update(self, post):
         db.session.update(post)
@@ -129,28 +134,34 @@ class Image(db.Model):
     url = db.Column(db.String(100), nullable=False)
     label = db.Column(db.String(32), nullable=True)
     aes_score = db.Column(db.DECIMAL, nullable=False)
+    weight = db.Column(db.DECIMAL, nullable=False)
     pid = db.Column(db.INTEGER, nullable=False)
 
     def __repr__(self):
         return '<Image %r>' % self.iid
 
-    def __init__(self, url, label, aes_score, pid):
+    def __init__(self, url, label, aes_score, weight, pid):
         self.url = url
         self.label = label
         self.aes_score = aes_score
+        self.weight = weight
         self.pid = pid
 
-    def getbypid(self, pid):
+    def get_by_pid(self, pid):
         return self.query.filter_by(pid=pid).all()
 
-    def get_by_score(self, start, end):
+    def get_by_weight(self, start, end):
         from Stack.config import RANK_LIMIT
         return self.query\
             .filter(start < Post.ptime, Post.ptime <= end)\
             .filter(self.pid == Post.pid)\
-            .order_by(self.aes_score.desc())\
+            .order_by(self.weight.desc())\
             .limit(RANK_LIMIT)\
             .all()
+
+    def add(self, image):
+        db.session.add(image)
+        return session_commit()
 
     def delete_post(self, pid):
         self.query.filter_by(pid=pid).delete()
@@ -162,6 +173,7 @@ class Image(db.Model):
             'url': image.url,
             'label': image.label,
             'aes_score': str(image.aes_score),
+            'weight': str(image.weight),
             'pid': image.pid
         }
 
@@ -184,16 +196,13 @@ class LikeTable(db.Model):
     def get(self, lid):
         return self.query.filter_by(lid=lid).first()
 
-    def getbypp(self, pid, phonenum):
+    def get_by_pp(self, pid, phonenum):
         return self.query.filter(self.pid == pid, self.phonenum == phonenum).first()
 
-    def getisliked(self, pid, phonenum):
-        return self.query.filter(self.pid == pid, self.phonenum == phonenum).first()
-
-    def getbypid(self, pid):
+    def get_by_pid(self, pid):
         return self.query.filter_by(pid=pid).all()
 
-    def getcountbypid(self, pid):
+    def get_count_by_pid(self, pid):
         return self.query.filter_by(pid=pid).count()
 
     def add(self, like):
@@ -240,13 +249,13 @@ class CommentTable(db.Model):
     def get(self, cid):
         return self.query.filter_by(cid=cid).first()
 
-    def getselfcomment(self, pid, phonenum):
+    def get_selfcomment(self, pid, phonenum):
         return self.query.filter(self.pid==pid, self.phonenum==phonenum).order_by(self.ctime.asc()).first()
 
-    def getbypid(self, pid):
+    def get_by_pid(self, pid):
         return self.query.filter_by(pid=pid).all()
 
-    def getcountbypid(self, pid):
+    def get_count_by_pid(self, pid):
         return self.query.filter_by(pid=pid).count()
 
     def add(self, comment):
@@ -292,10 +301,16 @@ class FollowTable(db.Model):
     def get_followees(self, follower):
         return self.query.filter_by(follower=follower).all()
 
+    def get_count_of_followees(self, follower):
+        return self.query.filter_by(follower=follower).count()
+
     def get_followers(self, followee):
         return self.query.filter_by(followee=followee).all()
 
-    def getbyff(self, follower, followee):
+    def get_count_of_followers(self, followee):
+        return self.query.filter_by(followee=followee).count()
+
+    def get_by_ff(self, follower, followee):
         return self.query.filter(self.follower == follower, self.followee == followee).first()
 
     def add(self, follow):

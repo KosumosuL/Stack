@@ -36,17 +36,17 @@ def init_api(app):
                 for post in posts:
                     postdic = Post.out(Post, post)
                     # current like
-                    postdic['likes'] = LikeTable.getcountbypid(LikeTable, pid=post.pid)
-                    postdic['isliked'] = True if LikeTable.getbypp(LikeTable, pid=post.pid, phonenum=phonenum) is not None else False
+                    postdic['likes'] = LikeTable.get_count_by_pid(LikeTable, pid=post.pid)
+                    postdic['isliked'] = True if LikeTable.get_by_pp(LikeTable, pid=post.pid, phonenum=phonenum) is not None else False
                     # current comment
-                    postdic['comments'] = CommentTable.getcountbypid(CommentTable, pid=post.pid)
-                    comment = CommentTable.getselfcomment(CommentTable, pid=post.pid, phonenum=post.phonenum)
+                    postdic['comments'] = CommentTable.get_count_by_pid(CommentTable, pid=post.pid)
+                    comment = CommentTable.get_selfcomment(CommentTable, pid=post.pid, phonenum=post.phonenum)
                     postdic['selfcomment'] = comment.content if comment is not None else ""
                     # current user info
                     usr = User.partly_out(User, User.get(User, post.phonenum))
                     postdic['user'] = usr
                     # content
-                    images = Image.getbypid(Image, pid=post.pid)
+                    images = Image.get_by_pid(Image, pid=post.pid)
                     imgs = list()
                     for image in images:
                         imgs.append(Image.out(Image, image))
@@ -63,16 +63,21 @@ def init_api(app):
     ###########################################
     # post
     ###########################################
-    # for each user, get all posts
+    # for one user, get all posts
+    # phonenum == tar_phonenum is allowed(mine page)
     # check auth(phonenum) firstly
-    @app.route('/post/get_posts', methods=['POST'])
+    @app.route('/timeline/get_posts', methods=['POST'])
     def get_posts():
         data = {}
-        phonenum = request.form.get('phonenum')
+        phonenum = request.form.get('phonenum')         # logined user's phonenum
+        tar_phonenum = request.form.get('tar_phonenum')     # target  user's
+        time = request.form.get('time')                 # for refresh
         try:
             schema(
                 {
-                    "phonenum": phonenum
+                    "phonenum": phonenum,
+                    "tar_phonenum": tar_phonenum,
+                    "ptime": time
                 }
             )
             conforms_to_schema = True
@@ -85,16 +90,37 @@ def init_api(app):
                 data['message'] = e.msg + " for " + e.path[0]
 
         if conforms_to_schema:
-            try:
-                posts = Post.getbyuser(Post, phonenum=phonenum)
-                res = list()
-                for post in posts:
-                    res.append(Post.out(Post, post))
-                data['message'] = res
-                data['status'] = 200
-            except Exception as e:
-                data['status'] = 406
-                data['message'] = str(e)
+            if User.get(User, tar_phonenum) is None:
+                data['status'] = 404
+                data['message'] = "User {} doesn't exist".format(tar_phonenum)
+            else:
+                try:
+                    posts = Post.get_user_posts(Post, phonenum=tar_phonenum, time=time)
+                    res = list()
+                    for post in posts:
+                        postdic = Post.out(Post, post)
+                        # current like
+                        postdic['likes'] = LikeTable.get_count_by_pid(LikeTable, pid=post.pid)
+                        postdic['isliked'] = True if LikeTable.get_by_pp(LikeTable, pid=post.pid, phonenum=phonenum) is not None else False
+                        # current comment
+                        postdic['comments'] = CommentTable.get_count_by_pid(CommentTable, pid=post.pid)
+                        comment = CommentTable.get_selfcomment(CommentTable, pid=post.pid, phonenum=post.phonenum)
+                        postdic['selfcomment'] = comment.content if comment is not None else ""
+                        # current user info
+                        usr = User.partly_out(User, User.get(User, post.phonenum))
+                        postdic['user'] = usr
+                        # content
+                        images = Image.get_by_pid(Image, pid=post.pid)
+                        imgs = list()
+                        for image in images:
+                            imgs.append(Image.out(Image, image))
+                        postdic['images'] = imgs
+                        res.append(postdic)
+                    data['message'] = res
+                    data['status'] = 200
+                except Exception as e:
+                    data['status'] = 406
+                    data['message'] = str(e)
 
         return jsonify(data)
 
@@ -108,19 +134,14 @@ def init_api(app):
     @app.route('/post/create_post', methods=['POST'])
     def create_post():
         data = {}
-        image = request.form.get('image')
+        count = int(request.form.get('count'))
         ptime = request.form.get('ptime')
-        label = request.form.get('label')
-        import decimal
-        aes_score = decimal.Decimal(request.form.get('aes_score'))
         phonenum = request.form.get('phonenum')
         try:
             schema(
                 {
-                    "image": image,
+                    "count": count,
                     "ptime": ptime,
-                    "label": label,
-                    "aes_score": aes_score,
                     "phonenum": phonenum
                 }
             )
@@ -133,16 +154,51 @@ def init_api(app):
             else:
                 data['message'] = e.msg + " for " + e.path[0]
 
+        # basic validation has passed
         if conforms_to_schema:
-            post = Post(ptime=ptime,
-                        phonenum=phonenum)
-            try:
-                _ = Post.add(Post, post)
-                data['status'] = 200
-                data['message'] = 'post successfully!'
-            except Exception as e:
-                data['status'] = 406
-                data['message'] = str(e)
+            images = list()
+            _conforms_to_schema = True
+            # count round validation to keep _conforms_to_schema true
+            for idx in range(count):
+                if _conforms_to_schema:
+                    url = request.form.get('url_' + str(idx))
+                    label = request.form.get('label_' + str(idx))
+                    import decimal
+                    aes_score = decimal.Decimal(request.form.get('aes_score_' + str(idx)))
+                    try:
+                        schema(
+                            {
+                                "url": url,
+                                "label": label,
+                                "aes_score": aes_score
+                            }
+                        )
+                        images.append([url, label, aes_score])
+                    except MultipleInvalid as e:
+                        data['status'] = 400
+                        _conforms_to_schema = False
+                        if "expected" in e.msg:
+                            data['message'] = e.path[0] + " is not in the correct format"
+                        else:
+                            data['message'] = e.msg + " for " + e.path[0]
+
+            if _conforms_to_schema:
+                post = Post(ptime=ptime,
+                            phonenum=phonenum)
+                try:
+                    pid, _ = Post.add(Post, post)
+                    for [url, label, aes_score] in images:
+                        image = Image(url=url,
+                                      label=label,
+                                      aes_score=aes_score,
+                                      weight=aes_score-50,
+                                      pid=pid)
+                        _ = Image.add(Image, image)
+                    data['status'] = 200
+                    data['message'] = 'post successfully!'
+                except Exception as e:
+                    data['status'] = 406
+                    data['message'] = str(e)
 
         return jsonify(data)
 
@@ -168,59 +224,20 @@ def init_api(app):
                 data['message'] = e.msg + " for " + e.path[0]
 
         if conforms_to_schema:
-            # check like thirdly
-            try:
-                _ = Post.delete(Post, pid)
-                # 还需删除所有包含的likes和comments
-                _ = Image.delete_post(Image, pid)
-                _ = LikeTable.delete_post(LikeTable, pid)
-                _ = CommentTable.delete_post(CommentTable, pid)
-                data['status'] = 200
-                data['message'] = 'deleted successfully!'
-            except Exception as e:
-                data['status'] = 406
-                data['message'] = str(e)
-
-        return jsonify(data)
-
-    # user repost/retweet one post
-    # check auth(phonenum) firstly
-    @app.route('/post/re_post', methods=['POST'])
-    def re_post():
-        data = {}
-        ptime = request.form.get('ptime')
-        pid = int(request.form.get('pid'))
-        phonenum = request.form.get('phonenum')
-        try:
-            schema(
-                {
-                    "ptime": ptime,
-                    "pid": pid,
-                    "phonenum": phonenum
-                }
-            )
-            conforms_to_schema = True
-        except MultipleInvalid as e:
-            data['status'] = 400
-            conforms_to_schema = False
-            if "expected" in e.msg:
-                data['message'] = e.path[0] + " is not in the correct format"
-            else:
-                data['message'] = e.msg + " for " + e.path[0]
-
-        if conforms_to_schema:
             # check post secondly
-            origin_post = Post.get(Post, pid)
-            if origin_post is None:
+            if Post.get(Post, pid) is None:
                 data['status'] = 404
                 data['message'] = "Post {} doesn't exist".format(pid)
             else:
-                post = Post(ptime=ptime,
-                            phonenum=phonenum)
+                # check post thirdly
                 try:
-                    _ = Post.add(Post, post)
+                    _ = Post.delete(Post, pid)
+                    _ = Image.delete_post(Image, pid)
+                    # 还需删除所有包含的likes和comments
+                    _ = LikeTable.delete_post(LikeTable, pid)
+                    _ = CommentTable.delete_post(CommentTable, pid)
                     data['status'] = 200
-                    data['message'] = 'repost successfully!'
+                    data['message'] = 'deleted successfully!'
                 except Exception as e:
                     data['status'] = 406
                     data['message'] = str(e)
@@ -263,7 +280,7 @@ def init_api(app):
                     # for like in likes:
                     #     res.append(LikeTable.out(LikeTable, like))
                     # data['message'] = res
-                    lens = LikeTable.getcountbypid(LikeTable, pid=pid)
+                    lens = LikeTable.get_count_by_pid(LikeTable, pid=pid)
                     data['message'] = lens
                     data['status'] = 200
                 except Exception as e:
@@ -302,7 +319,7 @@ def init_api(app):
             if Post.get(Post, pid) is None:
                 data['status'] = 404
                 data['message'] = "Post {} doesn't exist".format(pid)
-            elif LikeTable.getbypp(LikeTable, pid, phonenum):
+            elif LikeTable.get_by_pp(LikeTable, pid, phonenum):
                 data['status'] = 400
                 data['message'] = 'repeat liking is forbidden'
             else:
@@ -348,12 +365,15 @@ def init_api(app):
             if Post.get(Post, pid) is None:
                 data['status'] = 404
                 data['message'] = "Post {} doesn't exist".format(pid)
+            elif LikeTable.get_by_pp(LikeTable, pid, phonenum) is None:
+                data['status'] = 400
+                data['message'] = 'repeat unliking is forbidden'
             else:
                 # check like thirdly
                 try:
                     # consider the inconvenience of obtaining the lid ...
                     # _ = LikeTable.delete(LikeTable, lid)
-                    like = LikeTable.getbypp(LikeTable, pid, phonenum)
+                    like = LikeTable.get_by_pp(LikeTable, pid, phonenum)
                     _ = LikeTable.delete(LikeTable, like.lid)
                     data['status'] = 200
                     data['message'] = 'unliked successfully!'
@@ -366,7 +386,7 @@ def init_api(app):
     ###########################################
     # comment
     ###########################################
-    # for each post, get comments
+    # for each post, get the number of comments
     # check auth(phonenum) firstly
     @app.route('/comment/get_comments', methods=['POST'])
     def get_comments():
@@ -394,7 +414,44 @@ def init_api(app):
                 data['message'] = "Post {} doesn't exist".format(pid)
             else:
                 try:
-                    comments = CommentTable.getbypid(CommentTable, pid=pid)
+                    lens = CommentTable.get_count_by_pid(CommentTable, pid=pid)
+                    data['message'] = lens
+                    data['status'] = 200
+                except Exception as e:
+                    data['status'] = 406
+                    data['message'] = str(e)
+
+        return jsonify(data)
+
+    # for each post, get comments
+    # check auth(phonenum) firstly
+    @app.route('/comment/get_all_comments', methods=['POST'])
+    def get_all_comments():
+        data = {}
+        pid = int(request.form.get('pid'))
+        try:
+            schema(
+                {
+                    "pid": pid
+                }
+            )
+            conforms_to_schema = True
+        except MultipleInvalid as e:
+            data['status'] = 400
+            conforms_to_schema = False
+            if "expected" in e.msg:
+                data['message'] = e.path[0] + " is not in the correct format"
+            else:
+                data['message'] = e.msg + " for " + e.path[0]
+
+        if conforms_to_schema:
+            # check post secondly
+            if Post.get(Post, pid) is None:
+                data['status'] = 404
+                data['message'] = "Post {} doesn't exist".format(pid)
+            else:
+                try:
+                    comments = CommentTable.get_by_pid(CommentTable, pid=pid)
                     res = list()
                     for comment in comments:
                         res.append(CommentTable.out(CommentTable, comment))
@@ -480,6 +537,9 @@ def init_api(app):
             if Post.get(Post, pid) is None:
                 data['status'] = 404
                 data['message'] = "Post {} doesn't exist".format(pid)
+            elif CommentTable.get(CommentTable, cid) is None:
+                data['status'] = 400
+                data['message'] = 'repeat uncommenting is forbidden'
             else:
                 # check comment thirdly
                 try:
@@ -517,18 +577,55 @@ def init_api(app):
                 data['message'] = e.msg + " for " + e.path[0]
 
         if conforms_to_schema:
-            try:
-                followers = FollowTable.get_followers(FollowTable, followee=phonenum)
-                res = list()
-                for follower in followers:
-                    # print(FollowTable.out(FollowTable, follower))
-                    user = User.get(User, phonenum=follower.follower)
-                    res.append(User.out(User, user))
-                data['message'] = res
-                data['status'] = 200
-            except Exception as e:
-                data['status'] = 406
-                data['message'] = str(e)
+            if User.get(User, phonenum) is None:
+                data['status'] = 404
+                data['message'] = "User {} doesn't exist".format(phonenum)
+            else:
+                try:
+                    lens = FollowTable.get_count_of_followers(FollowTable, followee=phonenum)
+                    data['message'] = lens
+                    data['status'] = 200
+                except Exception as e:
+                    data['status'] = 406
+                    data['message'] = str(e)
+
+        return jsonify(data)
+
+    @app.route('/follow/get_all_followers', methods=['POST'])
+    def get_all_followers():
+        data = {}
+        phonenum = request.form.get('phonenum')
+        try:
+            schema(
+                {
+                    "phonenum": phonenum
+                }
+            )
+            conforms_to_schema = True
+        except MultipleInvalid as e:
+            data['status'] = 400
+            conforms_to_schema = False
+            if "expected" in e.msg:
+                data['message'] = e.path[0] + " is not in the correct format"
+            else:
+                data['message'] = e.msg + " for " + e.path[0]
+
+        if conforms_to_schema:
+            if User.get(User, phonenum) is None:
+                data['status'] = 404
+                data['message'] = "User {} doesn't exist".format(phonenum)
+            else:
+                try:
+                    followers = FollowTable.get_followers(FollowTable, followee=phonenum)
+                    res = list()
+                    for follower in followers:
+                        user = User.get(User, phonenum=follower.follower)
+                        res.append(User.out(User, user))
+                    data['message'] = res
+                    data['status'] = 200
+                except Exception as e:
+                    data['status'] = 406
+                    data['message'] = str(e)
 
         return jsonify(data)
 
@@ -554,18 +651,55 @@ def init_api(app):
                 data['message'] = e.msg + " for " + e.path[0]
 
         if conforms_to_schema:
-            try:
-                followees = FollowTable.get_followees(FollowTable, follower=phonenum)
-                res = list()
-                for followee in followees:
-                    # print(FollowTable.out(FollowTable, followee))
-                    user = User.get(User, phonenum=followee.followee)
-                    res.append(User.out(User, user))
-                data['message'] = res
-                data['status'] = 200
-            except Exception as e:
-                data['status'] = 406
-                data['message'] = str(e)
+            if User.get(User, phonenum) is None:
+                data['status'] = 404
+                data['message'] = "User {} doesn't exist".format(phonenum)
+            else:
+                try:
+                    lens = FollowTable.get_count_of_followees(FollowTable, follower=phonenum)
+                    data['message'] = lens
+                    data['status'] = 200
+                except Exception as e:
+                    data['status'] = 406
+                    data['message'] = str(e)
+
+        return jsonify(data)
+
+    @app.route('/follow/get_all_followees', methods=['POST'])
+    def get_all_followees():
+        data = {}
+        phonenum = request.form.get('phonenum')
+        try:
+            schema(
+                {
+                    "phonenum": phonenum
+                }
+            )
+            conforms_to_schema = True
+        except MultipleInvalid as e:
+            data['status'] = 400
+            conforms_to_schema = False
+            if "expected" in e.msg:
+                data['message'] = e.path[0] + " is not in the correct format"
+            else:
+                data['message'] = e.msg + " for " + e.path[0]
+
+        if conforms_to_schema:
+            if User.get(User, phonenum) is None:
+                data['status'] = 404
+                data['message'] = "User {} doesn't exist".format(phonenum)
+            else:
+                try:
+                    followees = FollowTable.get_followees(FollowTable, follower=phonenum)
+                    res = list()
+                    for followee in followees:
+                        user = User.get(User, phonenum=followee.followee)
+                        res.append(User.out(User, user))
+                    data['message'] = res
+                    data['status'] = 200
+                except Exception as e:
+                    data['status'] = 406
+                    data['message'] = str(e)
 
         return jsonify(data)
 
@@ -602,7 +736,7 @@ def init_api(app):
             elif phonenum == followee:
                 data['status'] = 400
                 data['message'] = 'self-following is forbidden'
-            elif FollowTable.getbyff(FollowTable, phonenum, followee):
+            elif FollowTable.get_by_ff(FollowTable, phonenum, followee):
                 data['status'] = 400
                 data['message'] = 'repeat following is forbidden'
             else:
@@ -624,7 +758,6 @@ def init_api(app):
     @app.route('/follow/unfollow_user', methods=['POST'])
     def unfollow_user():
         data = {}
-        # fid = int(request.form.get('fid'))
         phonenum = request.form.get('phonenum')
         followee = request.form.get('followee')
         try:
@@ -645,16 +778,26 @@ def init_api(app):
 
         if conforms_to_schema:
             # check follew thirdly
-            try:
-                # consider the inconvenience of obtaining the fid ...
-                # _ = FollowTable.delete(FollowTable, fid)
-                follow = FollowTable.getbyff(FollowTable, phonenum, followee)
-                _ = FollowTable.delete(FollowTable, follow.fid)
-                data['status'] = 200
-                data['message'] = 'unfollowed successfully!'
-            except Exception as e:
-                data['status'] = 406
-                data['message'] = str(e)
+            if User.get(User, followee) is None:
+                data['status'] = 404
+                data['message'] = "User {} doesn't exist".format(followee)
+            elif phonenum == followee:
+                data['status'] = 400
+                data['message'] = 'self-unfollowing is forbidden'
+            elif FollowTable.get_by_ff(FollowTable, phonenum, followee) is None:
+                data['status'] = 400
+                data['message'] = 'repeat unfollowing is forbidden'
+            else:
+                try:
+                    # consider the inconvenience of obtaining the fid ...
+                    # _ = FollowTable.delete(FollowTable, fid)
+                    follow = FollowTable.get_by_ff(FollowTable, phonenum, followee)
+                    _ = FollowTable.delete(FollowTable, follow.fid)
+                    data['status'] = 200
+                    data['message'] = 'unfollowed successfully!'
+                except Exception as e:
+                    data['status'] = 406
+                    data['message'] = str(e)
 
         return jsonify(data)
 
@@ -691,13 +834,13 @@ def init_api(app):
 
         if conforms_to_schema:
             try:
-                images = Image.get_by_score(Image, start=pre, end=cur)
+                images = Image.get_by_weight(Image, start=pre, end=cur)
                 res = list()
                 for image in images:
                     imgdic = Image.out(Image, image)
                     post = Post.get(Post, image.pid)
-                    imgdic['likes'] = LikeTable.getcountbypid(LikeTable, pid=post.pid)
-                    imgdic['isliked'] = True if LikeTable.getbypp(LikeTable, pid=post.pid,
+                    imgdic['likes'] = LikeTable.get_count_by_pid(LikeTable, pid=post.pid)
+                    imgdic['isliked'] = True if LikeTable.get_by_pp(LikeTable, pid=post.pid,
                                                                    phonenum=phonenum) is not None else False
                     usr = User.partly_out(User, User.get(User, post.phonenum))
                     imgdic['user'] = usr

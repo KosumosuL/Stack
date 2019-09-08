@@ -6,7 +6,8 @@ schema = Schema({
     'cid': int,
     'fid': int,
     'period': int,
-    'image': str,
+    'count': int,
+    'url': str,
     'content': str,
     'token': str,
     'label': str,
@@ -18,6 +19,7 @@ schema = Schema({
     'isre': Boolean,
     'aes_score': Decimal,
     'phonenum': All(str, Length(min=11, max=11)),
+    'tar_phonenum': All(str, Length(min=11, max=11)),
     'follower': All(str, Length(min=11, max=11)),
     'followee': All(str, Length(min=11, max=11))
 })
