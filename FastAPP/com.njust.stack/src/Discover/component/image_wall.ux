@@ -1,8 +1,8 @@
 <template>
 	<div class="image-wall-container">
 		<div class="image-wall-list">
-			<div for="{{list}}" class="image-wall-product" onclick="clickToPostDetail($item.pid)">
-				<image class="image-wall-image" src="{{$item.url}}"></image>
+			<div for="{{list}}" class="image-wall-product">
+				<image class="image-wall-image" src="{{$item.url}}" onclick="clickToPostDetail($item.pid)"></image>
 			</div>
 		</div>
 	</div>
@@ -11,12 +11,15 @@
 <style>
 	.image-wall-container {
 		flex-direction: column;
+		height: 100%;
 		width: 100%;
 	}
 
 	.image-wall-list {
 		border-color: #0000ff;
 		flex-wrap: wrap;
+		height: 100%;
+		/* margin-bottom: 100px; */
 		/* margin-left: 25px; */
 		/* margin-right: 25px; */
 		/* margin-top: 0px; */
@@ -42,9 +45,7 @@
 	export default {
 		data: {
 			props: [
-				// 'list'
-				'url',
-				'pid'
+				'list'
 			],
 		},
 		clickToPostDetail(pid) {

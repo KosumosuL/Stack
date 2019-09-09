@@ -936,8 +936,8 @@ def init_api(app):
         if conforms_to_schema:
             try:
                 images = Image.get_recommended(Image)
-                import random
-                random.shuffle(images)
+                # import random
+                # random.shuffle(images)
                 res = list()
                 for image in images:
                     res.append(Image.out(Image, image))

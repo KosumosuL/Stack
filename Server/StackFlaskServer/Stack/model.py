@@ -162,8 +162,9 @@ class Image(db.Model):
     def get_recommended(self):
         from Stack.config import RECOMMEND_LIMIT
         return self.query\
-            .filter(self.weight > 10)\
-            .limit(RECOMMEND_LIMIT)\
+            .filter(self.weight > 10) \
+            .order_by(func.rand()) \
+            .limit(RECOMMEND_LIMIT) \
             .all()
 
 
