@@ -1,5 +1,4 @@
 <template>
-  <!-- template里只能有一个根节点 -->
   <div class="item-container">
     <div class="header-container">
       <div class="header-poster"  onclick="clickToUserDetail(phonenum)">
@@ -23,12 +22,12 @@
         <image src="{{liked===true?'/Community/img/like.png':'/Community/img/dislike.png'}}" class="btn" onclick="like"></image>
       </div>
     </div>
-    <text class="poster-comment" lines={{posterCommentLines}} onclick="expandPosterComment">
-      <a class="black bold">{{poster}}</a>
+    <text class="poster-comment" style="lines:{{posterCommentLines}}" onclick="expandPosterComment">
+      <a style="font-weight:bold;color:black">{{poster}}</a>
       <a value="&ensp;"></a>
-      <a class="black">{{postercomment}}</a>
+      <a style="color:black">{{postercomment}}</a>
     </text>
-    <text class="comment-number gray font-size-sm" onclick="clickToComments(pid)">查看全部{{commentnumber}}则留言</text>
+    <text class="comment-number" style="color:gray;font-size:27px" onclick="clickToComments(pid)">查看全部{{commentnumber}}则留言</text>
   </div>
 </template>
 

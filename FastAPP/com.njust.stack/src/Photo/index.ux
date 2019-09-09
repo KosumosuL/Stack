@@ -91,12 +91,12 @@
     import image from '@system.image'
     import request from '@system.request'
 
-    var CryptoJS = require("crypto-js");
-    var SecretId = 'AKIDz5p6FkpkyaY8HZTzMvpEmn1vUUeUsZ4w';
-    var SecretKey = '45XrRwHdsCRdu7B5rfOwtmbIvbxADxZ4';
-    var bucket = 'lucaszhao-1258906334';
-    var directory = 'stack/post/';
-    var period = 3600000;
+    const CryptoJS = require("../../node_modules/crypto-js");
+    const SecretId = 'AKIDz5p6FkpkyaY8HZTzMvpEmn1vUUeUsZ4w';
+    const SecretKey = '45XrRwHdsCRdu7B5rfOwtmbIvbxADxZ4';
+    const bucket = 'lucaszhao-1258906334';
+    const directory = 'test/';
+    const period = 3600;
 
     export default {
         props: [
@@ -162,16 +162,13 @@
             if (this.uris.length !== 0) {
                 var that = this;
                 var date = new Date();
-                var StartTimestamp = date.getTime();
+                var StartTimestamp = date.getTime() / 1000;
                 var EndTimestamp = StartTimestamp + period;
-                date.setTime(EndTimestamp);
-                var Expiration = date.toISOString();
                 var KeyTime = StartTimestamp + ';' + EndTimestamp;
                 var SignKey = CryptoJS.HmacSHA1(KeyTime, SecretKey).toString();
                 var Policy = JSON.stringify({
-                    "expiration": Expiration,
+                    "expiration": "2050-01-01T00:00:00.000Z",
                     "conditions": [
-                        { "acl": "default" },
                         { "bucket": bucket },
                         { "q-sign-algorithm": "sha1" },
                         { "q-ak": SecretId },
@@ -182,6 +179,7 @@
                 var Signature = CryptoJS.HmacSHA1(StringToSign, SignKey).toString();
                 var words = CryptoJS.enc.Utf8.parse(Policy);
                 var base64 = CryptoJS.enc.Base64.stringify(words);
+                console.log("request");
                 request.upload({
                     "url": 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com',
                     "files": that.uris.map(that.mapUri),
@@ -189,10 +187,6 @@
                         {
                             "name": "key",
                             "value": directory + "${filename}"
-                        },
-                        {
-                            "name": "acl",
-                            "value": "default"
                         },
                         {
                             "name": "policy",
@@ -216,13 +210,11 @@
                         }
                     ],
                     success: function (data) {
-                        console.log("request.upload success");
-                        console.log(data.code);
-                        console.log(data.data);
-                        console.log(data.headers);
+                        console.log("request.upload success (" + data.code + ") " + data.data);
                     },
                     fail: function (errmsg, errcode) {
-                        console.log("request.upload fail (" + errcode + ") " + errmsg);
+                        console.log("request.upload fail (" + errcode + ") ");
+                        console.log(errmsg);
                     }
                 });
             }
@@ -326,8 +318,7 @@
         },
         mapUri: function (item) {
             return {
-                uri: item,
-                filename: '01.jpg'
+                uri: item
             }
         }
     }
