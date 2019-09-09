@@ -1,0 +1,78 @@
+
+<template>
+  <!-- template里只能有一个根节点 -->
+  <div class="container">
+
+  </div>
+</template>
+
+<style>
+  .container {
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    background-color: #ffffff;
+  }
+
+
+</style>
+
+<script>
+  import fetch from '@system.fetch'
+  import prompt from '@system.prompt'
+  module.exports = {
+    data: {
+      pid: '',
+      comments: [
+      ],
+      userphoto: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+    },
+
+    refreshComment: function (that) {
+      return function (data) {
+        that.comments = data.data.message.map(that.mapPost);
+        clearTimeout(that.timeout);
+      }
+    },
+    showError: function (that) {
+      return function (errcode, errmsg) {
+        console.log(errcode + ' ' + errmsg);
+        prompt.showToast({ message: "请求错误", image: '/Common/logo.png' });
+        clearTimeout(that.timeout);
+      }
+    },
+    post: function (url, data) {
+      return new Promise((resolve, reject) => {
+        fetch.fetch({
+          url: url,
+          data: data,
+          responseType: 'json',
+          method: 'post',
+          success: function (data) {
+            console.log("post success");
+            resolve(data);
+          },
+          fail: function (errmsg, errcode) {
+            console.log("post fail");
+            reject(errcode, errmsg);
+          }
+        });  
+      })
+    },
+    mapPost: function (item) {
+      return {
+        comment: item.content,
+        username: item.user.username,
+        phonenum: item.user.phonenum,
+        image: item.user.photo,
+        time: item.ctime
+      }
+    },
+    onInit: function () {
+      var promise = this.post("http://114.116.248.233:12345/comment/get_all_comments", {"pid":this.pid});
+      this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.refreshComment(this), this.showError(this));
+    }
+  }
+</script>

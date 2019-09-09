@@ -69,10 +69,16 @@
 			]
 		},
 		clickToUserDetail(pn) {
-			router.push({
-				uri: "/UserDetail",
-				params: {phonenum: pn}
-			})
+      if(pn==='18260071012'){
+        router.push({
+          uri: '/Mine'
+        })
+      }else{
+        router.push({
+          uri: "/UserDetail",
+          params: {phonenum: pn}
+        })        
+      }
 		},
 	}
 </script>

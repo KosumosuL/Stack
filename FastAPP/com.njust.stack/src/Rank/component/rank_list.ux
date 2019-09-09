@@ -124,10 +124,16 @@
       prompt.showToast({ message: this.liked === true ? 'like' : 'dislike', image: '/Common/logo.png' });
     },
 		clickToUserDetail(pn) {
-			router.push({
-				uri: "/UserDetail",
-				params: {phonenum: pn}
-			})
+      if(pn==='18260071012'){
+        router.push({
+          uri: '/Mine'
+        })
+      }else{
+        router.push({
+          uri: "/UserDetail",
+          params: {phonenum: pn}
+        })        
+      }
 		},
 		clickToPostDetail(pid) {
 			router.push({

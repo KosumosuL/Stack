@@ -82,6 +82,9 @@ class Post(db.Model):
     def get(self, pid):
         return self.query.filter_by(pid=pid).first()
 
+    def get_posts(self, phonenum):
+        return self.query.filter_by(phonenum=phonenum).count()
+
     def get_followees_posts(self, phonenum, time):
         from Stack.config import SHOWPOSTS_LIMIT
         return self.query\

@@ -46,18 +46,7 @@
     data: {
       isRefreshing: false,
       isLoading: false,
-      userinfos:{
-        username: 'Lucaszhao',
-        name: 'liangzhao',
-        postericon: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-        email: 'hubukizhao@gmail.com',
-        gender: 'male',
-        // bio: 'nothing.',
-        bio: '鹦鹉来过吴江水，江上洲传鹦鹉名。鹦鹉西飞陇山去，芳洲之树何青青。烟开兰叶香风暖，岸夹桃花锦浪生。迁客此时徒极目，长洲孤月向谁明。',
-        followers: '1k',
-        following: '200',
-        posts: '59'
-      },
+      userinfos: [],
       postData: []
     },
     refreshPost: function (that) {
@@ -65,6 +54,13 @@
         that.postData = data.data.message.map(that.mapPost);
         that.isRefreshing = false;
         clearTimeout(that.timeout);
+      }
+    },
+    refreshUser: function (that) {
+      return function (data) {
+        that.userinfos = data.data.message.map(that.mapUser)[0];
+        that.isRefreshing = false;
+        clearTimeout(that.timeout1);
       }
     },
     loadMorePost: function (that) {
@@ -81,6 +77,7 @@
         that.isRefreshing = false;
         that.isLoading = false;
         clearTimeout(that.timeout);
+        clearTimeout(that.timeout1);
       }
     },
     post: function (url, data) {
@@ -107,6 +104,9 @@
       var promise = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":"18260071012", "tar_phonenum":"18260071012", "time":"2019-09-08 15:24:07"});
       this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshPost(this), this.showError(this));
+      var promise1 = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":"18260071012", "tar_phonenum":"18260071012", "time":"2019-09-08 15:24:07"});
+      this.timeout1 = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise1.then(this.refreshUser(this), this.showError(this));
     },
     scrollBottom: function () {
       var that = this;
@@ -128,10 +128,26 @@
         liked: item.isliked
       }
     },
+    mapUser: function (item) {
+      return {
+        username: item.username,
+        name: item.name,
+        postericon: item.photo,
+        email: item.email,
+        gender: item.gender,
+        bio: item.bio,
+        followers: item.followers,
+        following: item.following,
+        posts: item.posts
+      }
+    },
     onInit: function () {
       var promise = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":"18260071012", "tar_phonenum":"18260071012", "time":"2019-09-08 15:24:07"});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshPost(this), this.showError(this));
+      var promise1 = this.post("http://114.116.248.233:12345/user/get_user_info", {"phonenum":"18260071012"});
+      this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise1.then(this.refreshUser(this), this.showError(this));
     }
   }
 </script>

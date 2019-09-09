@@ -158,10 +158,16 @@
     },
 		clickToUserDetail(pn) {
       // console.log(pn);
-			router.push({
-				uri: "/UserDetail",
-				params: {phonenum: pn}
-			})
+      if(pn==='18260071012'){
+        router.push({
+          uri: '/Mine'
+        })
+      }else{
+        router.push({
+          uri: "/UserDetail",
+          params: {phonenum: pn}
+        })        
+      }
 		},
     viewImage: function (obj) {
       var that = this;

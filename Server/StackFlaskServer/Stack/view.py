@@ -60,6 +60,44 @@ def init_api(app):
 
         return jsonify(data)
 
+    @app.route('/user/get_user_info', methods=['POST'])
+    def get_user_info():
+        data = {}
+        phonenum = request.form.get('phonenum')
+        tar_phonenum = request.form.get('tar_phonenum')
+        try:
+            schema(
+                {
+                    "phonenum": phonenum,
+                    "tar_phonenum": tar_phonenum
+                }
+            )
+            conforms_to_schema = True
+        except MultipleInvalid as e:
+            data['status'] = 400
+            conforms_to_schema = False
+            if "expected" in e.msg:
+                data['message'] = e.path[0] + " is not in the correct format"
+            else:
+                data['message'] = e.msg + " for " + e.path[0]
+
+        if conforms_to_schema:
+            if User.get(User, phonenum=tar_phonenum) is None:
+                data['status'] = 404
+                data['message'] = "User {} doesn't exist".format(tar_phonenum)
+            try:
+                userdict = User.out(User, User.get(User, phonenum=tar_phonenum))
+                userdict['followers'] = FollowTable.get_count_of_followers(FollowTable, followee=tar_phonenum)
+                userdict['following'] = FollowTable.get_count_of_followees(FollowTable, follower=tar_phonenum)
+                userdict['posts'] = Post.get_posts(Post, phonenum=tar_phonenum)
+                data['message'] = [userdict]
+                data['status'] = 200
+            except Exception as e:
+                data['status'] = 406
+                data['message'] = str(e)
+
+        return jsonify(data)
+
     ###########################################
     # post
     ###########################################
@@ -102,6 +140,8 @@ def init_api(app):
                         # current like
                         postdic['likes'] = LikeTable.get_count_by_pid(LikeTable, pid=post.pid)
                         postdic['isliked'] = True if LikeTable.get_by_pp(LikeTable, pid=post.pid, phonenum=phonenum) is not None else False
+                        # follow status
+                        postdic['followed'] = True if FollowTable.get_by_ff(FollowTable, phonenum, tar_phonenum) is not None else False
                         # current comment
                         postdic['comments'] = CommentTable.get_count_by_pid(CommentTable, pid=post.pid)
                         comment = CommentTable.get_selfcomment(CommentTable, pid=post.pid, phonenum=post.phonenum)

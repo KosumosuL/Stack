@@ -55,6 +55,10 @@
         "component": "index",
         "path": "/Discover"
       },
+      "EditProfile": {
+        "component": "index",
+        "path": "/EditProfile"
+      },
       "FollowInfo": {
         "component": "index",
         "path": "/FollowInfo"
