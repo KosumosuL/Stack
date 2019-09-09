@@ -5,11 +5,11 @@
 					<image class="icon" src={{userphoto}}></image>
 				</div>
 				<div class="content-mid">
-          <input type="text" placeholder="Comment here..."/> 
+          <textarea class="textarea" placeholder="Comment here..." @change="onGetComment()"></textarea> 
 				</div>
         <div class="content-right">
           <text>
-            <a color="blue">{{'Post'}}</a>
+            <a color="blue" onclick="clickToComment">{{'Post'}}</a>
           </text>
         </div>
 			</div>
@@ -33,7 +33,7 @@
 
 	.content-list {
 		justify-content: space-between;
-		height: 120px;
+		/* height: 120px; */
 		position: fixed;
 		width: 100%;
 		bottom: 0px;
@@ -52,9 +52,13 @@
   .content-mid {
     width: 500px;
     height: 100%;
-    flex-direction: column;
+		flex-direction: column;
 		justify-content: center;
   }
+
+	.textarea {
+		margin-top: 30px;
+	}
 
 	.content-right {
 		width: 60px;
@@ -67,16 +71,46 @@
 
 <script>
 	import router from '@system.router';
-
+	import fetch from '@system.fetch'
 	export default {
 		data: {
+			comment: '',
 			props: [
 				'userphoto',
+				'pid',
+				'comments'
 			]
 		},
-		// press(item) {
-		// 	console.error("on press event param : " + item);
-		// },
+    post: function (url, data) {
+      return new Promise((resolve, reject) => {
+        fetch.fetch({
+          url: url,
+          data: data,
+          responseType: 'json',
+          method: 'post',
+          success: function (data) {
+            console.log("post success");
+            resolve(data);
+          },
+          fail: function (errmsg, errcode) {
+            console.log("post fail");
+            reject(errcode, errmsg);
+          }
+        });  
+      })
+    },
+		onGetComment: function(e) {
+      this.comment = e.value;
+    },
+		clickToComment() {
+			console.log(this.comment);
+			if(this.comment!==''){
+        var date = new Date();
+        var ctime = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        var promise = this.post("http://114.116.248.233:12345/comment/comment_post", {"phonenum":"18260071012", "pid":this.pid, "ctime":ctime, "content":this.comment});
+				this.comments.unshift({"comment":this.comment, "username":"lucaszhao", "phonenum":"18260071012", "image":this.userphoto, "ctime":ctime});
+			}
+		}
 
 		// routePage(url) {
 		// 	//跳转到应用内的某个页面

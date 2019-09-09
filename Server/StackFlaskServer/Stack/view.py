@@ -89,6 +89,10 @@ def init_api(app):
                 userdict = User.out(User, User.get(User, phonenum=tar_phonenum))
                 userdict['followers'] = FollowTable.get_count_of_followers(FollowTable, followee=tar_phonenum)
                 userdict['following'] = FollowTable.get_count_of_followees(FollowTable, follower=tar_phonenum)
+                if phonenum != tar_phonenum:
+                    # follow status
+                    userdict['followed'] = True if FollowTable.get_by_ff(FollowTable, phonenum,
+                                                                        tar_phonenum) is not None else False
                 userdict['posts'] = Post.get_posts(Post, phonenum=tar_phonenum)
                 data['message'] = [userdict]
                 data['status'] = 200
@@ -140,8 +144,6 @@ def init_api(app):
                         # current like
                         postdic['likes'] = LikeTable.get_count_by_pid(LikeTable, pid=post.pid)
                         postdic['isliked'] = True if LikeTable.get_by_pp(LikeTable, pid=post.pid, phonenum=phonenum) is not None else False
-                        # follow status
-                        postdic['followed'] = True if FollowTable.get_by_ff(FollowTable, phonenum, tar_phonenum) is not None else False
                         # current comment
                         postdic['comments'] = CommentTable.get_count_by_pid(CommentTable, pid=post.pid)
                         comment = CommentTable.get_selfcomment(CommentTable, pid=post.pid, phonenum=post.phonenum)

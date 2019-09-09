@@ -19,7 +19,8 @@
               <text class="item-mount">Following</text>
             </div>
         </div>
-        <a class="a_item">Follow</a>
+        <a class="a_item" if="{{userinfos.followed}}" onclick="clickToUnfollow">Unfollow</a>
+        <a class="b_item" else  onclick="clickToFollow">Follow</a>
       </div>
     </div>
     <div class="content-down">
@@ -106,6 +107,20 @@
     lines: 1;
   }
 
+  .b_item {
+    text-align: center;
+    background-color: #3399ff;
+    height: 60px;
+    width: 100%;
+    border-radius: 8.3px;
+		/* border-color: #fffff0;
+		border-width: 2px; */
+    padding: 20px 20px;
+    font-size: 35px;
+    color: #ffffff;
+    lines: 1;
+  }
+
 	.content-down {
     margin-top: 5px;
     margin-left: 40px;
@@ -141,7 +156,8 @@
 <script>
 	import router from '@system.router';
   import prompt from '@system.prompt'
-	
+	import fetch from '@system.fetch'
+
 	export default {
 		data: {
 			props: [
@@ -161,8 +177,41 @@
 			// 	uri: "/Page_Hearingdetail"
 			// })
 		},
+    post: function (url, data) {
+      return new Promise((resolve, reject) => {
+        fetch.fetch({
+          url: url,
+          data: data,
+          responseType: 'json',
+          method: 'post',
+          success: function (data) {
+            console.log("post success");
+            resolve(data);
+          },
+          fail: function (errmsg, errcode) {
+            console.log("post fail");
+            reject(errcode, errmsg);
+          }
+        });  
+      })
+    },
+    clickToFollow() {
+      this.userinfos.followed = !this.userinfos.followed;
+      this.userinfos.followers += 1;
+      var date = new Date();
+      var ftime = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+      var promise = this.post("http://114.116.248.233:12345/follow/follow_user", {"phonenum":"18260071012", "followee":this.userinfos.phonenum, "ftime":ftime});
+    },
+    clickToUnfollow() {
+      this.userinfos.followed = !this.userinfos.followed;
+      this.userinfos.followers -= 1;
+      var promise = this.post("http://114.116.248.233:12345/follow/unfollow_user", {"phonenum":"18260071012", "followee":this.userinfos.phonenum});
+    },
     clickToFollowInfo() {
-        router.push({ uri: '/FollowInfo' });
+        router.push({ 
+          uri: '/FollowInfo',
+          params: {phonenum: this.userinfos.phonenum}
+        });
     }
 	}
 </script>

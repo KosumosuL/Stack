@@ -265,7 +265,7 @@ class CommentTable(db.Model):
         return self.query.filter(self.pid==pid, self.phonenum==phonenum).order_by(self.ctime.asc()).first()
 
     def get_by_pid(self, pid):
-        return self.query.filter_by(pid=pid).all()
+        return self.query.filter_by(pid=pid).order_by(self.ctime.asc()).all()
 
     def get_count_by_pid(self, pid):
         return self.query.filter_by(pid=pid).count()

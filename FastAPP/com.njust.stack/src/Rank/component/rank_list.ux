@@ -107,9 +107,9 @@
 </style>
 
 <script>
-	import router from '@system.router';
+	import router from '@system.router'
   import prompt from '@system.prompt'
-	
+	import fetch from '@system.fetch'
 	export default {
 		data: {
 			props: [
@@ -119,9 +119,38 @@
 		press(item) {
 			console.error("on press event param : " + item);
 		},
+    post: function (url, data) {
+      return new Promise((resolve, reject) => {
+        fetch.fetch({
+          url: url,
+          data: data,
+          responseType: 'json',
+          method: 'post',
+          success: function (data) {
+            console.log("post success");
+            resolve(data);
+          },
+          fail: function (errmsg, errcode) {
+            console.log("post fail");
+            reject(errcode, errmsg);
+          }
+        });  
+      })
+    },
     like: function () {
+			
       this.liked = !this.liked;
-      prompt.showToast({ message: this.liked === true ? 'like' : 'dislike', image: '/Common/logo.png' });
+      if(this.liked === true) { 
+        this.likedata += 1; 
+        var date = new Date();
+        var ltime = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
+        var promise = this.post("http://114.116.248.233:12345/like/like_post", {"phonenum":"18260071012", "pid":this.pid, "ltime":ltime});
+      }
+      else { 
+        this.likedata -= 1;
+        var promise = this.post("http://114.116.248.233:12345/like/unlike_post", {"phonenum":"18260071012", "pid":this.pid});
+      }
+      // prompt.showToast({ message: this.liked === true ? 'like' : 'dislike', image: '/Common/logo.png' });
     },
 		clickToUserDetail(pn) {
       if(pn==='18260071012'){

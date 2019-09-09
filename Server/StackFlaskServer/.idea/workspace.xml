@@ -12,7 +12,7 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/StackFlaskServer$view.coverage" NAME="view Coverage Results" MODIFIED="1567580739220" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Stack" />
     <SUITE FILE_PATH="coverage/StackFlaskServer$test.coverage" NAME="test Coverage Results" MODIFIED="1567925782033" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Stack" />
-    <SUITE FILE_PATH="coverage/StackFlaskServer$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1568014077775" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/StackFlaskServer$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1568030505570" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
@@ -25,11 +25,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="view.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="view.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Stack/view.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="638">
-              <caret line="90" column="110" lean-forward="true" selection-start-line="90" selection-start-column="110" selection-end-line="90" selection-end-column="110" />
+            <state relative-caret-position="336">
+              <caret line="139" column="75" selection-start-line="139" selection-start-column="63" selection-end-line="139" selection-end-column="75" />
               <folding>
                 <element signature="e#0#34#0" expanded="true" />
                 <element signature="e#243#2389#0" />
@@ -81,11 +81,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="model.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="model.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Stack/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="242">
-              <caret line="11" selection-start-line="11" selection-end-line="16" selection-end-column="50" />
+            <state relative-caret-position="638">
+              <caret line="266" column="30" lean-forward="true" selection-start-line="266" selection-start-column="30" selection-end-line="266" selection-end-column="30" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -132,8 +132,8 @@
         <option value="$PROJECT_DIR$/Stack/test.py" />
         <option value="$PROJECT_DIR$/Stack/valid.py" />
         <option value="$PROJECT_DIR$/Stack/config.py" />
-        <option value="$PROJECT_DIR$/Stack/model.py" />
         <option value="$PROJECT_DIR$/Stack/view.py" />
+        <option value="$PROJECT_DIR$/Stack/model.py" />
       </list>
     </option>
   </component>
@@ -790,20 +790,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Stack/model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="11" selection-start-line="11" selection-end-line="16" selection-end-column="50" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Stack/view.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="638">
-          <caret line="90" column="110" lean-forward="true" selection-start-line="90" selection-start-column="110" selection-end-line="90" selection-end-column="110" />
+        <state relative-caret-position="336">
+          <caret line="139" column="75" selection-start-line="139" selection-start-column="63" selection-end-line="139" selection-end-column="75" />
           <folding>
             <element signature="e#0#34#0" expanded="true" />
             <element signature="e#243#2389#0" />
@@ -820,6 +810,16 @@
             <element signature="e#23977#25064#0" />
             <element signature="e#25165#26458#0" />
             <element signature="e#26651#27738#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Stack/model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="638">
+          <caret line="266" column="30" lean-forward="true" selection-start-line="266" selection-start-column="30" selection-end-line="266" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
           </folding>
         </state>
       </provider>

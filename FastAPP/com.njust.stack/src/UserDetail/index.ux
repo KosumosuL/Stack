@@ -105,7 +105,7 @@
       var promise = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":"18260071012", "tar_phonenum":that.phonenum, "time":"2019-09-08 15:24:07"});
       this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshPost(this), this.showError(this));
-      var promise1 = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":"18260071012", "tar_phonenum":"18260071012", "time":"2019-09-08 15:24:07"});
+      var promise1 = this.post("http://114.116.248.233:12345/user/get_user_info", {"phonenum":"18260071012", "tar_phonenum":that.phonenum});
       this.timeout1 = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise1.then(this.refreshUser(this), this.showError(this));
     },
@@ -131,12 +131,14 @@
     },
     mapUser: function (item) {
       return {
+        phonenum: item.phonenum,
         username: item.username,
         name: item.name,
         postericon: item.photo,
         email: item.email,
         gender: item.gender,
         bio: item.bio,
+        followed: item.followed,
         followers: item.followers,
         following: item.following,
         posts: item.posts
@@ -146,7 +148,7 @@
       var promise = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":"18260071012", "tar_phonenum":this.phonenum, "time":"2019-09-08 15:24:07"});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshPost(this), this.showError(this));
-      var promise1 = this.post("http://114.116.248.233:12345/user/get_user_info", {"phonenum":this.phonenum});
+      var promise1 = this.post("http://114.116.248.233:12345/user/get_user_info", {"phonenum":"18260071012", "tar_phonenum":this.phonenum});
       this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise1.then(this.refreshUser(this), this.showError(this));
     }

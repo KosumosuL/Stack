@@ -11,7 +11,7 @@
       </list>
     </refresh>
     <!-- <comment_list comments="{{comments}}"></comment_list> -->
-    <comment userphoto="{{userphoto}}"></comment>
+    <comment userphoto="{{userphoto}}" pid="{{pid}}" comments="{{comments}}"></comment>
   </div>
 </template>
 
@@ -39,68 +39,7 @@
     data: {
       isRefreshing: false,
       pid: '',
-      comments: [
-        // {
-        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-        //   'username': "吃出亮",
-        //   'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
-        // },
-        // {
-        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-        //   'username': "忽视黑天鹅",
-        //   'comment': "现象的外在机制",
-        // },
-        // {
-        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-        //   'username': "拒绝主食？",
-        //   'comment': "真的能减肥吗",
-        // },
-        // {
-        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-        //   'username': "吃出亮",
-        //   'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
-        // },
-        // {
-        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-        //   'username': "忽视黑天鹅",
-        //   'comment': "现象的外在机制",
-        // },
-        // {
-        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-        //   'username': "拒绝主食？",
-        //   'comment': "真的能减肥吗",
-        // },
-        // {
-        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-        //   'username': "吃出亮",
-        //   'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
-        // },
-        // {
-        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-        //   'username': "忽视黑天鹅",
-        //   'comment': "现象的外在机制",
-        // },
-        // {
-        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-        //   'username': "拒绝主食？",
-        //   'comment': "真的能减肥吗",
-        // },
-        // {
-        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-        //   'username': "吃出亮",
-        //   'comment': "吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品吃出漂亮：健康白领的女人都喜欢的美丽食品",
-        // },
-        // {
-        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-        //   'username': "忽视黑天鹅",
-        //   'comment': "现象的外在机制",
-        // },
-        // {
-        //   'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-        //   'username': "拒绝主食？",
-        //   'comment': "真的能减肥吗",
-        // }
-      ],
+      comments: [],
       userphoto: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
     },
 

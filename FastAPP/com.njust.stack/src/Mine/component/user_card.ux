@@ -152,10 +152,6 @@
 		press(item) {
 			console.error("on press event param : " + item);
 		},
-    like: function () {
-      this.liked = !this.liked;
-      prompt.showToast({ message: this.liked === true ? 'like' : 'dislike', image: '/Common/logo.png' });
-    },
 		routePage(url) {
 			//跳转到应用内的某个页面
 			// router.push({
@@ -163,7 +159,10 @@
 			// })
 		},
     clickToFollowInfo() {
-        router.push({ uri: '/FollowInfo' });
+        router.push({ 
+          uri: '/FollowInfo',
+          params: {phonenum: this.userinfos.phonenum}
+        });
     }
 	}
 </script>
