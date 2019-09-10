@@ -7,8 +7,10 @@
 <template>
   <!-- template里只能有一个根节点 -->
   <div class="container">
-    <div class="header" show={{idx===0||idx===2}}>
+    <div class="header" show={{idx===0||idx===2||idx===4}}>
         <text class="header-text" show={{idx===0}}>Stack</text>
+        <text class="header-name" show={{idx===4}}>Lucaszhao</text>
+        <image class="header-setting" src="/Common/back.png" show={{idx===4}}></image>
         <image class="header-back" src="/Common/back.png" show={{idx===2}} onclick="back" />
     </div>
     <tabs onchange="switchTab" index={{idx}}>
@@ -38,10 +40,12 @@
     }
     .header {
         top: 0px;
-        height: 64px;
+        height: 75px;
         position: fixed;
         width: 100%;
         background-color: #ffffff;
+        border-bottom-color: #CCCCCC;
+        border-bottom-width: 2px;
     }
     @font-face {
         font-family: 'Billabong';
@@ -51,14 +55,30 @@
         height: 100%;
         width: 100%;
         font-size: 55px;
-        margin-top: 6px;
+        margin-top: 15px;
         text-align: center;
         font-weight: bold;
         font-family: Billabong;
     }
+    .header-name {
+        height: 100%;
+        width: 100%;
+        font-size: 40px;
+        /* margin-top: 10px; */
+        margin-left: 20px;
+        /* text-align: center; */
+        /* font-weight: bold; */
+        /* font-family: Billabong; */
+    }
     .header-back {
         height: 100%;
         width: 64px;
+        object-fit: contain;
+    }
+    .header-setting {
+        height: 100%;
+        width: 64px;
+        margin-right: 110px;
         object-fit: contain;
     }
 	.tab-bar-item {

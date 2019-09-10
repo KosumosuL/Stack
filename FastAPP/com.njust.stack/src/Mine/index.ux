@@ -30,13 +30,18 @@
     background-color: #FFFFFF; */
   }
 
+  /* .refresh {
+    
+    background-color: #ffffff;
+    progress-color: #0faeff;
+  } */
+
   .refresh {
     flex-direction: column;
+    margin-top: 75px;
     background-color: #ffffff;
     progress-color: #0faeff;
   }
-
-  
 </style>
 
 <script>

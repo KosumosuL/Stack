@@ -18,7 +18,7 @@
 
 <style>
   .refresh {
-    margin-top: 64px;
+    margin-top: 75px;
     background-color: #ffffff;
     progress-color: #0faeff;
   }

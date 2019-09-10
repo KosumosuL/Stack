@@ -25,10 +25,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="view.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="view.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Stack/view.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="336">
+            <state relative-caret-position="-3621">
               <caret line="139" column="75" selection-start-line="139" selection-start-column="63" selection-end-line="139" selection-end-column="75" />
               <folding>
                 <element signature="e#0#34#0" expanded="true" />
@@ -46,6 +46,11 @@
                 <element signature="e#23977#25064#0" />
                 <element signature="e#25165#26458#0" />
                 <element signature="e#26651#27738#0" />
+                <element signature="e#27839#29132#0" />
+                <element signature="e#29286#31040#0" />
+                <element signature="e#31201#32958#0" />
+                <element signature="e#33216#35002#0" />
+                <element signature="e#35255#36300#0" />
               </folding>
             </state>
           </provider>
@@ -81,7 +86,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="model.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Stack/model.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="638">
@@ -143,7 +148,7 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="-7" />
     <option name="width" value="974" />
     <option name="height" value="1087" />
@@ -286,7 +291,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1096" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1096" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -320,7 +325,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="15" />
+      <option name="time" value="16" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -351,6 +356,11 @@
             <element signature="e#23977#25064#0" />
             <element signature="e#25165#26458#0" />
             <element signature="e#26651#27738#0" />
+            <element signature="e#27839#29132#0" />
+            <element signature="e#29286#31040#0" />
+            <element signature="e#31201#32958#0" />
+            <element signature="e#33216#35002#0" />
+            <element signature="e#35255#36300#0" />
           </folding>
         </state>
       </provider>
@@ -464,6 +474,11 @@
             <element signature="e#23977#25064#0" />
             <element signature="e#25165#26458#0" />
             <element signature="e#26651#27738#0" />
+            <element signature="e#27839#29132#0" />
+            <element signature="e#29286#31040#0" />
+            <element signature="e#31201#32958#0" />
+            <element signature="e#33216#35002#0" />
+            <element signature="e#35255#36300#0" />
           </folding>
         </state>
       </provider>
@@ -536,6 +551,11 @@
             <element signature="e#23977#25064#0" />
             <element signature="e#25165#26458#0" />
             <element signature="e#26651#27738#0" />
+            <element signature="e#27839#29132#0" />
+            <element signature="e#29286#31040#0" />
+            <element signature="e#31201#32958#0" />
+            <element signature="e#33216#35002#0" />
+            <element signature="e#35255#36300#0" />
           </folding>
         </state>
       </provider>
@@ -567,6 +587,11 @@
             <element signature="e#23977#25064#0" />
             <element signature="e#25165#26458#0" />
             <element signature="e#26651#27738#0" />
+            <element signature="e#27839#29132#0" />
+            <element signature="e#29286#31040#0" />
+            <element signature="e#31201#32958#0" />
+            <element signature="e#33216#35002#0" />
+            <element signature="e#35255#36300#0" />
           </folding>
         </state>
       </provider>
@@ -673,6 +698,11 @@
             <element signature="e#23977#25064#0" />
             <element signature="e#25165#26458#0" />
             <element signature="e#26651#27738#0" />
+            <element signature="e#27839#29132#0" />
+            <element signature="e#29286#31040#0" />
+            <element signature="e#31201#32958#0" />
+            <element signature="e#33216#35002#0" />
+            <element signature="e#35255#36300#0" />
           </folding>
         </state>
       </provider>
@@ -790,9 +820,19 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Stack/model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="638">
+          <caret line="266" column="30" lean-forward="true" selection-start-line="266" selection-start-column="30" selection-end-line="266" selection-end-column="30" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Stack/view.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="336">
+        <state relative-caret-position="-3621">
           <caret line="139" column="75" selection-start-line="139" selection-start-column="63" selection-end-line="139" selection-end-column="75" />
           <folding>
             <element signature="e#0#34#0" expanded="true" />
@@ -810,16 +850,11 @@
             <element signature="e#23977#25064#0" />
             <element signature="e#25165#26458#0" />
             <element signature="e#26651#27738#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Stack/model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="638">
-          <caret line="266" column="30" lean-forward="true" selection-start-line="266" selection-start-column="30" selection-end-line="266" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
+            <element signature="e#27839#29132#0" />
+            <element signature="e#29286#31040#0" />
+            <element signature="e#31201#32958#0" />
+            <element signature="e#33216#35002#0" />
+            <element signature="e#35255#36300#0" />
           </folding>
         </state>
       </provider>
