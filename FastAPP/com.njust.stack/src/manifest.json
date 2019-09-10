@@ -35,7 +35,7 @@
   ],
   "config": {},
   "router": {
-    "entry": "Main",
+    "entry": "Login",
     "pages": {
       "Comments": {
         "component": "index",
@@ -53,9 +53,17 @@
         "component": "index",
         "path": "/EditProfile"
       },
+      "EntryPerInfo": {
+        "component": "index",
+        "path": "/EntryPerInfo"
+      },
       "FollowInfo": {
         "component": "index",
         "path": "/FollowInfo"
+      },
+      "Login": {
+        "component": "index",
+        "path": "/Login"
       },
       "Main": {
         "component": "index",
@@ -76,6 +84,10 @@
       "Rank": {
         "component": "index",
         "path": "/Rank"
+      },
+      "Register": {
+        "component": "index",
+        "path": "/Register"
       },
       "Search": {
         "component": "index",
