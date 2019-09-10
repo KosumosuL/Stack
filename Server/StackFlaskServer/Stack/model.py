@@ -98,8 +98,7 @@ class Post(db.Model):
     def get_followees_posts(self, phonenum, time):
         from Stack.config import SHOWPOSTS_LIMIT
         return self.query\
-            .filter(self.phonenum == FollowTable.followee)\
-            .filter(FollowTable.follower == phonenum) \
+            .filter(or_(and_(self.phonenum == FollowTable.followee, FollowTable.follower == phonenum), self.phonenum == phonenum))\
             .filter(self.ptime < time) \
             .order_by(self.ptime.desc())\
             .limit(SHOWPOSTS_LIMIT)\
@@ -185,6 +184,12 @@ class Image(db.Model):
             .limit(RECOMMEND_LIMIT) \
             .all()
 
+    def search(self, keyword):
+        from Stack.config import SEARCH_LIMIT
+        return self.query\
+            .filter(self.label.like("%" + keyword + "%"))\
+            .limit(SEARCH_LIMIT)\
+            .all()
 
     def add(self, image):
         db.session.add(image)

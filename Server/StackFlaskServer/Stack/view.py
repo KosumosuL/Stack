@@ -1080,7 +1080,7 @@ def init_api(app):
                         res[u.phonenum] += 1
 
                 res = sorted(res.items(), key=lambda x: x[1], reverse=True)
-                from Stack.config import UL_RECOMMEND_LIMIT
+                from Stack.config import U_RECOMMEND_LIMIT
                 count = 0
                 ans = list()
                 for pn, cnt in res:
@@ -1089,7 +1089,7 @@ def init_api(app):
                         userdict['count'] = cnt
                         ans.append(userdict)
                         count += 1
-                    if count >= UL_RECOMMEND_LIMIT:
+                    if count >= U_RECOMMEND_LIMIT:
                         break
                 data['message'] = ans
                 data['status'] = 200
@@ -1134,17 +1134,17 @@ def init_api(app):
                             res[label] += 1
 
                 res = sorted(res.items(), key=lambda x: x[1], reverse=True)
-                from Stack.config import UL_RECOMMEND_LIMIT
+                from Stack.config import L_RECOMMEND_LIMIT
                 count = 0
                 ans = list()
                 for label, cnt in res:
                     if label != '其它':
-                        imgdict = dict()
-                        imgdict['label'] = label
-                        imgdict['count'] = cnt
-                        ans.append(imgdict)
-                        count += 1
-                    if count >= UL_RECOMMEND_LIMIT // 2:
+                        images = Image.search(Image, keyword=label)
+                        for image in images:
+                            if Post.get_by_pp(Post, image.pid, phonenum) is None:
+                                ans.append(Image.out(Image, image))
+                                count += 1
+                    if count >= L_RECOMMEND_LIMIT:
                         break
                 data['message'] = ans
                 data['status'] = 200
@@ -1220,8 +1220,8 @@ def init_api(app):
                 labellist = list()
                 images = Image.search(Image, keyword=keyword)
                 for image in images:
-                    if Post.get_by_pp(Post, image.pid, phonenum) is None:
-                        labellist.append(Image.out(Image, image))
+                    # if Post.get_by_pp(Post, image.pid, phonenum) is None:
+                    labellist.append(Image.out(Image, image))
                 data['message'] = labellist
                 data['status'] = 200
             except Exception as e:

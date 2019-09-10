@@ -20,6 +20,7 @@
     </div>
     <div class="panel">
     <!-- tab 部分开始 -->
+    <block if="{{showPageType==='searchBar'}}">
       <tabs onchange="onChangeTabIndex">
         <tab-bar class="tab-bar" mode="scrollable">
           <block for="tabs">
@@ -29,30 +30,38 @@
             </div>
           </block>
         </tab-bar>
-        
         <tab-content class="tab_content">
-          <block if="{{showPageType==='searchBar'}}">
             <!-- tabs的body部分 -->
             <div class="div_tabcontent">
                 <user_list userinfos="{{rec_users}}"></user_list>
             </div>
             <div class="div_tabcontent">
-                <user_list userinfos="{{userinfos}}"></user_list>
+                <image_wall list="{{rec_labels}}"></image_wall>
             </div>
-          </block>
-          <!-- 搜索结果页面展示区域 -->
-          <block if="{{showPageType==='result'}}">   
-            <!-- tabs的body部分 -->
-            <div class="div_tabcontent">
-                <user_list userinfos="{{userinfos}}"></user_list>
-            </div>
-            <div class="div_tabcontent">
-                <image_wall list="{{imgs}}"></image_wall>
-            </div>
-          </block>           
         </tab-content>
       </tabs>
-
+    </block>
+    <block if="{{showPageType==='result'}}">   
+      <tabs onchange="onChangeTabIndex">
+        <tab-bar class="tab-bar" mode="scrollable">
+          <block for="tabs">
+            <div class="tab-item">
+              <text>{{$item}}</text>
+              <div class="{{$idx==currIndex? 'item_bg_active' : 'item_bg'}}"></div>
+            </div>
+          </block>
+        </tab-bar>
+        <tab-content class="tab_content">
+            <!-- tabs的body部分 -->
+            <div class="div_tabcontent">
+                <user_list userinfos="{{sear_users}}"></user_list>
+            </div>
+            <div class="div_tabcontent">
+                <image_wall list="{{sear_labels}}"></image_wall>
+            </div>
+        </tab-content>
+      </tabs>
+      </block>
     </div>
   </div>
 </template>
@@ -281,19 +290,8 @@
     data: {
       inputValue: "",
       showPageType: "searchBar",
-      tabs: ["ACCOUNTS", "LABELS"],
+      tabs: ["账户", "标签"],
       currIndex: 0,
-      imgs:[
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_217.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Bing_222.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_067.png',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
-          {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
-      ],
       userinfos: [],
       rec_users: [],
       rec_labels: [],
@@ -306,9 +304,21 @@
         clearTimeout(that.timeout);
       }
     },
+    getSearUsers: function (that) {
+      return function (data) {
+        that.sear_users = data.data.message.map(that.mapUser);
+        clearTimeout(that.timeout);
+      }
+    },
     getRecLabels: function (that) {
       return function (data) {
         that.rec_labels = data.data.message.map(that.mapLabel);
+        clearTimeout(that.timeout1);
+      }
+    },
+    getSearLabels: function (that) {
+      return function (data) {
+        that.sear_labels = data.data.message.map(that.mapLabel);
         clearTimeout(that.timeout1);
       }
     },
@@ -348,19 +358,16 @@
     },
     mapLabel: function (item) {
       return {
-        image: item.photo,
-        username: item.username,
-        name: item.name,
-        phonenum: item.phonenum
+        uri: item.url
       }
     },
     onInit: function () {
       var promise = this.post("http://114.116.248.233:12345/recommend/recommend_users", {"phonenum":this.$app.$def.data.phonenum});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.getRecUsers(this), this.showError(this));
-      // var promise1 = this.post("http://114.116.248.233:12345/recommend/recommend_labels", {"phonenum":this.$app.$def.data.phonenum});
-      // this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
-      // promise1.then(this.getRecLabels(this), this.showError(this));
+      var promise1 = this.post("http://114.116.248.233:12345/recommend/recommend_labels", {"phonenum":this.$app.$def.data.phonenum});
+      this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise1.then(this.getRecLabels(this), this.showError(this));
     },
     find() {
       if (this.inputValue === null || this.inputValue === undefined || this.inputValue === "") {
@@ -368,7 +375,10 @@
       }
       var promise = this.post("http://114.116.248.233:12345/discover/search_user", {"phonenum":this.$app.$def.data.phonenum, "keyword":this.inputValue});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
-      promise.then(this.getRecUsers(this), this.showError(this));
+      promise.then(this.getSearUsers(this), this.showError(this));
+      var promise1 = this.post("http://114.116.248.233:12345/discover/search_label", {"phonenum":this.$app.$def.data.phonenum, "keyword":this.inputValue});
+      this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise1.then(this.getSearLabels(this), this.showError(this));
     },
     search() {
       if (this.inputValue === null || this.inputValue === undefined || this.inputValue === "") {
@@ -381,6 +391,7 @@
       this.inputValue = e.text;
       if (this.inputValue !== "" && this.inputValue !== undefined && this.inputValue !== null) {
         this.showPageType = "result";
+        console.log(this.showPageType);
         console.log("result");
         this.find();
       }
