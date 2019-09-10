@@ -19,7 +19,7 @@
               <text class="item-mount">Following</text>
             </div>
         </div>
-        <a class="a_item">Edit Profile</a>
+        <a class="a_item" onclick="clickToEdit">Edit Profile</a>
       </div>
     </div>
     <div class="content-down">
@@ -152,17 +152,17 @@
 		press(item) {
 			console.error("on press event param : " + item);
 		},
-		routePage(url) {
-			//跳转到应用内的某个页面
-			// router.push({
-			// 	uri: "/Page_Hearingdetail"
-			// })
+		clickToEdit() {
+			router.push({
+				uri: '/EditProfile',
+        params: {userinfos: this.userinfos}
+			});
 		},
     clickToFollowInfo() {
-        router.push({ 
-          uri: '/FollowInfo',
-          params: {phonenum: this.userinfos.phonenum}
-        });
+      router.push({ 
+        uri: '/FollowInfo',
+        params: {phonenum: this.userinfos.phonenum}
+      });
     }
 	}
 </script>

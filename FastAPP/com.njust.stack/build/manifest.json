@@ -89,7 +89,14 @@
   },
   "display": {
     "titleBar": false,
-    "pages": {}
+    "pages": {
+      "EditProfile": {
+        "titleBar": true
+      },
+      "Comments": {
+        "titleBar": true
+      }
+    }
   },
   "debugable": true
 }

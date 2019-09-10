@@ -1,78 +1,186 @@
-
 <template>
-  <!-- template里只能有一个根节点 -->
-  <div class="container">
-
+  <div class="account-content">
+    <div class="top-content">
+      <div class="poster-item">
+        <image class="icon" src={{userinfos.postericon}}></image>
+        <a class="a_item">Edit Profile</a>
+      </div>
+      <div class="account-item">
+				<text class="account-subtitle">{{titlecontact}}</text>
+				<input class="account-input" autofocus="autofocus" value="{{userinfos.username}}" placeholder="{{placeholdername}}" maxlength="20" @change="inputChange('name')"></input>
+			</div>
+      <div class="account-item">
+				<text class="account-subtitle">{{titleusename}}</text>
+				<input class="account-input" value="{{userinfos.name}}" placeholder="{{placeholderusename}}" maxlength="20" @change="inputChange('usename')"></input>
+			</div>
+      <div class="account-item">
+        <text class="account-subtitle">{{titleEmail}}</text>
+        <input class="account-input" value="{{userinfos.email}}" placeholder="{{placeholderEmail}}" @change="inputChange('Email')"></input>
+      </div>
+      <div class="account-item">
+        <text class="account-subtitle">{{titlebio}}</text>
+        <input class="account-input" value="{{userinfos.bio}}" placeholder="{{placeholderbio}}" maxlength="100" @change="inputChange('bio')"></input>
+      </div>
+      <div class="account-label-box">
+				<text class="{{userinfos.gender===true?'account-active':'account-label'}}" onclick="chooseSex('men')">{{sex.man}}</text>
+				<text class="{{userinfos.gender===true?'account-label':'account-active'}}" onclick="chooseSex('women')">{{sex.lady}}</text>
+			</div>
+    </div>
+    <div class="account-btn-box">
+			<text class="account-btn" >{{titleconfirm}}</text>
+		</div>
   </div>
 </template>
-
 <style>
-  .container {
+  .account-content {
+		flex-direction: column;
+    justify-content: space-between;
+	}
+	.top-content{
     flex-direction: column;
     justify-content: center;
     align-content: center;
-    align-items: center;
-    background-color: #ffffff;
+    margin-left: 20px;
+    margin-right: 20px;
+	}
+
+	.account-item {
+    flex-direction: column;
+    margin-top: 20px;
+		/* padding: 34px 33px 10px 33px; */
+  }
+  
+  .poster-item {
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    /* background-color: #00a2d4; */
   }
 
+	.icon {
+		width: 250px;
+		height: 250px;
+		object-fit: cover;
+		border-radius: 125px;
+		/* considering */
+		border-color: #dc143c;
+		border-width: 5px;
+    margin: 40px 230px 40px 230px;
+  }
 
+  .a_item {
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0);
+    height: 60px;
+    width: 100%;
+    padding: 20px 20px;
+    font-size: 35px;
+    color: #0066ff;
+    lines: 1;
+  }
+	.account-subtitle {
+		width: 147px;
+		font-size: 31.3px;
+		color: gray;
+	}
+
+	.account-input {
+		height: 67px;
+		flex: 1;
+		font-size: 31.3px;
+		color: #1A1A1A;
+		border-bottom-color: #cccccc;
+		border-bottom-width: 1px;
+	}
+
+	.account-label-box {
+		padding: 50px 0px 14px 180px;
+	}
+
+	.account-label {
+		padding: 8px 40px;
+		margin: 0px 34px 0px 0px;
+		background-color: #F2F2F2;
+		font-size: 35px;
+		color: #cccccc;
+		border-radius: 8.3px;
+	}
+
+	.account-active {
+		padding: 8px 40px;
+		margin: 0px 34px 0px 0px;
+		background-color: #F2F2F2;
+		font-size: 35px;
+    color: #0066ff;
+		border-radius: 8.3px;
+	}
+
+	.account-btn-box {
+		margin-bottom: 150px;
+	}
+
+	.account-btn {
+		padding: 20px 155px;
+		margin: 0px 188px 0px 188px;
+		font-size: 31.3px;
+		color: #ffffff;
+		background-color: #0066ff;
+		border-radius: 8.3px;
+	}
 </style>
-
 <script>
-  import fetch from '@system.fetch'
-  import prompt from '@system.prompt'
+  import router from '@system.router'
   module.exports = {
     data: {
-      pid: '',
-      comments: [
-      ],
-      userphoto: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+      userinfos: '',
+      params:{
+        name:'',
+        usename:'',
+        sex:'men',
+        phone:'1',
+        Email:'1',
+        bio:'1'
+      },
+      titlecontact: '姓名:',	// 姓名title
+			placeholdername: '姓名',	 // 姓名提示信息 placeholdery
+      titleusename: '用户名:',
+      placeholderusename: '用户名',
+      sex: {
+				man: '先生',
+				lady: '女士'
+			},
+      titlephone:'电话:',
+      placeholderphone:'手机号码',
+      titleEmail:'电子邮件:',
+      placeholderEmail:'电子邮件',
+      titlebio:'bio',
+      placeholderbio:'bio',
+      titleconfirm:'确定',
     },
-
-    refreshComment: function (that) {
-      return function (data) {
-        that.comments = data.data.message.map(that.mapPost);
-        clearTimeout(that.timeout);
-      }
+    onInit() {
+      // console.log(typeof(this.userinfos));
+      this.userinfos = JSON.parse(this.userinfos)
+      // console.log(this.userinfos);
+      this.$page.setTitleBar({ 
+        text: '修改信息',
+				textColor: '#1a1a1a',
+				opacity: 1,
+				backgroundColor: '#f2f2f2',
+				menu: false 
+        })
     },
-    showError: function (that) {
-      return function (errcode, errmsg) {
-        console.log(errcode + ' ' + errmsg);
-        prompt.showToast({ message: "请求错误", image: '/Common/logo.png' });
-        clearTimeout(that.timeout);
-      }
+		inputChange: function(type,e) {
+      this.params[type] = e.value;
     },
-    post: function (url, data) {
-      return new Promise((resolve, reject) => {
-        fetch.fetch({
-          url: url,
-          data: data,
-          responseType: 'json',
-          method: 'post',
-          success: function (data) {
-            console.log("post success");
-            resolve(data);
-          },
-          fail: function (errmsg, errcode) {
-            console.log("post fail");
-            reject(errcode, errmsg);
-          }
-        });  
-      })
+		chooseSex: function(type) {
+      this.params.sex = type;
     },
-    mapPost: function (item) {
-      return {
-        comment: item.content,
-        username: item.user.username,
-        phonenum: item.user.phonenum,
-        image: item.user.photo,
-        time: item.ctime
-      }
-    },
-    onInit: function () {
-      var promise = this.post("http://114.116.248.233:12345/comment/get_all_comments", {"pid":this.pid});
-      this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
-      promise.then(this.refreshComment(this), this.showError(this));
+		ok: function() {
+      router.push({
+				'uri': '/Mine',
+				'params': this.params
+			});
     }
   }
 </script>

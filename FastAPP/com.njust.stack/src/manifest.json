@@ -90,6 +90,12 @@
   "display": {
     "titleBar": false,
     "pages": {
+      "EditProfile":{
+        "titleBar": true
+      },
+      "Comments":{
+        "titleBar": true
+      }
     }
   }
 }

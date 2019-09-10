@@ -340,6 +340,56 @@ def init_api(app):
 
         return jsonify(data)
 
+    # for each post, get the number of likes
+    # check auth(phonenum) firstly
+    @app.route('/post/re_post', methods=['POST'])
+    def re_post():
+        data = {}
+        pid = int(request.form.get('pid'))
+        ptime = request.form.get('ptime')
+        phonenum = request.form.get('phonenum')
+        try:
+            schema(
+                {
+                    "pid": pid,
+                    "ptime": ptime,
+                    "phonenum": phonenum
+                }
+            )
+            conforms_to_schema = True
+        except MultipleInvalid as e:
+            data['status'] = 400
+            conforms_to_schema = False
+            if "expected" in e.msg:
+                data['message'] = e.path[0] + " is not in the correct format"
+            else:
+                data['message'] = e.msg + " for " + e.path[0]
+
+        if conforms_to_schema:
+            # check post secondly
+            if Post.get(Post, pid) is None:
+                data['status'] = 404
+                data['message'] = "Post {} doesn't exist".format(pid)
+            else:
+                post = Post(ptime=ptime,
+                            phonenum=phonenum)
+                try:
+                    new_pid, _ = Post.add(Post, post)
+                    images = Image.get_by_pid(Image, pid)
+                    for image in images:
+                        new_image = Image(url=image.url,
+                                          label=image.label,
+                                          aes_score=image.aes_score,
+                                          weight=image.weight,
+                                          pid=new_pid)
+                        _ = Image.add(Image, new_image)
+                    data['message'] = 're-post successfully!'
+                    data['status'] = 200
+                except Exception as e:
+                    data['status'] = 406
+                    data['message'] = str(e)
+
+        return jsonify(data)
     ###########################################
     # like
     ###########################################
