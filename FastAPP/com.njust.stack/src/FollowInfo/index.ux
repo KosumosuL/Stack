@@ -4,7 +4,7 @@
   <!-- template里只能有一个根节点 -->
   <div class="container">
     <!-- tab 部分开始 -->
-    <tabs onchange="onChangeTabIndex">
+    <tabs onchange="onChangeTabIndex" index={{currIndex}}>
       <tab-bar class="tab-bar" mode="scrollable">
         <block for="tabs">
           <div class="tab-item">
@@ -66,19 +66,20 @@
     flex-direction: column;
     align-items: center;
     width: 50%;
+    height: 100%;
   }
 
   .tab-item text {
     opacity: 0.5;
-    margin-top: 27.5px;
-    margin-bottom: 27.5px;
+    margin-top: 10px;
+    margin-bottom: 30px;
     font-size: 35px;
   }
 
   .tab-item text:active {
     font-size: 35px;
-    margin-top: 27.5px;
-    margin-bottom: 27.5px;
+    margin-top: 10px;
+    margin-bottom: 30px;
     font-weight: bold;
     color: black;
   }
@@ -93,10 +94,12 @@
   import prompt from '@system.prompt'
 
   export default {
+    props: [
+      'currIndex'
+    ],
     data: {
       // placeholder: "关注",
       tabs: ["Followers", "Following"],
-      currIndex: 0,
       phonenum: '',
       followerInfo: [],
       followeeInfo: []
@@ -148,6 +151,7 @@
       }
     },
     onInit() {
+      this.$page.setTitleBar({backgroundColor: '#ffffff', textColor: '#000000'});
       var promise = this.post("http://114.116.248.233:12345/follow/get_all_followers", {"phonenum":this.phonenum});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.getFollowers(this), this.showError(this));

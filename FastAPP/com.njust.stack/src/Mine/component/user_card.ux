@@ -8,15 +8,15 @@
         <div class="usercard-bottom">
             <div class="usercard-bottom-item">
               <text class="item-key">{{userinfos.posts}}</text>
-              <text class="item-mount">Posts</text>
+              <text class="item-mount">动态</text>
             </div>
-            <div class="usercard-bottom-item" onclick="clickToFollowInfo">
+            <div class="usercard-bottom-item" onclick="clickToFollowInfo(0)">
               <text class="item-key">{{userinfos.followers}}</text>
-              <text class="item-mount">Followers</text>
+              <text class="item-mount">被关注</text>
             </div>
-            <div class="usercard-bottom-item" onclick="clickToFollowInfo">
+            <div class="usercard-bottom-item" onclick="clickToFollowInfo(1)">
               <text class="item-key">{{userinfos.following}}</text>
-              <text class="item-mount">Following</text>
+              <text class="item-mount">关注中</text>
             </div>
         </div>
         <a class="a_item" onclick="clickToEdit">Edit Profile</a>
@@ -144,10 +144,10 @@
   import prompt from '@system.prompt'
 	
 	export default {
+    props: [
+      'userinfos'
+    ],
 		data: {
-			props: [
-				'userinfos',
-			]
 		},
 		press(item) {
 			console.error("on press event param : " + item);
@@ -158,10 +158,10 @@
         params: {userinfos: this.userinfos}
 			});
 		},
-    clickToFollowInfo() {
+    clickToFollowInfo: function (idx) {
       router.push({ 
         uri: '/FollowInfo',
-        params: {phonenum: this.userinfos.phonenum}
+        params: {phonenum: this.userinfos.phonenum, currIndex: idx}
       });
     }
 	}

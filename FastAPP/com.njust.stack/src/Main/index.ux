@@ -73,7 +73,7 @@
     .header-setting {
         height: 100%;
         width: 64px;
-        margin-right: 110px;
+        margin-right: 20px;
         object-fit: contain;
     }
 	.tab-bar-item {
