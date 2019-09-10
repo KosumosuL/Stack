@@ -6,11 +6,10 @@
     <refresh offset="130px" refreshing={{isRefreshing}} onrefresh="refresh" class="refresh">
       <list>
         <list-item for={{comments}} type="listItem{{$idx}}">
-          <comment_list image={{$item.image}} username={{$item.username}} phonenum={{$item.phonenum}} comment={{$item.comment}} time={{$item.time}}></comment_list>
+          <comment_list image={{$item.image}} username={{$item.username}} phonenum={{$item.phonenum}} comment={{$item.comment}} time={{$item.time}} isself={{$item.isself}} cid={{$item.cid}} pid="{{pid}}" info={{info}} idx={{$idx}}></comment_list>
         </list-item>
       </list>
     </refresh>
-    <!-- <comment_list comments="{{comments}}"></comment_list> -->
     <comment userphoto="{{userphoto}}" pid="{{pid}}" comments="{{comments}}"></comment>
   </div>
 </template>
@@ -41,6 +40,7 @@
       pid: '',
       comments: [],
       userphoto: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
+      info: {deleteid: -1}
     },
     refreshComment: function (that) {
       return function (data) {
@@ -78,17 +78,19 @@
     refresh: function (e) {
       var that = this;
       this.isRefreshing = e.refreshing;
-      var promise = this.post("http://114.116.248.233:12345/comment/get_all_comments", {"pid":that.pid});
+      var promise = this.post("http://114.116.248.233:12345/comment/get_all_comments", {"pid":that.pid, "phonenum": "18260071012"});
       this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshComment(this), this.showError(this));
     },
     mapPost: function (item) {
       return {
+        cid: item.cid,
         comment: item.content,
         username: item.user.username,
         phonenum: item.user.phonenum,
         image: item.user.photo,
-        time: item.ctime
+        time: item.ctime,
+        isself: item.isself
       }
     },
     onInit: function () {
@@ -99,9 +101,17 @@
 				backgroundColor: '#f2f2f2',
 				menu: false 
       });
-      var promise = this.post("http://114.116.248.233:12345/comment/get_all_comments", {"pid":this.pid});
+      var promise = this.post("http://114.116.248.233:12345/comment/get_all_comments", {"pid":this.pid, "phonenum": "18260071012"});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshComment(this), this.showError(this));
+      this.$watch('info.deleteid', 'handleDelete');
+    },
+    handleDelete: function (newVal, oldVal) {
+      console.log('handleDelete ' + newVal);
+      if (newVal >= 0 && newVal < this.comments.length) {
+        this.comments.splice(newVal, 1);
+        this.info.deleteid = -1;
+      }
     }
   }
 </script>

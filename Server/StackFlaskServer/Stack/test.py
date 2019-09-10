@@ -30,3 +30,11 @@ t = datetime.datetime.strptime('2019-09-01 15:24:07', '%Y-%m-%d %H:%M:%S')
 print(t)
 print(t<now)
 print(t>now-delta)
+
+a = dict()
+a[1]=4
+a[2]=1
+a[3]=9
+print(a)
+a=sorted(a.items(),key = lambda x:x[1],reverse = True)
+print(a)

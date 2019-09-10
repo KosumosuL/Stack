@@ -8,7 +8,7 @@
         <user_card userinfos="{{userinfos}}"></user_card>
       </list-item>
       <list-item for={{postData}} type="listItem{{$idx}}">
-        <mine-component-post swiperdata={{$item.swiperdata}} pid={{$item.pid}} likedata={{$item.likedata}} poster={{$item.poster}} postericon={{$item.postericon}} postercomment={{$item.postercomment}} commentnumber={{$item.commentnumber}} posttime={{$item.posttime}} liked={{$item.liked}}></mine-component-post>
+        <mine-component-post posData="{{postData}}" swiperdata={{$item.swiperdata}} pid={{$item.pid}} likedata={{$item.likedata}} poster={{$item.poster}} postericon={{$item.postericon}} postercomment={{$item.postercomment}} commentnumber={{$item.commentnumber}} posttime={{$item.posttime}} liked={{$item.liked}} info={{info}} idx={{$idx}} ></mine-component-post>
       </list-item>
       <list-item type="loadMore" show={{isLoading}}>
         <div class="loadMore">
@@ -52,7 +52,8 @@
       isRefreshing: false,
       isLoading: false,
       userinfos: [],
-      postData: []
+      postData: [],
+      info: {deleteid: -1}
     },
     refreshPost: function (that) {
       return function (data) {
@@ -154,6 +155,14 @@
       var promise1 = this.post("http://114.116.248.233:12345/user/get_user_info", {"phonenum":"18260071012", "tar_phonenum":"18260071012"});
       this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise1.then(this.refreshUser(this), this.showError(this));
+      this.$watch('info.deleteid', 'handleDelete');
+    },
+    handleDelete: function (newVal, oldVal) {
+      console.log('handleDelete ' + newVal);
+      if (newVal >= 0 && newVal < this.postData.length) {
+        this.postData.splice(newVal, 1);
+        this.info.deleteid = -1;
+      }
     }
   }
 </script>

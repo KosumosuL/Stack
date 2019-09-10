@@ -223,7 +223,7 @@ def init_api(app):
     # (aes_score-50)+likes*0.005
     # to ensure the balance between about 10k likes and high score
     # when number of likes is small, to expand the influence of the aes_score
-    # and when it is large(>10k), to expand the affect of the likes
+    # and when it is large(>10k=>1%*total user), to expand the affect of the likes
     # (100-50) == 10k*0.005 == 50
     # user creates one post
     # check auth(phonenum) firstly
@@ -574,10 +574,12 @@ def init_api(app):
     @app.route('/comment/get_all_comments', methods=['POST'])
     def get_all_comments():
         data = {}
+        phonenum = request.form.get('phonenum')
         pid = int(request.form.get('pid'))
         try:
             schema(
                 {
+                    "phonenum": phonenum,
                     "pid": pid
                 }
             )
@@ -602,6 +604,7 @@ def init_api(app):
                     for comment in comments:
                         comdict = CommentTable.out(CommentTable, comment)
                         usr = User.partly_out(User, User.get(User, comment.phonenum))
+                        comdict['isself'] = True if usr['phonenum'] == phonenum else False
                         comdict['user'] = usr
                         res.append(comdict)
                     data['message'] = res
@@ -1073,10 +1076,22 @@ def init_api(app):
                     for f in fs:
                         u = User.get(User, phonenum=f.followee)
                         if u.phonenum not in res:
-                            res[u.phonenum] = list()
-                        res[u.phonenum].append(user)
-                    res.append(User.out(User, user))
-                data['message'] = res
+                            res[u.phonenum] = 1
+                        res[u.phonenum] += 1
+
+                res = sorted(res.items(), key=lambda x: x[1], reverse=True)
+                from Stack.config import UL_RECOMMEND_LIMIT
+                count = 0
+                ans = list()
+                for pn, cnt in res:
+                    if pn != phonenum and FollowTable.get_by_ff(FollowTable, phonenum, pn) is None:
+                        userdict = User.out(User, User.get(User, phonenum=pn))
+                        userdict['count'] = cnt
+                        ans.append(userdict)
+                        count += 1
+                    if count >= UL_RECOMMEND_LIMIT:
+                        break
+                data['message'] = ans
                 data['status'] = 200
             except Exception as e:
                 data['status'] = 406
@@ -1107,19 +1122,31 @@ def init_api(app):
 
         if conforms_to_schema:
             try:
-                followees = FollowTable.get_followees(FollowTable, follower=phonenum)
+                posts = Post.get_all_posts(Post, phonenum)
                 res = dict()
-                for followee in followees:
-                    # print(FollowTable.out(FollowTable, followee))
-                    user = User.get(User, phonenum=followee.followee)
-                    fs = FollowTable.get_followees(FollowTable, follower=user.phonenum)
-                    for f in fs:
-                        u = User.get(User, phonenum=f.followee)
-                        if u.phonenum not in res:
-                            res[u.phonenum] = list()
-                        res[u.phonenum].append(user)
-                    res.append(User.out(User, user))
-                data['message'] = res
+                for post in posts:
+                    images = Image.get_by_pid(Image, post.pid)
+                    for image in images:
+                        labels = image.label.split()
+                        for label in labels:
+                            if label not in res:
+                                res[label] = 1
+                            res[label] += 1
+
+                res = sorted(res.items(), key=lambda x: x[1], reverse=True)
+                from Stack.config import UL_RECOMMEND_LIMIT
+                count = 0
+                ans = list()
+                for label, cnt in res:
+                    if label != '其它':
+                        imgdict = dict()
+                        imgdict['label'] = label
+                        imgdict['count'] = cnt
+                        ans.append(imgdict)
+                        count += 1
+                    if count >= UL_RECOMMEND_LIMIT // 2:
+                        break
+                data['message'] = ans
                 data['status'] = 200
             except Exception as e:
                 data['status'] = 406
@@ -1131,14 +1158,16 @@ def init_api(app):
     # search
     ###########################################
     # search posts in discover page
-    @app.route('/discover/search', methods=['POST'])
-    def search():
+    @app.route('/discover/search_user', methods=['POST'])
+    def search_user():
         data = {}
         keyword = request.form.get('keyword')
+        phonenum = request.form.get('phonenum')
         try:
             schema(
                 {
-                    "keyword": keyword
+                    "keyword": keyword,
+                    "phonenum": phonenum
                 }
             )
             conforms_to_schema = True
@@ -1152,11 +1181,12 @@ def init_api(app):
 
         if conforms_to_schema:
             try:
-                posts = Post.getbylabel_fuzzy(Post, keyword=keyword)
-                res = list()
-                for post in posts:
-                    res.append(Post.out(Post, post))
-                data['message'] = res
+                userlist = list()
+                users = User.search(User, keyword=keyword)
+                for user in users:
+                    if user.phonenum != phonenum:
+                        userlist.append(User.out(User, user))
+                data['message'] = userlist
                 data['status'] = 200
             except Exception as e:
                 data['status'] = 406
@@ -1164,6 +1194,41 @@ def init_api(app):
 
         return jsonify(data)
 
+    @app.route('/discover/search_label', methods=['POST'])
+    def search_label():
+        data = {}
+        keyword = request.form.get('keyword')
+        phonenum = request.form.get('phonenum')
+        try:
+            schema(
+                {
+                    "keyword": keyword,
+                    "phonenum": phonenum
+                }
+            )
+            conforms_to_schema = True
+        except MultipleInvalid as e:
+            data['status'] = 400
+            conforms_to_schema = False
+            if "expected" in e.msg:
+                data['message'] = e.path[0] + " is not in the correct format"
+            else:
+                data['message'] = e.msg + " for " + e.path[0]
+
+        if conforms_to_schema:
+            try:
+                labellist = list()
+                images = Image.search(Image, keyword=keyword)
+                for image in images:
+                    if Post.get_by_pp(Post, image.pid, phonenum) is None:
+                        labellist.append(Image.out(Image, image))
+                data['message'] = labellist
+                data['status'] = 200
+            except Exception as e:
+                data['status'] = 406
+                data['message'] = str(e)
+
+        return jsonify(data)
 
     # for testing
     @app.route('/')

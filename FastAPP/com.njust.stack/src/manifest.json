@@ -81,6 +81,10 @@
         "component": "index",
         "path": "/Search"
       },
+      "Setting": {
+        "component": "index",
+        "path": "/Setting"
+      },
       "UserDetail": {
         "component": "index",
         "path": "/UserDetail"
@@ -91,6 +95,12 @@
     "titleBar": false,
     "pages": {
       "EditProfile":{
+        "titleBar": true
+      },
+      "UserDetail":{
+        "titleBar": true
+      },
+      "PostDetail":{
         "titleBar": true
       },
       "Comments":{

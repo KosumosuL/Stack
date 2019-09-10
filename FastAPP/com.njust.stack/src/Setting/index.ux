@@ -1,0 +1,116 @@
+<template>
+  <div class="account-content">
+    <div class="top-content">
+        <image class="icon" src="https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png"></image>
+        <a class="a_item">Lucaszhao</a>
+    </div>
+    <div class="account-btn-box">
+      <text class="account-about" onclick="clickToAbout">有关</text>
+      <text class="account-logout" onclick="clickToLogout">注销</text>
+		</div>
+  </div>
+</template>
+<style>
+  .account-content {
+		flex-direction: column;
+    justify-content: space-between;
+	}
+	.top-content{
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    margin-top: 100px;
+    margin-left: 20px;
+    margin-right: 20px;
+	}
+
+	.icon {
+		width: 250px;
+		height: 250px;
+		object-fit: cover;
+		border-radius: 125px;
+		/* considering */
+		border-color: #dc143c;
+		border-width: 5px;
+    margin: 100px 230px 40px 230px;
+  }
+
+  .a_item {
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0);
+    height: 60px;
+    width: 100%;
+    padding: 20px 20px;
+    font-size: 35px;
+    color: #0066ff;
+    lines: 1;
+  }
+
+	.account-btn-box {
+    flex-direction: column;
+		margin-bottom: 250px;
+	}
+
+	.account-about {
+    width: 100%;
+    height: 100px;
+    text-align: center;
+    font-size: 31.3px;
+    border-bottom-color: #ffffff;
+    border-bottom-width: 1px;
+		color: #000000;
+		background-color: rgb(202, 202, 202);
+    border-radius: 8.3px;
+    margin-bottom: 10px;
+  }
+  
+	.account-logout {
+    width: 100%;
+    height: 100px;
+    text-align: center;
+    font-size: 31.3px;
+    /* border-bottom-color: #ffffff; */
+    border-bottom-width: 1px;
+		color: #ffffff;
+		background-color: #FF0000;
+		border-radius: 8.3px;
+  }
+</style>
+<script>
+  import router from '@system.router'
+  import prompt from '@system.prompt'
+  module.exports = {
+    onInit() {
+      this.$page.setTitleBar({ 
+        text: '设置',
+				textColor: '#1a1a1a',
+				opacity: 1,
+				backgroundColor: '#f2f2f2',
+				menu: false 
+        })
+    },
+    clickToAbout() {
+      // prompt.showDialog({
+      //   title: 'About',
+      //   message: '   Stack\nNJUST&HUAWEI\nInternship Project',
+      //   buttons: [
+      //     {
+      //       text: 'btn',
+      //       color: '#33dd44'
+      //     }
+      //   ],
+      //   success: function(data) {
+      //     console.log("handling callback");
+      //   },
+      //   fail: function(data, code) {
+      //     console.log("handling fail, code=" + code);
+      //   }
+      // })
+    },
+    clickToLogout() {
+      router.replace({
+        uri: '/Login'
+      })
+    }
+  }
+</script>

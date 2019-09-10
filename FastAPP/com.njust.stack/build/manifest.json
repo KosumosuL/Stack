@@ -1,0 +1,112 @@
+{
+  "package": "com.njust.stack",
+  "name": "Stack",
+  "versionName": "1.0.0",
+  "versionCode": 1,
+  "icon": "/Common/logo.png",
+  "minPlatformVersion": 1040,
+  "features": [
+    {
+      "name": "system.image"
+    },
+    {
+      "name": "system.media"
+    },
+    {
+      "name": "system.prompt"
+    },
+    {
+      "name": "system.router"
+    },
+    {
+      "name": "system.ai"
+    },
+    {
+      "name": "system.fetch"
+    },
+    {
+      "name": "system.request"
+    }
+  ],
+  "permissions": [
+    {
+      "origin": "*"
+    }
+  ],
+  "config": {},
+  "router": {
+    "entry": "Main",
+    "pages": {
+      "Comments": {
+        "component": "index",
+        "path": "/Comments"
+      },
+      "Community": {
+        "component": "index",
+        "path": "/Community"
+      },
+      "Discover": {
+        "component": "index",
+        "path": "/Discover"
+      },
+      "EditProfile": {
+        "component": "index",
+        "path": "/EditProfile"
+      },
+      "FollowInfo": {
+        "component": "index",
+        "path": "/FollowInfo"
+      },
+      "Main": {
+        "component": "index",
+        "path": "/Main"
+      },
+      "Mine": {
+        "component": "index",
+        "path": "/Mine"
+      },
+      "Photo": {
+        "component": "index",
+        "path": "/Photo"
+      },
+      "PostDetail": {
+        "component": "index",
+        "path": "/PostDetail"
+      },
+      "Rank": {
+        "component": "index",
+        "path": "/Rank"
+      },
+      "Search": {
+        "component": "index",
+        "path": "/Search"
+      },
+      "Setting": {
+        "component": "index",
+        "path": "/Setting"
+      },
+      "UserDetail": {
+        "component": "index",
+        "path": "/UserDetail"
+      }
+    }
+  },
+  "display": {
+    "titleBar": false,
+    "pages": {
+      "EditProfile": {
+        "titleBar": true
+      },
+      "UserDetail": {
+        "titleBar": true
+      },
+      "PostDetail": {
+        "titleBar": true
+      },
+      "Comments": {
+        "titleBar": true
+      }
+    }
+  },
+  "debugable": true
+}

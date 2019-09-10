@@ -2,12 +2,15 @@
   <!-- template里只能有一个根节点 -->
   <div class="item-container">
     <div class="header-container">
-      <div class="header-poster" onclick="viewPoster">
+      <!-- <div class="header-poster" onclick="viewPoster">
         <image src={{postericon}} class="icon"></image>
         <text class="black bold">{{poster}}</text>
-      </div>
+      </div> -->
       <div class="header-time">
         <text>{{posttime}}</text>
+      </div>
+      <div class="header-delete">
+        <image src="/Photo/img/clearPhoto.png" class="btn" onclick="delete"></image>
       </div>
     </div>
     <swiper class="swiper" autoplay=true id="swiper">
@@ -57,6 +60,9 @@
     object-fit: contain;
   }
   .header-time {
+    /* justify-content: flex-end; */
+  }
+  .header-delete {
     justify-content: flex-end;
   }
   .swiper {
@@ -121,17 +127,21 @@
 	import fetch from '@system.fetch'
   module.exports = {
     props: [
-        'swiperdata',
-        'likedata',
-        'poster',
-        'pid',
-        'postercomment',
-        'commentnumber',
-        'postericon',
-        'posttime',
-        'liked'
+      'info',
+      'idx',
+      'posData',
+      'swiperdata',
+      'likedata',
+      'poster',
+      'pid',
+      'postercomment',
+      'commentnumber',
+      'postericon',
+      'posttime',
+      'liked'
     ],
     data: {
+        postid: -1,
         posterCommentLines: 2
     },
     retweet: function () {
@@ -142,6 +152,12 @@
     },
     comment: function () {
       prompt.showToast({ message: 'comment', image: '/Common/logo.png' });
+    },
+    delete: function () {
+      var promise = this.post("http://114.116.248.233:12345/post/delete_post", {"pid":this.pid});
+      prompt.showToast({ message: 'delete', image: '/Common/logo.png' });
+      this.info.deleteid = this.idx;
+      // console.log(this.info);
     },
     clickToComments(pid) {
         router.push({ 
@@ -202,6 +218,8 @@
     },
     onInit: function () {
       this.$watch('swiperdata', 'handleUpdate');
+      this.postid = this.idx;
+      this.pipe = this.info;
     },
     handleUpdate: function (newVal, oldVal) {
       this.$element('swiper').swipeTo({index: 0});

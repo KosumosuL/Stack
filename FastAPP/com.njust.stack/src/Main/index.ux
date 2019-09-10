@@ -10,7 +10,7 @@
     <div class="header" show={{idx===0||idx===2||idx===4}}>
         <text class="header-text" show={{idx===0}}>Stack</text>
         <text class="header-name" show={{idx===4}}>Lucaszhao</text>
-        <image class="header-setting" src="/Common/back.png" show={{idx===4}}></image>
+        <image class="header-setting" src="/Common/setting.png" show={{idx===4}} onclick="setting"></image>
         <image class="header-back" src="/Common/back.png" show={{idx===2}} onclick="back" />
     </div>
     <tabs onchange="switchTab" index={{idx}}>
@@ -97,6 +97,7 @@
 </style>
 
 <script>
+    import router from '@system.router'
     module.exports = {
         data: {
             idx: 0,
@@ -115,6 +116,9 @@
         },
         back: function () {
             this.idx = this.backup;
+        },
+        setting() {
+			router.push({uri: '/Setting'});
         },
         onInit: function () {
             this.$app.$def.data.phonenum = "18260071011";

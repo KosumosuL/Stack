@@ -12,7 +12,7 @@
         <div class="image_search_back_div" onclick="search">
           <image class="image_search_result " src="./img/search.png"></image>
         </div>
-        <input class="search" id="search" name="search" value="{{inputValue}}" placeholder="搜索书籍、作者" onchange="updateValue()"></input>
+        <input class="search" id="search" name="search" value="{{inputValue}}" placeholder="在这里，尽情发现" onchange="updateValue()"></input>
         <div show="{{inputValue!=''}}" class="image_search_back_div" onclick="resetSearchValue">
           <image class="image_search_result close_size" src="./img/search_close.png"></image>
         </div>
@@ -31,24 +31,23 @@
         </tab-bar>
         
         <tab-content class="tab_content">
-          <block if="{{showPageType === 'searchBar'}}">
+          <block if="{{showPageType==='searchBar'}}">
             <!-- tabs的body部分 -->
             <div class="div_tabcontent">
-                <user_list userinfos="{{userinfos}}"></user_list>
+                <user_list userinfos="{{rec_users}}"></user_list>
             </div>
             <div class="div_tabcontent">
                 <user_list userinfos="{{userinfos}}"></user_list>
             </div>
           </block>
-
           <!-- 搜索结果页面展示区域 -->
-          <block if="{{showPageType ==='result'}}">   
+          <block if="{{showPageType==='result'}}">   
             <!-- tabs的body部分 -->
             <div class="div_tabcontent">
                 <user_list userinfos="{{userinfos}}"></user_list>
             </div>
             <div class="div_tabcontent">
-                <user_list userinfos="{{userinfos}}"></user_list>
+                <image_wall list="{{imgs}}"></image_wall>
             </div>
           </block>           
         </tab-content>
@@ -274,14 +273,14 @@
 </style>
 
 <script>
+  import fetch from '@system.fetch'
+  import prompt from '@system.prompt'
   import router from '@system.router';
 
   export default {
     data: {
-      // key: "",
       inputValue: "",
       showPageType: "searchBar",
-      isAutoClick: true,
       tabs: ["ACCOUNTS", "LABELS"],
       currIndex: 0,
       imgs:[
@@ -294,54 +293,79 @@
           {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/cover/73934916_p0.jpg',},
           {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/01.jpg',},
           {uri: 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/post/AM_Google_525.png',},
-        ],
-      userinfos: [
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
-          'username': "吃出漂亮：健康白领的女人都喜欢的美丽食品",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-          'username': "忽视黑天鹅现象的外在机制",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-          'username': "拒绝主食真的能减肥吗？",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-          'username': "吃出漂亮：健康白领的女人都喜欢的美丽食品",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default1.png",
-          'username': "忽视黑天鹅现象的外在机制",
-          'name': "./img/time.png",
-        },
-        {
-          'image': "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/default.jpg",
-          'username': "拒绝主食真的能减肥吗？",
-          'name': "./img/time.png",
-        }
-      ]
+      ],
+      userinfos: [],
+      rec_users: [],
+      rec_labels: [],
+      sear_users: [],
+      sear_labels: []
+    },
+    getRecUsers: function (that) {
+      return function (data) {
+        that.rec_users = data.data.message.map(that.mapUser);
+        clearTimeout(that.timeout);
+      }
+    },
+    getRecLabels: function (that) {
+      return function (data) {
+        that.rec_labels = data.data.message.map(that.mapLabel);
+        clearTimeout(that.timeout1);
+      }
+    },
+    showError: function (that) {
+      return function (errcode, errmsg) {
+        console.log(errcode + ' ' + errmsg);
+        prompt.showToast({ message: "请求错误", image: '/Common/logo.png' });
+        clearTimeout(that.timeout);
+        clearTimeout(that.timeout1);
+      }
+    },
+    post: function (url, data) {
+      return new Promise((resolve, reject) => {
+        fetch.fetch({
+          url: url,
+          data: data,
+          responseType: 'json',
+          method: 'post',
+          success: function (data) {
+            console.log("post success");
+            resolve(data);
+          },
+          fail: function (errmsg, errcode) {
+            console.log("post fail");
+            reject(errcode, errmsg);
+          }
+        });  
+      })
+    },
+    mapUser: function (item) {
+      return {
+        image: item.photo,
+        username: item.username,
+        name: item.name,
+        phonenum: item.phonenum
+      }
+    },
+    mapLabel: function (item) {
+      return {
+        image: item.photo,
+        username: item.username,
+        name: item.name,
+        phonenum: item.phonenum
+      }
     },
     onInit: function () {
-      //titlebar的状态，在manifest.json中display设置的
-      this.$page.setTitleBar({
-        menu: false
-      });
-      },
-  
+      var promise = this.post("http://114.116.248.233:12345/recommend/recommend_users", {"phonenum":this.$app.$def.data.phonenum});
+      this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.getRecUsers(this), this.showError(this));
+      var promise1 = this.post("http://114.116.248.233:12345/recommend/recommend_labels", {"phonenum":this.$app.$def.data.phonenum});
+      this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise1.then(this.getRecLabels(this), this.showError(this));
+    },
     find() {
       if (this.inputValue === null || this.inputValue === undefined || this.inputValue === "") {
         return;
       }
-      //增加历史搜索记录
-      // this.addHistory();
-      // use the search api
     },
     search() {
       if (this.inputValue === null || this.inputValue === undefined || this.inputValue === "") {
@@ -353,15 +377,11 @@
     updateValue(e) {
       this.inputValue = e.text;
       if (this.inputValue !== "" && this.inputValue !== undefined && this.inputValue !== null) {
-        if (this.isAutoClick) {
-          this.showPageType = "result";
-          this.find();
-        }
+        this.showPageType = "result";
+        console.log("result");
+        this.find();
       }
     },
-    // setInputValue(text) {
-    //   this.inputValue = text || "请输入搜索词汇";
-    // },
     back() {
       router.back();
     },

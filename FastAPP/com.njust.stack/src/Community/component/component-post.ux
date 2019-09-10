@@ -191,7 +191,7 @@
     },
 		clickToUserDetail(pn) {
       // console.log(pn);
-      if(pn==='18260071012'){
+      if(pn===this.$app.$def.data.phonenum){
         router.push({
           uri: '/Mine'
         })

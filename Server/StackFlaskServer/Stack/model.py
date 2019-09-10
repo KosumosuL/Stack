@@ -34,6 +34,13 @@ class User(db.Model):
     def get(self, phonenum):
         return self.query.filter_by(phonenum=phonenum).first()
 
+    def search(self, keyword):
+        from Stack.config import SEARCH_LIMIT
+        return self.query\
+            .filter(or_(self.username.like("%" + keyword + "%"), self.name.like("%" + keyword + "%")))\
+            .limit(SEARCH_LIMIT)\
+            .all()
+
     # def add(self, user):
     #     db.session.add(user)
     #     return session_commit()
@@ -85,6 +92,9 @@ class Post(db.Model):
     def get_posts(self, phonenum):
         return self.query.filter_by(phonenum=phonenum).count()
 
+    def get_all_posts(self, phonenum):
+        return self.query.filter_by(phonenum=phonenum).all()
+
     def get_followees_posts(self, phonenum, time):
         from Stack.config import SHOWPOSTS_LIMIT
         return self.query\
@@ -104,12 +114,17 @@ class Post(db.Model):
             .limit(SHOWPOSTS_LIMIT)\
             .all()
 
+    def get_by_pp(self, pid, phonenum):
+        return self.query.filter(self.pid == pid, self.phonenum == phonenum).first()
+
     def get_by_label(self, keyword):
         return self.query.filter_by(label=keyword).order_by(self.aes_score.desc()).all()
 
-    def get_by_label_fuzzy(self, keyword):
-        # keyword cannot be blank(must be checked in frond end)
-        return self.query.filter(self.label.like("%" + keyword + "%")).all()
+    def search(self, keyword):
+        from Stack.config import SEARCH_LIMIT
+        return self.query\
+            .filter(self.label.like("%" + keyword + "%"))\
+            .limit(SEARCH_LIMIT).all()
 
     def add(self, post):
         db.session.add(post)
