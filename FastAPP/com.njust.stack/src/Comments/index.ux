@@ -42,7 +42,6 @@
       comments: [],
       userphoto: "https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png",
     },
-
     refreshComment: function (that) {
       return function (data) {
         that.comments = data.data.message.map(that.mapPost);

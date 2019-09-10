@@ -143,7 +143,9 @@
     clickToComments(pid) {
         router.push({ 
           uri: '/Comments', 
-          params: {pid: pid}
+          params: {
+            pid: pid
+          }
         });
     },
     post: function (url, data) {

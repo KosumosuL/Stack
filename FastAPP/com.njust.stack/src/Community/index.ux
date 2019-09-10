@@ -38,6 +38,7 @@
 
 <script>
   import fetch from '@system.fetch'
+  import router from '@system.router'
   import prompt from '@system.prompt'
   module.exports = {
     data: {
@@ -118,6 +119,6 @@
       var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":"18260071011", "time":"2019-09-10 15:24:07"});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshPost(this), this.showError(this));
-    }
+    },
   }
 </script>
