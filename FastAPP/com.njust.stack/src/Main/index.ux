@@ -95,6 +95,9 @@
         },
         back: function () {
             this.idx = this.backup;
-        }
+        },
+        onInit: function () {
+            this.$app.$def.data.phonenum = "18260071012";
+        },
     }
 </script>
