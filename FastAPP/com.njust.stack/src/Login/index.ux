@@ -1,0 +1,170 @@
+<template>
+    <div class="container">
+        <div class="top-content">
+            <div class="poster-item">
+                <a class="a_item">Stack</a>
+            </div>
+            <div class="account-item">
+                <text class="account-subtitle">手机号</text>
+                <input class="account-input" onfocus="onFocusPhoneNum" onblur="onBlur" maxlength="20" border-bottom-color={{focusItem===0?"#0066ff":"#cccccc"}} onchange="getPhoneNum" ></input>
+            </div>
+            <div class="account-item">
+                <text class="account-subtitle">密码</text>
+                <input type="password" class="account-input" onfocus="onFocusPassword" onblur="onBlur" maxlength="20" border-bottom-color={{focusItem===1?"#0066ff":"#cccccc"}} onchange="getPassword" ></input>
+            </div>
+        </div>
+        <div class="buttons">
+          <input type="button" class="account-btn" value="注册" onclick="register"></input>
+          <input type="button" class="account-btn" value="登录" onclick="login"></input>
+        </div>
+    </div>
+</template>
+
+<style>
+    .container {
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        background-color: #ffffff;
+    }
+    .top-content{
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+    .account-item {
+        flex-direction: column;
+        margin-top: 20px;
+    }
+    .poster-item {
+        width: 100%;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+    }
+    @font-face {
+        font-family: 'Billabong';
+        src: url('/Common/Billabong.ttf');
+    }
+    .a_item {
+        text-align: center;
+        color: #000000;
+        height: 200px;
+        width: 100%;
+        padding: 20px 20px;
+        font-family: Billabong;
+        font-weight: bold;
+        font-size: 150px;
+        lines: 1;
+    }
+    .account-subtitle {
+        width: 147px;
+        font-size: 31.3px;
+        color: gray;
+    }
+    .account-input {
+        height: 67px;
+        flex: 1;
+        font-size: 31.3px;
+        color: #1A1A1A;
+        border-bottom-width: 1px;
+    }
+    .selection {
+        border-bottom-width: 1px;
+    }
+    .buttons {
+      width: 100%;
+      justify-content: center;
+      margin-top: 70px;
+    }
+    .account-btn {
+        font-size: 31.3px;
+        color: #ffffff;
+        background-color: #0066ff;
+        border-radius: 8.3px;
+        height: 75px;
+        width: 250px;
+        margin-left: 40px;
+        margin-right: 40px;
+    }
+</style>
+
+<script>
+    import prompt from '@system.prompt'
+    import fetch from '@system.fetch'
+    import router from '@system.router'
+
+    module.exports = {
+        data: {
+          focusItem: -1,
+          inputPhoneNum: '',
+          inputPassword: ''
+        },
+        onFocusPhoneNum: function () {
+            this.focusItem = 0;
+        },
+        onFocusPassword: function () {
+            this.focusItem = 1;
+        },
+        onBlur: function () {
+            this.focusItem = -1;
+        },
+        getPhoneNum: function (e) {
+            this.inputPhoneNum = e.value;
+        },
+        getPassword: function (e) {
+            this.inputPassword = e.value;
+        },
+        register: function () {
+          router.push({
+            uri: '/Register'
+          })
+        },
+        login: function () {
+          var that = this;
+          fetch.fetch({
+            url: 'http://101.132.227.218:8080/stackUserManagement/login',
+            data: { "phoneNum": that.inputPhoneNum, "password": that.inputPassword },
+            responseType:'json',
+            method:"POST",
+            success: function (data) {
+              var returnType = data.data.errNo;
+              var token = data.data.token;
+              if( returnType === "200" ) {
+                fetch.fetch({
+                  url: 'http://114.116.248.233:12345/user/get_user_info',
+                  data: {"phonenum": that.inputPhoneNum, "tar_phonenum": that.inputPhoneNum},
+                  responseType: 'json',
+                  method: 'post',
+                  success: function (data) {
+                    console.log("post success");
+                    prompt.showToast({ message: '登录成功', image: '/Common/logo.png' });
+                    that.$app.$def.data.phonenum = data.data.message[0].phonenum;
+                    that.$app.$def.data.username = data.data.message[0].username;
+                    that.$app.$def.data.iconuri = data.data.message[0].photo;
+                    router.replace({
+                      uri: '/Main'
+                    });
+                  },
+                  fail: function (errmsg, errcode) {
+                    console.log("post fail");
+                    prompt.showToast({ message: '登录失败', image: '/Common/logo.png' });
+                  }
+                }); 
+              } else if ( returnType === "404" ) {
+                prompt.showToast({ message: '用户不存在', image: '/Common/logo.png' });
+              } else {
+                prompt.showToast({ message: '密码错误', image: '/Common/logo.png' });
+              }
+            },
+            fail: function (data, code) {
+              console.log("handling fail, code = " + code);
+              prompt.showToast({ message: '网络错误', image: '/Common/logo.png' });
+            }
+          });
+        }
+    }
+</script>

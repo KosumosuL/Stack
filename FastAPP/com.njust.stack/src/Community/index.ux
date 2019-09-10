@@ -38,7 +38,6 @@
 
 <script>
   import fetch from '@system.fetch'
-  import router from '@system.router'
   import prompt from '@system.prompt'
   module.exports = {
     data: {

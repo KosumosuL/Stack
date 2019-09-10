@@ -5,7 +5,6 @@
 <import name='mine' src='../Mine/index'></import>
 
 <template>
-  <!-- template里只能有一个根节点 -->
   <div class="container">
     <div class="header" show={{idx===0||idx===2||idx===4}}>
         <text class="header-text" show={{idx===0}}>Stack</text>
@@ -64,11 +63,7 @@
         height: 100%;
         width: 100%;
         font-size: 40px;
-        /* margin-top: 10px; */
         margin-left: 20px;
-        /* text-align: center; */
-        /* font-weight: bold; */
-        /* font-family: Billabong; */
     }
     .header-back {
         height: 100%;
@@ -105,7 +100,7 @@
                 { icon: './img/discover.png', icon_choice: './img/selected-discover.png'},
                 { icon: './img/new.png', icon_choice: './img/selected-new.png'},
                 { icon: './img/rank.png', icon_choice: './img/selected-rank.png'},
-                { icon: './img/mine.png', icon_choice: './img/selected-mine.png'}
+                { icon: './img/mine.png', icon_choice: getApp().$def.data.iconuri}
             ],
             backup: 0
         },
@@ -115,11 +110,6 @@
         },
         back: function () {
             this.idx = this.backup;
-        },
-        onInit: function () {
-            this.$app.$def.data.phonenum = "18260071011";
-            this.$app.$def.data.username = "LucasZhao";
-            this.$app.$def.data.icon = "/Common/logo.png";
         }
     }
 </script>
