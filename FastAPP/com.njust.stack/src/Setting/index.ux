@@ -90,22 +90,22 @@
         })
     },
     clickToAbout() {
-      // prompt.showDialog({
-      //   title: 'About',
-      //   message: '   Stack\nNJUST&HUAWEI\nInternship Project',
-      //   buttons: [
-      //     {
-      //       text: 'btn',
-      //       color: '#33dd44'
-      //     }
-      //   ],
-      //   success: function(data) {
-      //     console.log("handling callback");
-      //   },
-      //   fail: function(data, code) {
-      //     console.log("handling fail, code=" + code);
-      //   }
-      // })
+      prompt.showDialog({
+        title: 'About',
+        message: 'Stack\nNJUST&HUAWEI\nInternship Project',
+        buttons: [
+          {
+            text: 'Fine.',
+            color: '#33dd44'
+          }
+        ],
+        success: function(data) {
+          console.log("handling callback");
+        },
+        fail: function(data, code) {
+          console.log("handling fail, code=" + code);
+        }
+      })
     },
     clickToLogout() {
       router.replace({

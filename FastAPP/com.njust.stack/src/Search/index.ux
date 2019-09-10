@@ -358,14 +358,17 @@
       var promise = this.post("http://114.116.248.233:12345/recommend/recommend_users", {"phonenum":this.$app.$def.data.phonenum});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.getRecUsers(this), this.showError(this));
-      var promise1 = this.post("http://114.116.248.233:12345/recommend/recommend_labels", {"phonenum":this.$app.$def.data.phonenum});
-      this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
-      promise1.then(this.getRecLabels(this), this.showError(this));
+      // var promise1 = this.post("http://114.116.248.233:12345/recommend/recommend_labels", {"phonenum":this.$app.$def.data.phonenum});
+      // this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      // promise1.then(this.getRecLabels(this), this.showError(this));
     },
     find() {
       if (this.inputValue === null || this.inputValue === undefined || this.inputValue === "") {
         return;
       }
+      var promise = this.post("http://114.116.248.233:12345/discover/search_user", {"phonenum":this.$app.$def.data.phonenum, "keyword":this.inputValue});
+      this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
+      promise.then(this.getRecUsers(this), this.showError(this));
     },
     search() {
       if (this.inputValue === null || this.inputValue === undefined || this.inputValue === "") {
