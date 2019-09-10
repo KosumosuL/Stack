@@ -12,6 +12,9 @@
                 </div>
             </div>
         </div>
+        <div class="progress-container" show={{show&&showProgress}}>
+            <progress percent={{percent}} class="progress-bar"></progress>
+        </div>
         <div class="list-center" show={{show}}>
             <image src="/Photo/img/takePhoto.png" class="btn image-contain" onclick="takePhoto" />
             <image src="/Photo/img/pickPhoto.png" class="btn image-contain" onclick="pickPhoto" />
@@ -61,7 +64,17 @@
 		width: 100%;
         margin: 1px 1px 1px 1px;
         background-color: #ffffff;
-	}
+    }
+    .progress-container {
+        width: 100%;
+        bottom: 100px;
+        position: fixed;
+        flex-direction: column;
+    }
+    .progress-bar {
+        stroke-width: 60px;
+        width: 100%;
+    }
     .list-center {
         position: fixed;
         bottom: 0px;
@@ -97,7 +110,7 @@
     const SecretId = 'AKIDz5p6FkpkyaY8HZTzMvpEmn1vUUeUsZ4w';
     const SecretKey = '45XrRwHdsCRdu7B5rfOwtmbIvbxADxZ4';
     const bucket = 'lucaszhao-1258906334';
-    const directory = 'test/';
+    const directory = 'stack/post/';
     const period = 3600;
 
     export default {
@@ -109,8 +122,11 @@
             idx: -1,
             displayuri: '',
             backup: [],
-            num: 0,
-            results: {}
+            numPhoto: 0,
+            numTotal: 0,
+            results: {},
+            showProgress: false,
+            percent: 0
         },
         takePhoto: function () {
             var that = this;
@@ -168,8 +184,6 @@
                 this.idx = -1;
                 this.displayuri = '';
                 this.backup = [];
-                this.num = 0;
-                this.results = {};
                 prompt.showToast({ message: "清空相片" });    
             }
         },
@@ -217,8 +231,6 @@
                             that.idx = -1;
                             that.displayuri = '';
                             that.backup = [];
-                            that.num = 0;
-                            that.results = {};
                         } else if (that.idx > obj.$idx) {
                             that.idx -= 1;
                         } else if (that.idx === obj.$idx) {
@@ -266,7 +278,7 @@
             if (this.uris.length !== 0) {
                 var that = this;
                 var date = new Date();
-                var StartTimestamp = date.getTime() / 1000;
+                var StartTimestamp = Math.floor(date.getTime() / 1000);
                 var EndTimestamp = StartTimestamp + period;
                 var KeyTime = StartTimestamp + ';' + EndTimestamp;
                 var SignKey = CryptoJS.HmacSHA1(KeyTime, SecretKey).toString();
@@ -283,6 +295,11 @@
                 var Signature = CryptoJS.HmacSHA1(StringToSign, SignKey).toString();
                 var words = CryptoJS.enc.Utf8.parse(Policy);
                 var base64 = CryptoJS.enc.Base64.stringify(words);
+                that.numPhoto = 0;
+                that.numTotal = 0;
+                that.results = {};
+                that.showProgress = true;
+                that.percent = 0;
                 for (let i = 0; i < that.uris.length; i++) {
                     request.upload({
                         "url": 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com',
@@ -321,11 +338,15 @@
                             console.log("request.upload success (" + data.code + ")");
                             console.log(data.data);
                             that.results["url_"+i] = data.headers.Location;
-                            that.num += 1;
+                            that.numPhoto += 1;
+                            that.percent = that.numPhoto / that.uris.length * 100;
+                            that.numTotal += 1;
                         },
                         fail: function (errmsg, errcode) {
                             console.log("request.upload fail (" + errcode + ")");
                             console.log(errmsg);
+                            prompt.showToast({ message: '上传失败', image: '/Common/logo.png' });
+                            that.showProgress = false;
                         }
                     });
                     ai.detectLabel ({
@@ -339,32 +360,36 @@
                             } else {
                                 that.results["label_"+i] = category + " " + label;
                             }
-                            that.num += 1;
+                            that.numTotal += 1;
                         },
                         fail: function (data, code) {
                             console.log("ai.detectLabel fail, code: " + code);
                             console.log(data);
+                            prompt.showToast({ message: '检测失败', image: '/Common/logo.png' });
+                            that.showProgress = false;
                         }
                     });
                     ai.detectAestheticsScore ({
                         uri: that.uris[i],
                         success: function (data) {
                             console.log("ai.detectAestheticsScore success");
-                            that.results["aes_score_"+i] = data.score;
-                            that.num += 1;
+                            that.results["aes_score_"+i] = parseFloat(data.score).toString() === "NaN" ? 0 : parseFloat(data.score);
+                            that.numTotal += 1;
                         },
                         fail: function (data, code) {
                             console.log("ai.detectAestheticsScore fail, code: " + code);
                             console.log(data);
+                            prompt.showToast({ message: '检测失败', image: '/Common/logo.png' });
+                            that.showProgress = false;
                         }
                     });
                 }
             }
         },
         onInit: function () {
-            this.$watch('num', 'handleNum');
+            this.$watch('numTotal', 'handleNumTotal');
         },
-        handleNum: function (newVal, oldVal) {
+        handleNumTotal: function (newVal, oldVal) {
             if (newVal !== 0 && newVal === this.uris.length * 3) {
                 var that = this;
                 that.results["count"] = that.uris.length;
@@ -383,11 +408,10 @@
                     },
                     fail: function (errmsg, errcode) {
                         console.log("fetch.fetch fail");
-                        prompt.showToast({ message: "上传失败" });
+                        prompt.showToast({ message: "上传失败", image: '/Common/logo.png' });
                     },
                     complete: function () {
-                        that.num = 0;
-                        that.results = {};
+                        that.showProgress = false;
                     }
                 });
             }

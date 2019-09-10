@@ -117,7 +117,9 @@
             this.idx = this.backup;
         },
         onInit: function () {
-            this.$app.$def.data.phonenum = "18260071012";
-        },
+            this.$app.$def.data.phonenum = "18260071011";
+            this.$app.$def.data.username = "LucasZhao";
+            this.$app.$def.data.icon = "/Common/logo.png";
+        }
     }
 </script>
