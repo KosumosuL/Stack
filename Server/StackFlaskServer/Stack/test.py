@@ -38,3 +38,5 @@ a[3]=9
 print(a)
 a=sorted(a.items(),key = lambda x:x[1],reverse = True)
 print(a)
+
+print(10/75)

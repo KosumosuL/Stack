@@ -19,8 +19,8 @@
               <text class="item-mount">Following</text>
             </div>
         </div>
-        <a class="a_item" if="{{userinfos.followed}}" onclick="clickToUnfollow">Unfollow</a>
-        <a class="b_item" else  onclick="clickToFollow">Follow</a>
+        <a class="a_item" if="{{userinfos.followed}}" onclick="clickToUnfollow">关注中</a>
+        <a class="b_item" else  onclick="clickToFollow">关注</a>
       </div>
     </div>
     <div class="content-down">

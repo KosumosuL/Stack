@@ -195,6 +195,10 @@ class Image(db.Model):
         db.session.add(image)
         return session_commit()
 
+    def update(self, image):
+        db.session.update(image)
+        return session_commit()
+
     def delete_post(self, pid):
         self.query.filter_by(pid=pid).delete()
         return session_commit()

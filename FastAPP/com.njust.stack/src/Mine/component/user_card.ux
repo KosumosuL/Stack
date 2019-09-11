@@ -19,7 +19,7 @@
               <text class="item-mount">关注中</text>
             </div>
         </div>
-        <a class="a_item" onclick="clickToEdit">Edit Profile</a>
+        <a class="a_item" onclick="clickToEdit">修改个人信息</a>
       </div>
     </div>
     <div class="content-down">

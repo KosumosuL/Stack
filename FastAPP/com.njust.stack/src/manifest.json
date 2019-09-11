@@ -120,6 +120,9 @@
       },
       "FollowInfo":{
         "titleBar": true
+      },
+      "Setting":{
+        "titleBar": true
       }
     }
   }

@@ -99,7 +99,7 @@
     ],
     data: {
       // placeholder: "关注",
-      tabs: ["Followers", "Following"],
+      tabs: ["被关注", "关注中"],
       phonenum: '',
       followerInfo: [],
       followeeInfo: []

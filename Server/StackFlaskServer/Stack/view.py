@@ -220,12 +220,16 @@ def init_api(app):
 
         return jsonify(data)
 
-    # (aes_score-50)+likes*0.005
     # to ensure the balance between about 10k likes and high score
     # when number of likes is small, to expand the influence of the aes_score
-    # and when it is large(>10k=>1%*total user), to expand the affect of the likes
-    # (100-50) == 10k*0.005 == 50
+    # and when it is large(alpha*total user), to expand the affect of the likes
     #
+    #                                       likes                comments
+    # weight = (Aes_score - 50) + 40 * --------------- + 10 * --------------
+    #                                   total * alpha          total * beta
+    #
+    # const alpha = 10%, beta = 50%
+    # total = 100
     # user creates one post
     # check auth(phonenum) firstly
     @app.route('/post/create_post', methods=['POST'])
@@ -473,8 +477,12 @@ def init_api(app):
                 like = LikeTable(ltime=ltime,
                                  pid=pid,
                                  phonenum=phonenum)
+                images = Image.get_by_pid(Image, pid)
                 try:
                     _ = LikeTable.add(LikeTable, like)
+                    for image in images:
+                        image.weight += 4
+                        _ = Image.update(Image, image)
                     data['status'] = 200
                     data['message'] = 'liked successfully!'
                 except Exception as e:
@@ -522,6 +530,10 @@ def init_api(app):
                     # _ = LikeTable.delete(LikeTable, lid)
                     like = LikeTable.get_by_pp(LikeTable, pid, phonenum)
                     _ = LikeTable.delete(LikeTable, like.lid)
+                    images = Image.get_by_pid(Image, pid)
+                    for image in images:
+                        image.weight -= 4
+                        _ = Image.update(Image, image)
                     data['status'] = 200
                     data['message'] = 'unliked successfully!'
                 except Exception as e:
@@ -653,8 +665,12 @@ def init_api(app):
                                        ctime=ctime,
                                        pid=pid,
                                        phonenum=phonenum)
+                images = Image.get_by_pid(Image, pid)
                 try:
                     _ = CommentTable.add(CommentTable, comment)
+                    for image in images:
+                        image.weight += 1
+                        _ = Image.update(Image, image)
                     data['status'] = 200
                     data['message'] = 'commented successfully!'
                 except Exception as e:
@@ -697,6 +713,10 @@ def init_api(app):
                 # check comment thirdly
                 try:
                     _ = CommentTable.delete(CommentTable, cid)
+                    images = Image.get_by_pid(Image, pid)
+                    for image in images:
+                        image.weight -= 1
+                        _ = Image.update(Image, image)
                     data['status'] = 200
                     data['message'] = 'uncommented successfully!'
                 except Exception as e:
