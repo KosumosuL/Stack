@@ -107,7 +107,7 @@
     refresh: function (e) {
       var that = this;
       this.isRefreshing = e.refreshing;
-      var promise = this.post("http://114.116.248.233:12345/recommend/recommend_images", {"phonenum":this.$app.$def.data.phonenum});
+      var promise = this.post("http://114.116.248.233:12345/recommend/recommend_images", {"phonenum":getApp().$def.data.phonenum});
       this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.getImages(this), this.showError(this));
     },
@@ -118,7 +118,7 @@
       }
     },
     onInit() {
-      var promise = this.post("http://114.116.248.233:12345/recommend/recommend_images", {"phonenum":this.$app.$def.data.phonenum});
+      var promise = this.post("http://114.116.248.233:12345/recommend/recommend_images", {"phonenum":getApp().$def.data.phonenum});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.getImages(this), this.showError(this));
     },

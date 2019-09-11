@@ -111,8 +111,8 @@
 			if(this.comment!==''){
         var date = new Date();
         var ctime = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-        var promise = this.post("http://114.116.248.233:12345/comment/comment_post", {"phonenum":this.$app.$def.data.phonenum, "pid":this.pid, "ctime":ctime, "content":this.comment});
-				this.comments.unshift({"comment":this.comment, "username":this.$app.$def.data.username, "phonenum":this.$app.$def.data.phonenum, "image":this.userphoto, "time":ctime});
+        var promise = this.post("http://114.116.248.233:12345/comment/comment_post", {"phonenum":getApp().$def.data.phonenum, "pid":this.pid, "ctime":ctime, "content":this.comment});
+				this.comments.unshift({"comment":this.comment, "username":getApp().$def.data.username, "phonenum":getApp().$def.data.phonenum, "image":this.userphoto, "time":ctime});
 				this.$element('textarea').focus({focus: false});
 			}
 		}

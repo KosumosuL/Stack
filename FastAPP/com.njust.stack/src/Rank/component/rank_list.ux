@@ -142,16 +142,16 @@
         this.likedata += 1; 
         var date = new Date();
         var ltime = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-        this.post("http://114.116.248.233:12345/like/like_post", {"phonenum":this.$app.$def.data.phonenum, "pid":this.pid, "ltime":ltime});
+        this.post("http://114.116.248.233:12345/like/like_post", {"phonenum":getApp().$def.data.phonenum, "pid":this.pid, "ltime":ltime});
       }
       else { 
         this.likedata -= 1;
-        this.post("http://114.116.248.233:12345/like/unlike_post", {"phonenum":this.$app.$def.data.phonenum, "pid":this.pid});
+        this.post("http://114.116.248.233:12345/like/unlike_post", {"phonenum":getApp().$def.data.phonenum, "pid":this.pid});
       }
       // prompt.showToast({ message: this.liked === true ? 'like' : 'dislike', image: '/Common/logo.png' });
     },
 		clickToUserDetail(pn) {
-      if(pn===this.$app.$def.data.phonenum){
+      if(pn===getApp().$def.data.phonenum){
         router.push({
           uri: '/Mine'
         })

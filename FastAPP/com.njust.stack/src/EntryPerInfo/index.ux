@@ -24,8 +24,8 @@
             <div class="account-item">
                 <text class="account-subtitle">性别</text>
                 <select style="font-size:29.3px;" class="selection" onchange="getGender" >
-                    <option style="color:#666666;font-size:27.3px;" value="true" selected="true">先生</option>
-                    <option style="color:#666666;font-size:27.3px;" value="false" selected="false">女士</option>
+                    <option style="color:#666666;font-size:27.3px;" value="{{false}}" selected="false">先生</option>
+                    <option style="color:#666666;font-size:27.3px;" value="{{true}}" selected="true">女士</option>
                 </select>
             </div>
         </div>
@@ -134,7 +134,10 @@
             inputEmail: '',
             inputBio: '',
             inputGender: true,
-            inputURI: ''
+            inputURI: '',
+            inputPhoneNum: '',
+            inputPassword: '',
+            directory: ''
         },
         onFocusName: function () {
             this.focusItem = 0;
@@ -266,9 +269,12 @@
             this.directory = 'stack/' + this.phonenum + '/';
             this.$watch('inputURI', 'handleRegister');
         },
+        randomStr: function () {
+            return '啊'+Math.random().toString(36).slice(-8);
+        },
         handleRegister: function (newVal, oldVal) {
             if (newVal !== '') {
-                var data = {"phoneNum":this.inputPhoneNum,"password":this.inputPassword,"name":this.inputName,"email":this.inputEmail,"gender":this.inputGender===true?0:1,"photo":this.inputURI,"username":this.inputUserName,"bio":this.inputBio};
+                var data = {"phoneNum":this.inputPhoneNum,"password":this.inputPassword,"name":this.inputName,"email":this.inputEmail,"gender":this.inputGender==="false"?0:1,"photo":this.inputURI,"username":this.inputUserName!==''?this.inputUserName:this.randomStr(),"bio":this.inputBio};
                 var that = this;
                 fetch.fetch({
                     url: "http://101.132.227.218:8080/stackUserManagement/signin",

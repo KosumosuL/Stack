@@ -71,7 +71,7 @@
     refresh: function (e) {
       var that = this;
       this.isRefreshing = e.refreshing;
-      var promise = this.post("http://114.116.248.233:12345/post/get_one_post", {"phonenum":this.$app.$def.data.phonenum, "pid":that.pid});
+      var promise = this.post("http://114.116.248.233:12345/post/get_one_post", {"phonenum":getApp().$def.data.phonenum, "pid":that.pid});
       this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshPost(this), this.showError(this));
     },
@@ -97,7 +97,7 @@
 				backgroundColor: '#f2f2f2',
 				menu: false 
       })
-      var promise = this.post("http://114.116.248.233:12345/post/get_one_post", {"phonenum":this.$app.$def.data.phonenum, "pid":this.pid});
+      var promise = this.post("http://114.116.248.233:12345/post/get_one_post", {"phonenum":getApp().$def.data.phonenum, "pid":this.pid});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshPost(this), this.showError(this));
     }

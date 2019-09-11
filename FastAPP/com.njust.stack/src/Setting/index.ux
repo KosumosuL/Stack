@@ -1,8 +1,8 @@
 <template>
   <div class="account-content">
     <div class="top-content">
-        <image class="icon" src="{{this.$app.$def.data.iconuri}}"></image>
-        <a class="a_item">{{this.$app.$def.data.username}}</a>
+        <image class="icon" src="{{$app.$def.data.iconuri}}"></image>
+        <a class="a_item">{{$app.$def.data.username}}</a>
     </div>
     <div class="account-btn-box">
       <text class="account-about" onclick="clickToAbout">有关</text>
@@ -109,7 +109,8 @@
     },
     clickToLogout() {
       router.replace({
-        uri: '/Login'
+        uri: '/Login',
+        params: { phonenum: getApp().$def.data.phonenum }
       })
     }
   }

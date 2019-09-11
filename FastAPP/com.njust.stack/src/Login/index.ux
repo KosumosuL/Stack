@@ -6,7 +6,7 @@
             </div>
             <div class="account-item">
                 <text class="account-subtitle">手机号</text>
-                <input class="account-input" onfocus="onFocusPhoneNum" onblur="onBlur" maxlength="20" border-bottom-color={{focusItem===0?"#0066ff":"#cccccc"}} onchange="getPhoneNum" ></input>
+                <input class="account-input" onfocus="onFocusPhoneNum" onblur="onBlur" maxlength="20" border-bottom-color={{focusItem===0?"#0066ff":"#cccccc"}} onchange="getPhoneNum" value={{phonenum}} ></input>
             </div>
             <div class="account-item">
                 <text class="account-subtitle">密码</text>
@@ -98,6 +98,9 @@
     import router from '@system.router'
 
     module.exports = {
+        props: [
+            'phonenum'
+        ],
         data: {
           focusItem: -1,
           inputPhoneNum: '',
@@ -125,6 +128,9 @@
         },
         login: function () {
           var that = this;
+          if (this.inputPhoneNum === '') {
+              this.inputPhoneNum = this.phonenum;
+          } 
           fetch.fetch({
             url: 'http://101.132.227.218:8080/stackUserManagement/login',
             data: { "phoneNum": that.inputPhoneNum, "password": that.inputPassword },
@@ -142,11 +148,12 @@
                   success: function (data) {
                     console.log("post success");
                     prompt.showToast({ message: '登录成功', image: '/Common/logo.png' });
-                    that.$app.$def.data.phonenum = data.data.message[0].phonenum;
-                    that.$app.$def.data.username = data.data.message[0].username;
-                    that.$app.$def.data.iconuri = data.data.message[0].photo;
+                    getApp().$def.data.phonenum = data.data.message[0].phonenum;
+                    getApp().$def.data.username = data.data.message[0].username;
+                    getApp().$def.data.iconuri = data.data.message[0].photo;
                     router.replace({
-                      uri: '/Main'
+                      uri: '/Main',
+                      params: { index: 0 }
                     });
                   },
                   fail: function (errmsg, errcode) {

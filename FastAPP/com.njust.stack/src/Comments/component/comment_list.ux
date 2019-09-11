@@ -133,7 +133,7 @@
       // console.log(this.info);
     },
 		clickToUserDetail(pn) {
-      if(pn===this.$app.$def.data.phonenum){
+      if(pn===getApp().$def.data.phonenum){
         router.push({
           uri: '/Mine'
         })

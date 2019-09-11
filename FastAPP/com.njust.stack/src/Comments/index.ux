@@ -10,7 +10,7 @@
         </list-item>
       </list>
     </refresh>
-    <comment userphoto="{{this.$app.$def.data.iconuri}}" pid="{{pid}}" comments="{{comments}}"></comment>
+    <comment userphoto="{{$app.$def.data.iconuri}}" pid="{{pid}}" comments="{{comments}}"></comment>
   </div>
 </template>
 
@@ -77,7 +77,7 @@
     refresh: function (e) {
       var that = this;
       this.isRefreshing = e.refreshing;
-      var promise = this.post("http://114.116.248.233:12345/comment/get_all_comments", {"pid":that.pid, "phonenum": this.$app.$def.data.phonenum});
+      var promise = this.post("http://114.116.248.233:12345/comment/get_all_comments", {"pid":that.pid, "phonenum": getApp().$def.data.phonenum});
       this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshComment(this), this.showError(this));
     },
@@ -100,7 +100,7 @@
 				backgroundColor: '#f2f2f2',
 				menu: false 
       });
-      var promise = this.post("http://114.116.248.233:12345/comment/get_all_comments", {"pid":this.pid, "phonenum": this.$app.$def.data.phonenum});
+      var promise = this.post("http://114.116.248.233:12345/comment/get_all_comments", {"pid":this.pid, "phonenum": getApp().$def.data.phonenum});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshComment(this), this.showError(this));
       this.$watch('info.deleteid', 'handleDelete');

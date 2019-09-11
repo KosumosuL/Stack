@@ -31,7 +31,15 @@ def init_api(app):
 
         if conforms_to_schema:
             try:
-                posts = Post.get_followees_posts(Post, phonenum=phonenum, time=time)
+                followees = FollowTable.get_followees(FollowTable, follower=phonenum)
+                phlist = list()
+                phlist.append(phonenum)
+                for followee in followees:
+                    phlist.append(followee.followee)
+                # print(phlist)
+                posts = Post.fresh(Post, phlist, time)
+                # posts = Common.get_followees_posts(Common, phonenum=phonenum, time=time)
+                # print(posts)
                 res = list()
                 for post in posts:
                     postdic = Post.out(Post, post)
@@ -385,7 +393,7 @@ def init_api(app):
                         new_image = Image(url=image.url,
                                           label=image.label,
                                           aes_score=image.aes_score,
-                                          weight=image.weight,
+                                          weight=image.aes_score-50,
                                           pid=new_pid)
                         _ = Image.add(Image, new_image)
                     data['message'] = 're-post successfully!'

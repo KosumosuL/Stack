@@ -109,17 +109,17 @@
       this.isRefreshing = e.refreshing;
       var date = new Date();
       var time = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-      var promise = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":this.$app.$def.data.phonenum, "tar_phonenum":this.$app.$def.data.phonenum, "time":time});
+      var promise = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":getApp().$def.data.phonenum, "tar_phonenum":getApp().$def.data.phonenum, "time":time});
       this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshPost(this), this.showError(this));
-      var promise1 = this.post("http://114.116.248.233:12345/user/get_user_info", {"phonenum":this.$app.$def.data.phonenum, "tar_phonenum":this.$app.$def.data.phonenum});
+      var promise1 = this.post("http://114.116.248.233:12345/user/get_user_info", {"phonenum":getApp().$def.data.phonenum, "tar_phonenum":getApp().$def.data.phonenum});
       this.timeout1 = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise1.then(this.refreshUser(this), this.showError(this));
     },
     scrollBottom: function () {
       var that = this;
       this.isLoading = true;
-      var promise = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":this.$app.$def.data.phonenum, "tar_phonenum":this.$app.$def.data.phonenum, "time":this.postData[this.postData.length-1].posttime});
+      var promise = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":getApp().$def.data.phonenum, "tar_phonenum":getApp().$def.data.phonenum, "time":this.postData[this.postData.length-1].posttime});
       this.timeout = setTimeout(function () { that.isLoading = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.loadMorePost(this), this.showError(this));
     },
@@ -153,10 +153,10 @@
     onInit: function () {
       var date = new Date();
       var time = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-      var promise = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":this.$app.$def.data.phonenum, "tar_phonenum":this.$app.$def.data.phonenum, "time":time});
+      var promise = this.post("http://114.116.248.233:12345/timeline/get_posts", {"phonenum":getApp().$def.data.phonenum, "tar_phonenum":getApp().$def.data.phonenum, "time":time});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshPost(this), this.showError(this));
-      var promise1 = this.post("http://114.116.248.233:12345/user/get_user_info", {"phonenum":this.$app.$def.data.phonenum, "tar_phonenum":this.$app.$def.data.phonenum});
+      var promise1 = this.post("http://114.116.248.233:12345/user/get_user_info", {"phonenum":getApp().$def.data.phonenum, "tar_phonenum":getApp().$def.data.phonenum});
       this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise1.then(this.refreshUser(this), this.showError(this));
       this.$watch('info.deleteid', 'handleDelete');

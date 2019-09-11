@@ -78,7 +78,7 @@
 			console.error("on press event param : " + item);
 		},
 		clickToUserDetail(pn) {
-      if(pn===this.$app.$def.data.phonenum){
+      if(pn===getApp().$def.data.phonenum){
         router.push({
           uri: '/Mine'
         })

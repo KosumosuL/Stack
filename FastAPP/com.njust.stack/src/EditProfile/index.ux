@@ -24,8 +24,8 @@
             <div class="account-item">
                 <text class="account-subtitle">性别</text>
                 <select style="font-size:29.3px;" class="selection" onchange="getGender" >
-                    <option style="color:#666666;font-size:27.3px;" value="true" selected={{infos.gender}}>先生</option>
-                    <option style="color:#666666;font-size:27.3px;" value="false" selected={{!infos.gender}}>女士</option>
+                    <option style="color:#666666;font-size:27.3px;" value="{{false}}" selected="{{infos.gender===false}}">先生</option>
+                    <option style="color:#666666;font-size:27.3px;" value="{{true}}" selected="{{infos.gender===true}}">女士</option>
                 </select>
             </div>
         </div>
@@ -129,7 +129,14 @@
             iconuri: '',
             focusItem: -1,
             inputURI: '',
-            infos: {}
+            infos: {},
+            inputName: '',
+            inputUserName: '',
+            inputEmail: '',
+            inputBio: '',
+            inputGender: '',
+            inputPhoneNum: '',
+            directory: ''
         },
         onInit: function () {
           this.$page.setTitleBar({backgroundColor: '#ffffff', textColor: '#000000'});
@@ -145,8 +152,9 @@
             this.$watch('inputURI', 'handleEdit');
         },
         handleEdit: function (newVal, oldVal) {
+            console.log(typeof(this.inputGender));
             if (newVal !== '') {
-                var data = {"phoneNum":this.inputPhoneNum,"password":"","name":this.inputName,"email":this.inputEmail,"gender":this.inputGender===true?0:1,"photo":this.inputURI,"username":this.inputUserName,"bio":this.inputBio};
+                var data = {"phoneNum":this.inputPhoneNum,"password":"","name":this.inputName!==''?this.inputName:this.infos.name,"email":this.inputEmail!==''?this.inputEmail:this.infos.email,"gender":this.inputGender==="false"?0:1,"photo":this.inputURI,"username":this.inputUserName!==''?this.inputUserName:this.infos.username,"bio":this.inputBio!==''?this.inputBio:this.infos.bio};
                 var that = this;
                 fetch.fetch({
                     url: "http://101.132.227.218:8080/stackUserManagement/updateUserInfo",
@@ -156,8 +164,15 @@
                     success: function (data) {
                         console.log("fetch.fetch success");
                         var code = data.data.errNo;
+                        console.log(data.data);
                         if (code === "200") {
                             prompt.showToast({ message: '修改成功' })
+                            getApp().$def.data.username = that.inputUserName!==''?that.inputUserName:that.infos.username;
+                            getApp().$def.data.iconuri = that.inputURI;
+                            router.replace({
+                                uri: '/Main',
+                                params: { index: 4 }
+                            })
                         } else if (code === "404") {
                             prompt.showToast({ message: '您已注销账号，请重新注册' })
                         }
@@ -204,70 +219,74 @@
             this.inputGender = e.newValue;
         },
         editRequest: function () {
-            var that = this;
-            var date = new Date();
-            var StartTimestamp = Math.floor(date.getTime() / 1000);
-            var EndTimestamp = StartTimestamp + period;
-            var KeyTime = StartTimestamp + ';' + EndTimestamp;
-            var SignKey = CryptoJS.HmacSHA1(KeyTime, SecretKey).toString();
-            var Policy = JSON.stringify({
-                "expiration": "2050-01-01T00:00:00.000Z",
-                "conditions": [
-                    { "bucket": bucket },
-                    { "q-sign-algorithm": "sha1" },
-                    { "q-ak": SecretId },
-                    { "q-sign-time": KeyTime }
-                ]
-            });
-            var StringToSign = CryptoJS.SHA1(Policy).toString();
-            var Signature = CryptoJS.HmacSHA1(StringToSign, SignKey).toString();
-            var words = CryptoJS.enc.Utf8.parse(Policy);
-            var base64 = CryptoJS.enc.Base64.stringify(words);
-            request.upload({
-                "url": 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com',
-                "files": [
-                    {
-                        uri: that.iconuri
+            if (this.iconuri !== this.infos.postericon) {
+                var that = this;
+                var date = new Date();
+                var StartTimestamp = Math.floor(date.getTime() / 1000);
+                var EndTimestamp = StartTimestamp + period;
+                var KeyTime = StartTimestamp + ';' + EndTimestamp;
+                var SignKey = CryptoJS.HmacSHA1(KeyTime, SecretKey).toString();
+                var Policy = JSON.stringify({
+                    "expiration": "2050-01-01T00:00:00.000Z",
+                    "conditions": [
+                        { "bucket": bucket },
+                        { "q-sign-algorithm": "sha1" },
+                        { "q-ak": SecretId },
+                        { "q-sign-time": KeyTime }
+                    ]
+                });
+                var StringToSign = CryptoJS.SHA1(Policy).toString();
+                var Signature = CryptoJS.HmacSHA1(StringToSign, SignKey).toString();
+                var words = CryptoJS.enc.Utf8.parse(Policy);
+                var base64 = CryptoJS.enc.Base64.stringify(words);
+                request.upload({
+                    "url": 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com',
+                    "files": [
+                        {
+                            uri: that.iconuri
+                        }
+                    ],
+                    "data": [
+                        {
+                            "name": "key",
+                            "value": that.directory + "${filename}"
+                        },
+                        {
+                            "name": "policy",
+                            "value": base64
+                        },
+                        {
+                            "name": "q-sign-algorithm",
+                            "value": "sha1"
+                        },
+                        {
+                            "name": "q-ak",
+                            "value": SecretId
+                        },
+                        {
+                            "name": "q-key-time",
+                            "value": KeyTime
+                        },
+                        {
+                            "name": "q-signature",
+                            "value": Signature
+                        }
+                    ],
+                    success: function (data) {
+                        console.log("request.upload success (" + data.code + ")");
+                        console.log(data.data);
+                        console.log(data.headers.Location);
+                        that.inputURI = data.headers.Location;
+                    },
+                    fail: function (errmsg, errcode) {
+                        console.log("request.upload fail (" + errcode + ")");
+                        console.log(errmsg);
+                        prompt.showToast({ message: '网络错误', image: '/Common/logo.png' });
                     }
-                ],
-                "data": [
-                    {
-                        "name": "key",
-                        "value": that.directory + "${filename}"
-                    },
-                    {
-                        "name": "policy",
-                        "value": base64
-                    },
-                    {
-                        "name": "q-sign-algorithm",
-                        "value": "sha1"
-                    },
-                    {
-                        "name": "q-ak",
-                        "value": SecretId
-                    },
-                    {
-                        "name": "q-key-time",
-                        "value": KeyTime
-                    },
-                    {
-                        "name": "q-signature",
-                        "value": Signature
-                    }
-                ],
-                success: function (data) {
-                    console.log("request.upload success (" + data.code + ")");
-                    console.log(data.data);
-                    console.log(data.headers.Location);
-                    that.inputURI = data.headers.Location;
-                },
-                fail: function (errmsg, errcode) {
-                    console.log("request.upload fail (" + errcode + ")");
-                    console.log(errmsg);
-                    prompt.showToast({ message: '网络错误', image: '/Common/logo.png' });
-                }
-            });
+                });
+            } else {
+                this.inputURI = this.iconuri;
+            }
         },
         pickPhoto: function () {
             var that = this;

@@ -23,7 +23,7 @@
     <block if="{{showPageType==='searchBar'}}">
       <tabs onchange="onChangeTabIndex">
         <tab-bar class="tab-bar" mode="scrollable">
-          <block for="tabs">
+          <block for="pre_tabs">
             <div class="tab-item">
               <text>{{$item}}</text>
               <div class="{{$idx==currIndex? 'item_bg_active' : 'item_bg'}}"></div>
@@ -290,7 +290,8 @@
     data: {
       inputValue: "",
       showPageType: "searchBar",
-      tabs: ["账户", "标签"],
+      tabs: ["账号", "标签"],
+      pre_tabs: ["推荐账号", "推荐标签"],
       currIndex: 0,
       userinfos: [],
       rec_users: [],
@@ -363,10 +364,10 @@
       }
     },
     onInit: function () {
-      var promise = this.post("http://114.116.248.233:12345/recommend/recommend_users", {"phonenum":this.$app.$def.data.phonenum});
+      var promise = this.post("http://114.116.248.233:12345/recommend/recommend_users", {"phonenum":getApp().$def.data.phonenum});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.getRecUsers(this), this.showError(this));
-      var promise1 = this.post("http://114.116.248.233:12345/recommend/recommend_labels", {"phonenum":this.$app.$def.data.phonenum});
+      var promise1 = this.post("http://114.116.248.233:12345/recommend/recommend_labels", {"phonenum":getApp().$def.data.phonenum});
       this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise1.then(this.getRecLabels(this), this.showError(this));
     },
@@ -374,10 +375,10 @@
       if (this.inputValue === null || this.inputValue === undefined || this.inputValue === "") {
         return;
       }
-      var promise = this.post("http://114.116.248.233:12345/discover/search_user", {"phonenum":this.$app.$def.data.phonenum, "keyword":this.inputValue});
+      var promise = this.post("http://114.116.248.233:12345/discover/search_user", {"phonenum":getApp().$def.data.phonenum, "keyword":this.inputValue});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.getSearUsers(this), this.showError(this));
-      var promise1 = this.post("http://114.116.248.233:12345/discover/search_label", {"phonenum":this.$app.$def.data.phonenum, "keyword":this.inputValue});
+      var promise1 = this.post("http://114.116.248.233:12345/discover/search_label", {"phonenum":getApp().$def.data.phonenum, "keyword":this.inputValue});
       this.timeout1 = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise1.then(this.getSearLabels(this), this.showError(this));
     },

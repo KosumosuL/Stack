@@ -106,12 +106,13 @@
     import request from '@system.request'
     import fetch from '@system.fetch'
     import ai from '@system.ai'
+    import router from '@system.router'
 
     const CryptoJS = require("../../node_modules/crypto-js");
     const SecretId = 'AKIDz5p6FkpkyaY8HZTzMvpEmn1vUUeUsZ4w';
     const SecretKey = '45XrRwHdsCRdu7B5rfOwtmbIvbxADxZ4';
     const bucket = 'lucaszhao-1258906334';
-    const directory = 'stack/post/';
+    const directory = 'stack/' + getApp().$def.data.phonenum + '/';
     const period = 3600;
 
     export default {
@@ -354,9 +355,9 @@
                         uri: that.uris[i],
                         success: function (data) {
                             console.log("ai.detectLabel success");
-                            var category = that.$app.$def.data.categories[data.category.toString()];
-                            var label = that.$app.$def.data.labels[data.labelContent[0].labelId.toString()];
-                            if (category === label) {
+                            var category = getApp().$def.data.categories[data.category.toString()];
+                            var label = getApp().$def.data.labels[data.labelContent[0].labelId.toString()];
+                            if (category === label || typeof(label) === "undefined") {
                                 that.results["label_"+i] = category;
                             } else {
                                 that.results["label_"+i] = category + " " + label;
@@ -367,21 +368,23 @@
                             console.log("ai.detectLabel fail, code: " + code);
                             console.log(data);
                             prompt.showToast({ message: '检测失败', image: '/Common/logo.png' });
-                            that.showProgress = false;
+                            that.results["label_"+i] = "其它";
+                            that.numTotal += 1;
                         }
                     });
                     ai.detectAestheticsScore ({
                         uri: that.uris[i],
                         success: function (data) {
                             console.log("ai.detectAestheticsScore success");
-                            that.results["aes_score_"+i] = parseFloat(data.score).toString() === "NaN" ? 0 : parseFloat(data.score);
+                            that.results["aes_score_"+i] = parseFloat(data.score).toString() === "NaN" ? Math.round(Math.random()*100) : parseFloat(data.score);
                             that.numTotal += 1;
                         },
                         fail: function (data, code) {
                             console.log("ai.detectAestheticsScore fail, code: " + code);
                             console.log(data);
                             prompt.showToast({ message: '检测失败', image: '/Common/logo.png' });
-                            that.showProgress = false;
+                            that.results["aes_score_"+i] = Math.round(Math.random()*100); ;
+                            that.numTotal += 1;
                         }
                     });
                 }
@@ -391,12 +394,13 @@
             this.$watch('numTotal', 'handleNumTotal');
         },
         handleNumTotal: function (newVal, oldVal) {
+            console.log(newVal);
             if (newVal !== 0 && newVal === this.uris.length * 3) {
                 var that = this;
                 that.results["count"] = that.uris.length;
                 var date = new Date();
                 that.results["ptime"] = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-                that.results["phonenum"] = that.$app.$def.data.phonenum;
+                that.results["phonenum"] = getApp().$def.data.phonenum;
                 console.log(that.results);
                 fetch.fetch({
                     url: "http://114.116.248.233:12345/post/create_post",
@@ -406,12 +410,15 @@
                     success: function (data) {
                         console.log("fetch.fetch success");
                         prompt.showToast({ message: "上传成功" });
+                        that.showProgress = false;
+                        router.replace({
+                            uri: '/Main',
+                            params: { index: 0 }
+                        })
                     },
                     fail: function (errmsg, errcode) {
                         console.log("fetch.fetch fail");
                         prompt.showToast({ message: "上传失败", image: '/Common/logo.png' });
-                    },
-                    complete: function () {
                         that.showProgress = false;
                     }
                 });

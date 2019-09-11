@@ -53,7 +53,7 @@
     border-color: #dc143c;
     border-width: 2px;
     margin: 4px 20px 4px 4px;
-    object-fit: contain;
+    object-fit: cover;
   }
   .header-time {
     justify-content: flex-end;
@@ -137,7 +137,7 @@
     retweet: function () {
       var date = new Date();
       var ptime = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-      this.post("http://114.116.248.233:12345/post/re_post", {"phonenum":this.$app.$def.data.phonenum, "pid":this.pid, "ptime":ptime});
+      this.post("http://114.116.248.233:12345/post/re_post", {"phonenum":getApp().$def.data.phonenum, "pid":this.pid, "ptime":ptime});
       prompt.showToast({ message: '转发成功' });
     },
     clickToComments(pid) {
@@ -172,11 +172,11 @@
         this.likedata += 1; 
         var date = new Date();
         var ltime = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-        this.post("http://114.116.248.233:12345/like/like_post", {"phonenum":this.$app.$def.data.phonenum, "pid":this.pid, "ltime":ltime});
+        this.post("http://114.116.248.233:12345/like/like_post", {"phonenum":getApp().$def.data.phonenum, "pid":this.pid, "ltime":ltime});
       }
       else { 
         this.likedata -= 1;
-        this.post("http://114.116.248.233:12345/like/unlike_post", {"phonenum":this.$app.$def.data.phonenum, "pid":this.pid});
+        this.post("http://114.116.248.233:12345/like/unlike_post", {"phonenum":getApp().$def.data.phonenum, "pid":this.pid});
       }
     },
     expandPosterComment: function () {
@@ -187,7 +187,7 @@
     },
 		clickToUserDetail(pn) {
       // console.log(pn);
-      if(pn===this.$app.$def.data.phonenum){
+      if(pn===getApp().$def.data.phonenum){
         router.push({
           uri: '/Mine'
         })

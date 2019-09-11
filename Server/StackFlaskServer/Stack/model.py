@@ -37,7 +37,8 @@ class User(db.Model):
     def search(self, keyword):
         from Stack.config import SEARCH_LIMIT
         return self.query\
-            .filter(or_(self.username.like("%" + keyword + "%"), self.name.like("%" + keyword + "%")))\
+            .filter(or_(self.username.like("%" + keyword + "%"), self.name.like("%" + keyword + "%"))) \
+            .order_by(func.rand())\
             .limit(SEARCH_LIMIT)\
             .all()
 
@@ -99,8 +100,16 @@ class Post(db.Model):
         # print(phonenum)
         from Stack.config import SHOWPOSTS_LIMIT
         return self.query\
-            .filter(or_(and_(self.phonenum == FollowTable.followee, FollowTable.follower == phonenum), self.phonenum == phonenum))\
-            .filter(self.ptime < time) \
+            .filter(and_(or_(and_(self.phonenum == FollowTable.followee, FollowTable.follower == phonenum), self.phonenum == '0')), self.ptime < time)\
+            .order_by(self.ptime.desc())\
+            .limit(SHOWPOSTS_LIMIT)\
+            .all()
+
+    def fresh(self, phlist, time):
+        from Stack.config import SHOWPOSTS_LIMIT
+        return self.query\
+            .filter(self.phonenum.in_(phlist))\
+            .filter(self.ptime < time)\
             .order_by(self.ptime.desc())\
             .limit(SHOWPOSTS_LIMIT)\
             .all()
@@ -188,7 +197,8 @@ class Image(db.Model):
     def search(self, keyword):
         from Stack.config import SEARCH_LIMIT
         return self.query\
-            .filter(self.label.like("%" + keyword + "%"))\
+            .filter(self.label.like("%" + keyword + "%")) \
+            .order_by(func.rand())\
             .limit(SEARCH_LIMIT)\
             .all()
 
@@ -373,6 +383,16 @@ class FollowTable(db.Model):
             'follower': follow.follower,
             'followee': follow.followee
         }
+
+class Common:
+    def get_followees_posts(self, phonenum, time):
+        # print(phonenum)
+        from Stack.config import SHOWPOSTS_LIMIT
+        return db.session.query(Post)\
+            .filter(and_(or_(and_(Post.phonenum == FollowTable.followee, FollowTable.follower == phonenum), Post.phonenum == phonenum)), Post.ptime < time)\
+            .order_by(Post.ptime.desc())\
+            .limit(SHOWPOSTS_LIMIT)\
+            .all()
 
 def session_commit():
     try:

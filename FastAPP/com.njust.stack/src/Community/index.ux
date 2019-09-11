@@ -91,14 +91,14 @@
       this.isRefreshing = e.refreshing;
       var date = new Date();
       var time = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-      var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":this.$app.$def.data.phonenum, "time":time});
+      var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":getApp().$def.data.phonenum, "time":time});
       this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshPost(this), this.showError(this));
     },
     scrollBottom: function () {
       var that = this;
       this.isLoading = true;
-      var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":this.$app.$def.data.phonenum, "time":this.postData[this.postData.length-1].posttime});
+      var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":getApp().$def.data.phonenum, "time":this.postData[this.postData.length-1].posttime});
       this.timeout = setTimeout(function () { that.isLoading = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.loadMorePost(this), this.showError(this));
     },
@@ -119,7 +119,7 @@
     onInit: function () {
       var date = new Date();
       var time = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-      var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":this.$app.$def.data.phonenum, "time":time});
+      var promise = this.post("http://114.116.248.233:12345/timeline/fresh", {"phonenum":getApp().$def.data.phonenum, "time":time});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.refreshPost(this), this.showError(this));
     },

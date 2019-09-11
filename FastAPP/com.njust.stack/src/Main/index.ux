@@ -8,7 +8,7 @@
   <div class="container">
     <div class="header" show={{idx===0||idx===2||idx===4}}>
         <text class="header-text" show={{idx===0}}>Stack</text>
-        <text class="header-name" show={{idx===4}}>Lucaszhao</text>
+        <text class="header-name" show={{idx===4}}>{{$app.$def.data.username}}</text>
         <image class="header-setting" src="/Common/setting.png" show={{idx===4}} onclick="setting"></image>
         <image class="header-back" src="/Common/back.png" show={{idx===2}} onclick="back" />
     </div>
@@ -94,6 +94,9 @@
 <script>
     import router from '@system.router'
     module.exports = {
+        props: [
+            'index'
+        ],
         data: {
             idx: 0,
             pages: [
@@ -115,5 +118,8 @@
         setting() {
 			router.push({uri: '/Setting'});
         },
+        onInit: function () {
+            this.idx = parseInt(this.index);
+        }
     }
 </script>
