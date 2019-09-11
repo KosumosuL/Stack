@@ -1051,12 +1051,18 @@ def init_api(app):
 
         if conforms_to_schema:
             try:
+
                 images = Image.get_recommended(Image)
                 # import random
                 # random.shuffle(images)
+                from Stack.config import DISCOVER_LIMIT
+                count = 0
                 res = list()
                 for image in images:
                     res.append(Image.out(Image, image))
+                    count += 1
+                    if count >= DISCOVER_LIMIT:
+                        break
                 data['message'] = res
                 data['status'] = 200
             except Exception as e:

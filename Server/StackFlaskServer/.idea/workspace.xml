@@ -28,8 +28,8 @@
       <file leaf-file-name="view.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Stack/view.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="263">
-              <caret line="717" column="43" selection-start-line="717" selection-start-column="43" selection-end-line="717" selection-end-column="43" />
+            <state relative-caret-position="406">
+              <caret line="1059" column="28" lean-forward="true" selection-start-line="1059" selection-start-column="28" selection-end-line="1059" selection-end-column="28" />
               <folding>
                 <element signature="e#0#34#0" expanded="true" />
                 <element signature="e#243#2389#0" />
@@ -40,8 +40,12 @@
                 <element signature="e#11087#12422#0" />
                 <element signature="e#14421#15672#0" />
                 <element signature="e#12692#14026#0" />
+                <element signature="e#14170#15716#0" />
+                <element signature="e#15866#17501#0" />
                 <element signature="e#17786#18868#0" />
                 <element signature="e#19037#20444#0" />
+                <element signature="e#20603#22158#0" />
+                <element signature="e#22324#23661#0" />
                 <element signature="e#23977#25064#0" />
                 <element signature="e#25165#26458#0" />
                 <element signature="e#26651#27738#0" />
@@ -58,8 +62,8 @@
       <file leaf-file-name="config.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Stack/config.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="44">
-              <caret line="2" column="17" selection-start-line="2" selection-end-line="2" selection-end-column="17" />
+            <state relative-caret-position="132">
+              <caret line="6" column="14" selection-start-line="6" selection-end-line="6" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -135,9 +139,9 @@
         <option value="$PROJECT_DIR$/app.py" />
         <option value="$PROJECT_DIR$/Stack/__init__.py" />
         <option value="$PROJECT_DIR$/Stack/valid.py" />
-        <option value="$PROJECT_DIR$/Stack/config.py" />
         <option value="$PROJECT_DIR$/Stack/model.py" />
         <option value="$PROJECT_DIR$/Stack/test.py" />
+        <option value="$PROJECT_DIR$/Stack/config.py" />
         <option value="$PROJECT_DIR$/Stack/view.py" />
       </list>
     </option>
@@ -350,8 +354,12 @@
             <element signature="e#11087#12422#0" />
             <element signature="e#14421#15672#0" />
             <element signature="e#12692#14026#0" />
+            <element signature="e#14170#15716#0" />
+            <element signature="e#15866#17501#0" />
             <element signature="e#17786#18868#0" />
             <element signature="e#19037#20444#0" />
+            <element signature="e#20603#22158#0" />
+            <element signature="e#22324#23661#0" />
             <element signature="e#23977#25064#0" />
             <element signature="e#25165#26458#0" />
             <element signature="e#26651#27738#0" />
@@ -467,8 +475,12 @@
             <element signature="e#11087#12422#0" />
             <element signature="e#14421#15672#0" />
             <element signature="e#12692#14026#0" />
+            <element signature="e#14170#15716#0" />
+            <element signature="e#15866#17501#0" />
             <element signature="e#17786#18868#0" />
             <element signature="e#19037#20444#0" />
+            <element signature="e#20603#22158#0" />
+            <element signature="e#22324#23661#0" />
             <element signature="e#23977#25064#0" />
             <element signature="e#25165#26458#0" />
             <element signature="e#26651#27738#0" />
@@ -543,8 +555,12 @@
             <element signature="e#11087#12422#0" />
             <element signature="e#14421#15672#0" />
             <element signature="e#12692#14026#0" />
+            <element signature="e#14170#15716#0" />
+            <element signature="e#15866#17501#0" />
             <element signature="e#17786#18868#0" />
             <element signature="e#19037#20444#0" />
+            <element signature="e#20603#22158#0" />
+            <element signature="e#22324#23661#0" />
             <element signature="e#23977#25064#0" />
             <element signature="e#25165#26458#0" />
             <element signature="e#26651#27738#0" />
@@ -578,8 +594,12 @@
             <element signature="e#11087#12422#0" />
             <element signature="e#14421#15672#0" />
             <element signature="e#12692#14026#0" />
+            <element signature="e#14170#15716#0" />
+            <element signature="e#15866#17501#0" />
             <element signature="e#17786#18868#0" />
             <element signature="e#19037#20444#0" />
+            <element signature="e#20603#22158#0" />
+            <element signature="e#22324#23661#0" />
             <element signature="e#23977#25064#0" />
             <element signature="e#25165#26458#0" />
             <element signature="e#26651#27738#0" />
@@ -688,8 +708,12 @@
             <element signature="e#11087#12422#0" />
             <element signature="e#14421#15672#0" />
             <element signature="e#12692#14026#0" />
+            <element signature="e#14170#15716#0" />
+            <element signature="e#15866#17501#0" />
             <element signature="e#17786#18868#0" />
             <element signature="e#19037#20444#0" />
+            <element signature="e#20603#22158#0" />
+            <element signature="e#22324#23661#0" />
             <element signature="e#23977#25064#0" />
             <element signature="e#25165#26458#0" />
             <element signature="e#26651#27738#0" />
@@ -801,13 +825,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Stack/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="2" column="17" selection-start-line="2" selection-end-line="2" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Stack/model.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="560">
@@ -825,10 +842,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Stack/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="132">
+          <caret line="6" column="14" selection-start-line="6" selection-end-line="6" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Stack/view.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="263">
-          <caret line="717" column="43" selection-start-line="717" selection-start-column="43" selection-end-line="717" selection-end-column="43" />
+        <state relative-caret-position="406">
+          <caret line="1059" column="28" lean-forward="true" selection-start-line="1059" selection-start-column="28" selection-end-line="1059" selection-end-column="28" />
           <folding>
             <element signature="e#0#34#0" expanded="true" />
             <element signature="e#243#2389#0" />
@@ -839,8 +863,12 @@
             <element signature="e#11087#12422#0" />
             <element signature="e#14421#15672#0" />
             <element signature="e#12692#14026#0" />
+            <element signature="e#14170#15716#0" />
+            <element signature="e#15866#17501#0" />
             <element signature="e#17786#18868#0" />
             <element signature="e#19037#20444#0" />
+            <element signature="e#20603#22158#0" />
+            <element signature="e#22324#23661#0" />
             <element signature="e#23977#25064#0" />
             <element signature="e#25165#26458#0" />
             <element signature="e#26651#27738#0" />
