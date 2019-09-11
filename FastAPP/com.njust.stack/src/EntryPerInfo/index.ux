@@ -23,7 +23,7 @@
             </div>
             <div class="account-item">
                 <text class="account-subtitle">性别</text>
-                <select style="font-size:31.3px;" class="selection" onchange="getGender" >
+                <select style="font-size:29.3px;" class="selection" onchange="getGender" >
                     <option style="color:#666666;font-size:27.3px;" value="true" selected="true">先生</option>
                     <option style="color:#666666;font-size:27.3px;" value="false" selected="false">女士</option>
                 </select>

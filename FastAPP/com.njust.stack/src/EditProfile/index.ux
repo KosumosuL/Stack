@@ -1,186 +1,301 @@
 <template>
-  <div class="account-content">
-    <div class="top-content">
-      <div class="poster-item">
-        <image class="icon" src={{userinfos.postericon}}></image>
-        <a class="a_item">Edit Profile</a>
-      </div>
-      <div class="account-item">
-				<text class="account-subtitle">{{titlecontact}}</text>
-				<input class="account-input" autofocus="autofocus" value="{{userinfos.username}}" placeholder="{{placeholdername}}" maxlength="20" @change="inputChange('name')"></input>
-			</div>
-      <div class="account-item">
-				<text class="account-subtitle">{{titleusename}}</text>
-				<input class="account-input" value="{{userinfos.name}}" placeholder="{{placeholderusename}}" maxlength="20" @change="inputChange('usename')"></input>
-			</div>
-      <div class="account-item">
-        <text class="account-subtitle">{{titleEmail}}</text>
-        <input class="account-input" value="{{userinfos.email}}" placeholder="{{placeholderEmail}}" @change="inputChange('Email')"></input>
-      </div>
-      <div class="account-item">
-        <text class="account-subtitle">{{titlebio}}</text>
-        <input class="account-input" value="{{userinfos.bio}}" placeholder="{{placeholderbio}}" maxlength="100" @change="inputChange('bio')"></input>
-      </div>
-      <div class="account-label-box">
-				<text class="{{userinfos.gender===true?'account-active':'account-label'}}" onclick="chooseSex('men')">{{sex.man}}</text>
-				<text class="{{userinfos.gender===true?'account-label':'account-active'}}" onclick="chooseSex('women')">{{sex.lady}}</text>
-			</div>
+    <div class="container">
+        <div class="top-content">
+            <div class="poster-item">
+                <image class="icon" src={{iconuri}} onclick="pickPhoto" onlongpress="viewPhoto"></image>
+                <a class="a_item">个人信息</a>
+            </div>
+            <div class="account-item">
+                <text class="account-subtitle">姓名</text>
+                <input class="account-input" onfocus="onFocusName" onblur="onBlur" maxlength="20" border-bottom-color={{focusItem===0?"#0066ff":"#cccccc"}} onchange="getName" placeholder={{infos.name}} ></input>
+            </div>
+            <div class="account-item">
+                <text class="account-subtitle">用户名</text>
+                <input class="account-input" onfocus="onFocusUserName" onblur="onBlur" maxlength="20" border-bottom-color={{focusItem===1?"#0066ff":"#cccccc"}} onchange="getUserName" placeholder={{infos.username}} ></input>
+            </div>
+            <div class="account-item">
+                <text class="account-subtitle">Email</text>
+                <input class="account-input" onfocus="onFocusEmail" onblur="onBlur" border-bottom-color={{focusItem===2?"#0066ff":"#cccccc"}} onchange="getEmail" placeholder={{infos.email}} ></input>
+            </div>
+            <div class="account-item">
+                <text class="account-subtitle">经历</text>
+                <input class="account-input" onfocus="onFocusBio" onblur="onBlur" maxlength="100" border-bottom-color={{focusItem===3?"#0066ff":"#cccccc"}} onchange="getBio" placeholder={{infos.bio}} ></input>
+            </div>
+            <div class="account-item">
+                <text class="account-subtitle">性别</text>
+                <select style="font-size:29.3px;" class="selection" onchange="getGender" >
+                    <option style="color:#666666;font-size:27.3px;" value="true" selected={{infos.gender}}>先生</option>
+                    <option style="color:#666666;font-size:27.3px;" value="false" selected={{!infos.gender}}>女士</option>
+                </select>
+            </div>
+        </div>
+        <div class="account-btn-box" onclick="editRequest">
+            <text class="account-btn" >确认</text>
+        </div>
     </div>
-    <div class="account-btn-box">
-			<text class="account-btn" >{{titleconfirm}}</text>
-		</div>
-  </div>
 </template>
+
 <style>
-  .account-content {
-		flex-direction: column;
-    justify-content: space-between;
-	}
-	.top-content{
-    flex-direction: column;
-    justify-content: center;
-    align-content: center;
-    margin-left: 20px;
-    margin-right: 20px;
-	}
-
-	.account-item {
-    flex-direction: column;
-    margin-top: 20px;
-		/* padding: 34px 33px 10px 33px; */
-  }
-  
-  .poster-item {
-    width: 100%;
-    flex-direction: column;
-    justify-content: center;
-    align-content: center;
-    /* background-color: #00a2d4; */
-  }
-
-	.icon {
-		width: 250px;
-		height: 250px;
-		object-fit: cover;
-		border-radius: 125px;
-		/* considering */
-		border-color: #dc143c;
-		border-width: 5px;
-    margin: 40px 230px 40px 230px;
-  }
-
-  .a_item {
-    text-align: center;
-    background-color: rgba(0, 0, 0, 0);
-    height: 60px;
-    width: 100%;
-    padding: 20px 20px;
-    font-size: 35px;
-    color: #0066ff;
-    lines: 1;
-  }
-	.account-subtitle {
-		width: 147px;
-		font-size: 31.3px;
-		color: gray;
-	}
-
-	.account-input {
-		height: 67px;
-		flex: 1;
-		font-size: 31.3px;
-		color: #1A1A1A;
-		border-bottom-color: #cccccc;
-		border-bottom-width: 1px;
-	}
-
-	.account-label-box {
-		padding: 50px 0px 14px 180px;
-	}
-
-	.account-label {
-		padding: 8px 40px;
-		margin: 0px 34px 0px 0px;
-		background-color: #F2F2F2;
-		font-size: 35px;
-		color: #cccccc;
-		border-radius: 8.3px;
-	}
-
-	.account-active {
-		padding: 8px 40px;
-		margin: 0px 34px 0px 0px;
-		background-color: #F2F2F2;
-		font-size: 35px;
-    color: #0066ff;
-		border-radius: 8.3px;
-	}
-
-	.account-btn-box {
-		margin-bottom: 150px;
-	}
-
-	.account-btn {
-		padding: 20px 155px;
-		margin: 0px 188px 0px 188px;
-		font-size: 31.3px;
-		color: #ffffff;
-		background-color: #0066ff;
-		border-radius: 8.3px;
-	}
-</style>
-<script>
-  import router from '@system.router'
-  module.exports = {
-    data: {
-      userinfos: '',
-      params:{
-        name:'',
-        usename:'',
-        sex:'men',
-        phone:'',
-        Email:'',
-        bio:''
-      },
-      titlecontact: '姓名:',	// 姓名title
-			placeholdername: '姓名',	 // 姓名提示信息 placeholdery
-      titleusename: '用户名:',
-      placeholderusename: '用户名',
-      sex: {
-				man: '先生',
-				lady: '女士'
-			},
-      titlephone:'电话:',
-      placeholderphone:'手机号码',
-      titleEmail:'电子邮件:',
-      placeholderEmail:'电子邮件',
-      titlebio:'bio',
-      placeholderbio:'bio',
-      titleconfirm:'确定',
-    },
-    onInit() {
-      // console.log(typeof(this.userinfos));
-      this.userinfos = JSON.parse(this.userinfos)
-      // console.log(this.userinfos);
-      this.$page.setTitleBar({ 
-        text: '修改信息',
-				textColor: '#1a1a1a',
-				opacity: 1,
-				backgroundColor: '#f2f2f2',
-				menu: false 
-        })
-    },
-		inputChange: function(type,e) {
-      this.params[type] = e.value;
-    },
-		chooseSex: function(type) {
-      this.params.sex = type;
-    },
-		ok: function() {
-      router.push({
-				'uri': '/Mine',
-				'params': this.params
-			});
+    .container {
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        align-items: center;
+        background-color: #ffffff;
     }
-  }
+    .top-content{
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+    .account-item {
+        flex-direction: column;
+        margin-top: 20px;
+    }
+    .poster-item {
+        width: 100%;
+        flex-direction: column;
+        justify-content: center;
+        align-content: center;
+    }
+    .icon {
+        width: 250px;
+        height: 250px;
+        object-fit: cover;
+        border-radius: 125px;
+        border-color: #dc143c;
+        border-width: 5px;
+        margin: 40px 230px 40px 230px;
+    }
+    .a_item {
+        text-align: center;
+        background-color: rgba(0, 0, 0, 0);
+        height: 60px;
+        width: 100%;
+        padding: 20px 20px;
+        font-size: 35px;
+        color: #0066ff;
+        lines: 1;
+    }
+    .account-subtitle {
+        width: 147px;
+        font-size: 31.3px;
+        color: gray;
+    }
+    .account-input {
+        height: 67px;
+        flex: 1;
+        font-size: 31.3px;
+        color: #1A1A1A;
+        border-bottom-width: 1px;
+    }
+    .selection {
+        border-bottom-width: 1px;
+    }
+    .account-btn-box {
+        margin-top: 50px;
+        margin-bottom: 150px;
+    }
+    .account-btn {
+        padding: 20px 155px;
+        margin: 0px 188px 0px 188px;
+        font-size: 31.3px;
+        color: #ffffff;
+        background-color: #0066ff;
+        border-radius: 8.3px;
+    }
+</style>
+
+<script>
+    import media from '@system.media'
+    import prompt from '@system.prompt'
+    import request from '@system.request'
+    import fetch from '@system.fetch'
+    import router from '@system.router'
+
+    const CryptoJS = require("../../node_modules/crypto-js");
+    const SecretId = 'AKIDz5p6FkpkyaY8HZTzMvpEmn1vUUeUsZ4w';
+    const SecretKey = '45XrRwHdsCRdu7B5rfOwtmbIvbxADxZ4';
+    const bucket = 'lucaszhao-1258906334';
+    const period = 3600;
+
+    module.exports = {
+        props: [
+            'userinfos'
+        ],
+        data: {
+            iconuri: '',
+            focusItem: -1,
+            inputURI: '',
+            infos: {}
+        },
+        onInit: function () {
+          this.$page.setTitleBar({backgroundColor: '#ffffff', textColor: '#000000'});
+            this.infos = JSON.parse(this.userinfos);
+            this.iconuri = this.infos.postericon;
+            this.inputName = this.infos.name;
+            this.inputUserName = this.infos.username;
+            this.inputEmail = this.infos.email;
+            this.inputBio = this.infos.bio;
+            this.inputGender = this.infos.gender;
+            this.inputPhoneNum = this.infos.phonenum;
+            this.directory = 'stack/' + this.infos.phonenum + '/';
+            this.$watch('inputURI', 'handleEdit');
+        },
+        handleEdit: function (newVal, oldVal) {
+            if (newVal !== '') {
+                var data = {"phoneNum":this.inputPhoneNum,"password":"","name":this.inputName,"email":this.inputEmail,"gender":this.inputGender===true?0:1,"photo":this.inputURI,"username":this.inputUserName,"bio":this.inputBio};
+                var that = this;
+                fetch.fetch({
+                    url: "http://101.132.227.218:8080/stackUserManagement/updateUserInfo",
+                    data: data,
+                    responseType: 'json',
+                    method: 'post',
+                    success: function (data) {
+                        console.log("fetch.fetch success");
+                        var code = data.data.errNo;
+                        if (code === "200") {
+                            prompt.showToast({ message: '修改成功' })
+                        } else if (code === "404") {
+                            prompt.showToast({ message: '您已注销账号，请重新注册' })
+                        }
+                    },
+                    fail: function (errmsg, errcode) {
+                        console.log("fetch.fetch fail " + errcode);
+                        console.log(errmsg);
+                        prompt.showToast({ message: "网络错误", image: '/Common/logo.png' });
+                    },
+                    complete: function () {
+                        that.inputURI = '';
+                    }
+                });
+            }
+        },
+        onFocusName: function () {
+            this.focusItem = 0;
+        },
+        onFocusUserName: function () {
+            this.focusItem = 1;
+        },
+        onFocusEmail: function () {
+            this.focusItem = 2;
+        },
+        onFocusBio: function () {
+            this.focusItem = 3;
+        },
+        onBlur: function () {
+            this.focusItem = -1;
+        },
+        getName: function (e) {
+            this.inputName = e.value;
+        },
+        getUserName: function (e) {
+            this.inputUserName = e.value;
+        },
+        getEmail: function (e) {
+            this.inputEmail = e.value;
+        },
+        getBio: function (e) {
+            this.inputBio = e.value;
+        },
+        getGender: function (e) {
+            this.inputGender = e.newValue;
+        },
+        editRequest: function () {
+            var that = this;
+            var date = new Date();
+            var StartTimestamp = Math.floor(date.getTime() / 1000);
+            var EndTimestamp = StartTimestamp + period;
+            var KeyTime = StartTimestamp + ';' + EndTimestamp;
+            var SignKey = CryptoJS.HmacSHA1(KeyTime, SecretKey).toString();
+            var Policy = JSON.stringify({
+                "expiration": "2050-01-01T00:00:00.000Z",
+                "conditions": [
+                    { "bucket": bucket },
+                    { "q-sign-algorithm": "sha1" },
+                    { "q-ak": SecretId },
+                    { "q-sign-time": KeyTime }
+                ]
+            });
+            var StringToSign = CryptoJS.SHA1(Policy).toString();
+            var Signature = CryptoJS.HmacSHA1(StringToSign, SignKey).toString();
+            var words = CryptoJS.enc.Utf8.parse(Policy);
+            var base64 = CryptoJS.enc.Base64.stringify(words);
+            request.upload({
+                "url": 'https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com',
+                "files": [
+                    {
+                        uri: that.iconuri
+                    }
+                ],
+                "data": [
+                    {
+                        "name": "key",
+                        "value": that.directory + "${filename}"
+                    },
+                    {
+                        "name": "policy",
+                        "value": base64
+                    },
+                    {
+                        "name": "q-sign-algorithm",
+                        "value": "sha1"
+                    },
+                    {
+                        "name": "q-ak",
+                        "value": SecretId
+                    },
+                    {
+                        "name": "q-key-time",
+                        "value": KeyTime
+                    },
+                    {
+                        "name": "q-signature",
+                        "value": Signature
+                    }
+                ],
+                success: function (data) {
+                    console.log("request.upload success (" + data.code + ")");
+                    console.log(data.data);
+                    console.log(data.headers.Location);
+                    that.inputURI = data.headers.Location;
+                },
+                fail: function (errmsg, errcode) {
+                    console.log("request.upload fail (" + errcode + ")");
+                    console.log(errmsg);
+                    prompt.showToast({ message: '网络错误', image: '/Common/logo.png' });
+                }
+            });
+        },
+        pickPhoto: function () {
+            var that = this;
+            media.pickImage({
+                success: function (data) {
+                    that.iconuri = data.uri;
+                    console.log('media.pickImage success');
+                },
+                fail: function (errmsg, errcode) {
+                    prompt.showToast({ message: "选取失败", image: '/Common/logo.png' });
+                    console.log('media.pickImage fail ' + errcode);
+                    console.log(errmsg);
+                }
+            })
+        },
+        viewPhoto: function () {
+            var that = this;
+            media.previewImage({
+                current: that.iconuri,
+                uris: [that.iconuri],
+                success: function () {
+                    console.log('media.previewImage success');
+                },
+                fail: function (errmsg, errcode) {
+                    console.log('media.previewImage fail ' + errcode);
+                    console.log(errmsg);
+                }
+            });     
+        }
+    }
 </script>

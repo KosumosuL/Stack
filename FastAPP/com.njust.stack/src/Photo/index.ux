@@ -37,11 +37,12 @@
         top: 64px;
         height: 800px;
         position: fixed;
+        border-width: 1px;
     }
     .image {
         width: 100%;
         height: 100%;
-        background-color:#ffffff;
+        background-image: url(/Common/default.jpg);
     }
     .image-wall {
         margin-top: 865px;
