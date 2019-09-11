@@ -108,7 +108,6 @@
 
 <script>
 	import router from '@system.router'
-  import prompt from '@system.prompt'
 	import fetch from '@system.fetch'
 	export default {
 		data: {
@@ -138,22 +137,21 @@
       })
     },
     like: function () {
-			
       this.liked = !this.liked;
       if(this.liked === true) { 
         this.likedata += 1; 
         var date = new Date();
         var ltime = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-        var promise = this.post("http://114.116.248.233:12345/like/like_post", {"phonenum":"18260071012", "pid":this.pid, "ltime":ltime});
+        this.post("http://114.116.248.233:12345/like/like_post", {"phonenum":this.$app.$def.data.phonenum, "pid":this.pid, "ltime":ltime});
       }
       else { 
         this.likedata -= 1;
-        var promise = this.post("http://114.116.248.233:12345/like/unlike_post", {"phonenum":"18260071012", "pid":this.pid});
+        this.post("http://114.116.248.233:12345/like/unlike_post", {"phonenum":this.$app.$def.data.phonenum, "pid":this.pid});
       }
       // prompt.showToast({ message: this.liked === true ? 'like' : 'dislike', image: '/Common/logo.png' });
     },
 		clickToUserDetail(pn) {
-      if(pn==='18260071012'){
+      if(pn===this.$app.$def.data.phonenum){
         router.push({
           uri: '/Mine'
         })

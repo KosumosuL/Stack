@@ -225,6 +225,7 @@ def init_api(app):
     # when number of likes is small, to expand the influence of the aes_score
     # and when it is large(>10k=>1%*total user), to expand the affect of the likes
     # (100-50) == 10k*0.005 == 50
+    #
     # user creates one post
     # check auth(phonenum) firstly
     @app.route('/post/create_post', methods=['POST'])

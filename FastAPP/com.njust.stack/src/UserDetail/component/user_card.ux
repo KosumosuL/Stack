@@ -34,7 +34,9 @@
 
 <style>
 	.user-container {
-		flex-direction: column;
+    flex-direction: column;
+    border-bottom-color: #F2F2F2;
+    border-bottom-width: 4px;
 	}
 
 	.content-up {
@@ -126,9 +128,8 @@
     margin-left: 40px;
 		/* height: 150px; */
 		flex-direction: column;
-		border-bottom-color: #F2F2F2;
-		border-bottom-width: 1px;
-		justify-content: center;
+    justify-content: center;
+    margin-bottom: 40px;
 	}
 
 	.username {
@@ -200,12 +201,12 @@
       this.userinfos.followers += 1;
       var date = new Date();
       var ftime = date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate()+" "+date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-      var promise = this.post("http://114.116.248.233:12345/follow/follow_user", {"phonenum":"18260071012", "followee":this.userinfos.phonenum, "ftime":ftime});
+      var promise = this.post("http://114.116.248.233:12345/follow/follow_user", {"phonenum":this.$app.$def.data.phonenum, "followee":this.userinfos.phonenum, "ftime":ftime});
     },
     clickToUnfollow() {
       this.userinfos.followed = !this.userinfos.followed;
       this.userinfos.followers -= 1;
-      var promise = this.post("http://114.116.248.233:12345/follow/unfollow_user", {"phonenum":"18260071012", "followee":this.userinfos.phonenum});
+      var promise = this.post("http://114.116.248.233:12345/follow/unfollow_user", {"phonenum":this.$app.$def.data.phonenum, "followee":this.userinfos.phonenum});
     },
     clickToFollowInfo() {
         router.push({ 

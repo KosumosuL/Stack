@@ -7,11 +7,11 @@
 				</div>
 				<div class="content-right">
 					<text>
-						<a color="black" font-weight="bold" onclick="clickToUserDetail(phonenum)">{{username}}</a>
-						<span value="&ensp;"></span>
-						<span color="black">{{comment}}</span>
+						<a class="username" onclick="clickToUserDetail(phonenum)">{{username}}</a>
+						<a value="&ensp;"></a>
+						<span class="comment">{{comment}}</span>
 					</text>
-					<text color="gray" font-size="27px">{{time}}</text>
+					<text class="time">{{time}}</text>
 				</div>
 				<div class="delete" if="{{isself===true}}">
 					<image src="/Common/delete_gray.png" class="btn" onclick="delete"></image>
@@ -32,19 +32,36 @@
 		border-width: 4px;
 	}
 
+	.username {
+		color: #000000;
+		font-weight: bold;
+	}
+
+	.comment {
+		color: #000000;
+	}
+
+	.time {
+		color: gray;
+		font-size: 27px;
+	}
+
 	.comment-container {
 		margin: 0px 34px;
 		flex-direction: column;
 	}
+
   .btn {
     width: 50px;
 		height: 50px;
 		margin: 19px 0px 19px 19px;
     object-fit: contain;
 	}
+
 	.delete {
 		justify-content: flex-end;
 	}
+
 	.content-list {
 		/* height: 153px; */
 		width: 100%;

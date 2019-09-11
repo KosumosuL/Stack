@@ -9,7 +9,7 @@
 				</div>
         <div class="content-right">
           <text>
-            <a color="blue" onclick="clickToComment">{{'Post'}}</a>
+            <a class="post" onclick="clickToComment">{{'Post'}}</a>
           </text>
         </div>
 			</div>
@@ -26,6 +26,9 @@
 		border-width: 4px;
 	}
 
+	.post {
+		color: blue;
+	}
 	.comment-container {
 		/* margin: 0px 34px; */
 		flex-direction: column;

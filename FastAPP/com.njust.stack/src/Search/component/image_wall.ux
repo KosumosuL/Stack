@@ -1,8 +1,8 @@
 <template>
 	<div class="image-wall-container">
 		<div class="image-wall-list">
-			<div for="{{list}}" class="image-wall-product" onclick="routePage()">
-				<image class="image-wall-image" src="{{$item.uri}}"></image>
+			<div for="{{list}}" class="image-wall-product">
+				<image class="image-wall-image" src="{{$item.uri}}" onclick="clickToPostDetail($item.pid)"></image>
 			</div>
 		</div>
 	</div>
@@ -38,18 +38,17 @@
 
 <script>
 	import router from '@system.router';
-
 	export default {
 		data: {
 			props: [
 				'list'
 			],
 		},
-		routePage(url) {
-			//跳转到应用内的某个页面
-			// router.push({
-			// 	uri: "/Page_Bookdetails"
-			// })
+		clickToPostDetail(pid) {
+			router.push({
+				uri: "/PostDetail",
+				params: {pid: pid}
+			})
 		},
 	}
 </script>

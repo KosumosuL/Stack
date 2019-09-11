@@ -1,8 +1,8 @@
 <template>
   <div class="account-content">
     <div class="top-content">
-        <image class="icon" src="https://lucaszhao-1258906334.cos.ap-guangzhou.myqcloud.com/stack/31626668.png"></image>
-        <a class="a_item">Lucaszhao</a>
+        <image class="icon" src="{{this.$app.$def.data.iconuri}}"></image>
+        <a class="a_item">{{this.$app.$def.data.username}}</a>
     </div>
     <div class="account-btn-box">
       <text class="account-about" onclick="clickToAbout">有关</text>
@@ -92,7 +92,7 @@
     clickToAbout() {
       prompt.showDialog({
         title: 'About',
-        message: 'Stack\nNJUST&HUAWEI\nInternship Project',
+        message: 'Stack\nNJUST&HUAWEI\nGraduation Practice Project',
         buttons: [
           {
             text: 'Fine.',

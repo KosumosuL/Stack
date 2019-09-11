@@ -78,10 +78,16 @@
 			console.error("on press event param : " + item);
 		},
 		clickToUserDetail(pn) {
-			router.push({
-				uri: "/UserDetail",
-				params: {phonenum: pn}
-			})
+      if(pn===this.$app.$def.data.phonenum){
+        router.push({
+          uri: '/Mine'
+        })
+      }else{
+        router.push({
+          uri: "/UserDetail",
+          params: {phonenum: pn}
+        })        
+      }
 		},
 	}
 </script>

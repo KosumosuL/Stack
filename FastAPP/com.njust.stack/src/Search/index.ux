@@ -358,7 +358,8 @@
     },
     mapLabel: function (item) {
       return {
-        uri: item.url
+        uri: item.url,
+        pid: item.pid
       }
     },
     onInit: function () {

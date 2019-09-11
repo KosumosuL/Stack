@@ -141,7 +141,6 @@
 
 <script>
 	import router from '@system.router';
-  import prompt from '@system.prompt'
 	
 	export default {
 		data: {

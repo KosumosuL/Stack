@@ -138,9 +138,9 @@
         name:'',
         usename:'',
         sex:'men',
-        phone:'1',
-        Email:'1',
-        bio:'1'
+        phone:'',
+        Email:'',
+        bio:''
       },
       titlecontact: '姓名:',	// 姓名title
 			placeholdername: '姓名',	 // 姓名提示信息 placeholdery

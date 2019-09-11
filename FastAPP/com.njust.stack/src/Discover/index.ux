@@ -4,7 +4,7 @@
 
 <template>
   <!-- template里只能有一个根节点 -->
-  <div class="discover-container">
+  <div class="discover-container" id="container">
     <!-- 搜索框 -->
     <div class="search-box">
       <search_box searchbar={{searchbar}}></search_box>
@@ -107,7 +107,7 @@
     refresh: function (e) {
       var that = this;
       this.isRefreshing = e.refreshing;
-      var promise = this.post("http://114.116.248.233:12345/recommend/recommend_images", {"phonenum":"18260071012"});
+      var promise = this.post("http://114.116.248.233:12345/recommend/recommend_images", {"phonenum":this.$app.$def.data.phonenum});
       this.timeout = setTimeout(function () { that.isRefreshing = false; prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.getImages(this), this.showError(this));
     },
@@ -118,7 +118,7 @@
       }
     },
     onInit() {
-      var promise = this.post("http://114.116.248.233:12345/recommend/recommend_images", {"phonenum":"18260071012"});
+      var promise = this.post("http://114.116.248.233:12345/recommend/recommend_images", {"phonenum":this.$app.$def.data.phonenum});
       this.timeout = setTimeout(function () { prompt.showToast({ message: "请求超时", image: '/Common/logo.png' }); }, 5000);
       promise.then(this.getImages(this), this.showError(this));
     },
