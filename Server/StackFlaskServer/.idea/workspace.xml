@@ -12,7 +12,7 @@
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/StackFlaskServer$view.coverage" NAME="view Coverage Results" MODIFIED="1567580739220" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Stack" />
     <SUITE FILE_PATH="coverage/StackFlaskServer$test.coverage" NAME="test Coverage Results" MODIFIED="1568170626115" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/Stack" />
-    <SUITE FILE_PATH="coverage/StackFlaskServer$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1568133027842" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/StackFlaskServer$Flask__app_py_.coverage" NAME="Flask (app.py) Coverage Results" MODIFIED="1568174876623" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
@@ -28,11 +28,10 @@
       <file leaf-file-name="view.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/Stack/view.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="406">
-              <caret line="1059" column="28" lean-forward="true" selection-start-line="1059" selection-start-column="28" selection-end-line="1059" selection-end-column="28" />
+            <state relative-caret-position="-484">
+              <caret line="230" column="33" selection-start-line="230" selection-start-column="33" selection-end-line="230" selection-end-column="33" />
               <folding>
                 <element signature="e#0#34#0" expanded="true" />
-                <element signature="e#243#2389#0" />
                 <element signature="e#2468#4614#0" />
                 <element signature="e#2705#5336#0" />
                 <element signature="e#5504#7720#0" />
@@ -92,8 +91,8 @@
       <file leaf-file-name="model.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Stack/model.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="560">
-              <caret line="198" column="31" selection-start-line="198" selection-start-column="31" selection-end-line="198" selection-end-column="31" />
+            <state relative-caret-position="726">
+              <caret line="99" column="21" selection-start-line="99" selection-start-column="21" selection-end-line="99" selection-end-column="21" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
               </folding>
@@ -139,9 +138,9 @@
         <option value="$PROJECT_DIR$/app.py" />
         <option value="$PROJECT_DIR$/Stack/__init__.py" />
         <option value="$PROJECT_DIR$/Stack/valid.py" />
-        <option value="$PROJECT_DIR$/Stack/model.py" />
         <option value="$PROJECT_DIR$/Stack/test.py" />
         <option value="$PROJECT_DIR$/Stack/config.py" />
+        <option value="$PROJECT_DIR$/Stack/model.py" />
         <option value="$PROJECT_DIR$/Stack/view.py" />
       </list>
     </option>
@@ -275,8 +274,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.test" />
         <item itemvalue="Flask server.Flask (app.py)" />
+        <item itemvalue="Python.test" />
         <item itemvalue="Python.view" />
       </list>
     </recent_temporary>
@@ -303,7 +302,7 @@
       <window_info anchor="bottom" id="Database Changes" order="9" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Python Console" order="10" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49895832" visible="true" weight="0.27254307" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49895832" visible="true" weight="0.3596758" />
       <window_info anchor="bottom" id="Terminal" order="11" />
       <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.05625" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
@@ -329,7 +328,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="16" />
+      <option name="time" value="17" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -346,7 +345,6 @@
           <caret line="937" column="53" selection-start-line="937" selection-start-column="53" selection-end-line="937" selection-end-column="53" />
           <folding>
             <element signature="e#0#34#0" expanded="true" />
-            <element signature="e#243#2389#0" />
             <element signature="e#2468#4614#0" />
             <element signature="e#2705#5336#0" />
             <element signature="e#5504#7720#0" />
@@ -467,7 +465,6 @@
           <caret line="737" column="34" selection-start-line="737" selection-start-column="34" selection-end-line="737" selection-end-column="34" />
           <folding>
             <element signature="e#0#34#0" expanded="true" />
-            <element signature="e#243#2389#0" />
             <element signature="e#2468#4614#0" />
             <element signature="e#2705#5336#0" />
             <element signature="e#5504#7720#0" />
@@ -547,7 +544,6 @@
           <caret line="702" column="21" selection-start-line="702" selection-start-column="21" selection-end-line="702" selection-end-column="21" />
           <folding>
             <element signature="e#0#34#0" expanded="true" />
-            <element signature="e#243#2389#0" />
             <element signature="e#2468#4614#0" />
             <element signature="e#2705#5336#0" />
             <element signature="e#5504#7720#0" />
@@ -586,7 +582,6 @@
           <caret line="781" lean-forward="true" selection-start-line="781" selection-end-line="781" />
           <folding>
             <element signature="e#0#34#0" expanded="true" />
-            <element signature="e#243#2389#0" />
             <element signature="e#2468#4614#0" />
             <element signature="e#2705#5336#0" />
             <element signature="e#5504#7720#0" />
@@ -700,7 +695,6 @@
           <caret line="1" selection-start-line="1" selection-end-line="1" />
           <folding>
             <element signature="e#0#34#0" expanded="true" />
-            <element signature="e#243#2389#0" />
             <element signature="e#2468#4614#0" />
             <element signature="e#2705#5336#0" />
             <element signature="e#5504#7720#0" />
@@ -825,16 +819,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Stack/model.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="560">
-          <caret line="198" column="31" selection-start-line="198" selection-start-column="31" selection-end-line="198" selection-end-column="31" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Stack/test.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="623">
@@ -849,13 +833,22 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/Stack/model.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="726">
+          <caret line="99" column="21" selection-start-line="99" selection-start-column="21" selection-end-line="99" selection-end-column="21" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Stack/view.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="406">
-          <caret line="1059" column="28" lean-forward="true" selection-start-line="1059" selection-start-column="28" selection-end-line="1059" selection-end-column="28" />
+        <state relative-caret-position="-484">
+          <caret line="230" column="33" selection-start-line="230" selection-start-column="33" selection-end-line="230" selection-end-column="33" />
           <folding>
             <element signature="e#0#34#0" expanded="true" />
-            <element signature="e#243#2389#0" />
             <element signature="e#2468#4614#0" />
             <element signature="e#2705#5336#0" />
             <element signature="e#5504#7720#0" />

@@ -228,7 +228,7 @@ def init_api(app):
     # weight = (Aes_score - 50) + 40 * --------------- + 10 * --------------
     #                                   total * alpha          total * beta
     #
-    # const alpha = 10%, beta = 50%
+    # const alpha = 10%, beta = 10%
     # total = 100
     # user creates one post
     # check auth(phonenum) firstly

@@ -96,6 +96,7 @@ class Post(db.Model):
         return self.query.filter_by(phonenum=phonenum).all()
 
     def get_followees_posts(self, phonenum, time):
+        # print(phonenum)
         from Stack.config import SHOWPOSTS_LIMIT
         return self.query\
             .filter(or_(and_(self.phonenum == FollowTable.followee, FollowTable.follower == phonenum), self.phonenum == phonenum))\
@@ -359,6 +360,10 @@ class FollowTable(db.Model):
 
     def delete(self, fid):
         self.query.filter_by(fid=fid).delete()
+        return session_commit()
+
+    def delete_(self, follow):
+        self.query.delete(follow)
         return session_commit()
 
     def out(self, follow):
