@@ -38,8 +38,6 @@ def init_api(app):
                     phlist.append(followee.followee)
                 # print(phlist)
                 posts = Post.fresh(Post, phlist, time)
-                # posts = Common.get_followees_posts(Common, phonenum=phonenum, time=time)
-                # print(posts)
                 res = list()
                 for post in posts:
                     postdic = Post.out(Post, post)
@@ -68,51 +66,6 @@ def init_api(app):
 
         return jsonify(data)
 
-    @app.route('/user/get_user_info', methods=['POST'])
-    def get_user_info():
-        data = {}
-        phonenum = request.form.get('phonenum')
-        tar_phonenum = request.form.get('tar_phonenum')
-        try:
-            schema(
-                {
-                    "phonenum": phonenum,
-                    "tar_phonenum": tar_phonenum
-                }
-            )
-            conforms_to_schema = True
-        except MultipleInvalid as e:
-            data['status'] = 400
-            conforms_to_schema = False
-            if "expected" in e.msg:
-                data['message'] = e.path[0] + " is not in the correct format"
-            else:
-                data['message'] = e.msg + " for " + e.path[0]
-
-        if conforms_to_schema:
-            if User.get(User, phonenum=tar_phonenum) is None:
-                data['status'] = 404
-                data['message'] = "User {} doesn't exist".format(tar_phonenum)
-            try:
-                userdict = User.out(User, User.get(User, phonenum=tar_phonenum))
-                userdict['followers'] = FollowTable.get_count_of_followers(FollowTable, followee=tar_phonenum)
-                userdict['following'] = FollowTable.get_count_of_followees(FollowTable, follower=tar_phonenum)
-                if phonenum != tar_phonenum:
-                    # follow status
-                    userdict['followed'] = True if FollowTable.get_by_ff(FollowTable, phonenum,
-                                                                        tar_phonenum) is not None else False
-                userdict['posts'] = Post.get_posts(Post, phonenum=tar_phonenum)
-                data['message'] = [userdict]
-                data['status'] = 200
-            except Exception as e:
-                data['status'] = 406
-                data['message'] = str(e)
-
-        return jsonify(data)
-
-    ###########################################
-    # post
-    ###########################################
     # for one user, get all posts
     # phonenum == tar_phonenum is allowed(mine page)
     # check auth(phonenum) firstly
@@ -174,6 +127,51 @@ def init_api(app):
 
         return jsonify(data)
 
+    @app.route('/user/get_user_info', methods=['POST'])
+    def get_user_info():
+        data = {}
+        phonenum = request.form.get('phonenum')
+        tar_phonenum = request.form.get('tar_phonenum')
+        try:
+            schema(
+                {
+                    "phonenum": phonenum,
+                    "tar_phonenum": tar_phonenum
+                }
+            )
+            conforms_to_schema = True
+        except MultipleInvalid as e:
+            data['status'] = 400
+            conforms_to_schema = False
+            if "expected" in e.msg:
+                data['message'] = e.path[0] + " is not in the correct format"
+            else:
+                data['message'] = e.msg + " for " + e.path[0]
+
+        if conforms_to_schema:
+            if User.get(User, phonenum=tar_phonenum) is None:
+                data['status'] = 404
+                data['message'] = "User {} doesn't exist".format(tar_phonenum)
+            try:
+                userdict = User.out(User, User.get(User, phonenum=tar_phonenum))
+                userdict['followers'] = FollowTable.get_count_of_followers(FollowTable, followee=tar_phonenum)
+                userdict['following'] = FollowTable.get_count_of_followees(FollowTable, follower=tar_phonenum)
+                if phonenum != tar_phonenum:
+                    # follow status
+                    userdict['followed'] = True if FollowTable.get_by_ff(FollowTable, phonenum,
+                                                                        tar_phonenum) is not None else False
+                userdict['posts'] = Post.get_posts(Post, phonenum=tar_phonenum)
+                data['message'] = [userdict]
+                data['status'] = 200
+            except Exception as e:
+                data['status'] = 406
+                data['message'] = str(e)
+
+        return jsonify(data)
+
+    ###########################################
+    # post
+    ###########################################
     # in discover or rank page, when user click the image, this api is invoked
     @app.route('/post/get_one_post', methods=['POST'])
     def get_one_post():
